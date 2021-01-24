@@ -43,7 +43,7 @@ namespace MikuSharp.Commands
                 await ctx.Message.DeleteAsync();
                 return;
             }
-            var guild = await ctx.Client.GetGuildAsync(id: 802866811841675314);
+            var guild = await ctx.Client.GetGuildAsync(id: 483279257431441410);
             var emb = new DiscordEmbedBuilder();
             emb.WithAuthor(name: $"{ctx.Member.Username}#{ctx.Member.Discriminator}", iconUrl: ctx.Member.AvatarUrl).
                 WithTitle(title: "Feedback").
@@ -51,7 +51,7 @@ namespace MikuSharp.Commands
                 WithFooter(text: $"Sent from {ctx.Guild.Name}");
             emb.AddField(name: "User", value: $"{ctx.Member.Mention}", inline: true);
             emb.AddField(name: "ID", value: $"{ctx.Guild.Id}", inline: true);
-            var embed = await guild.GetChannel(802912806403571712).SendMessageAsync(embed: emb.Build());
+            var embed = await guild.GetChannel(484698873411928075).SendMessageAsync(embed: emb.Build());
             await embed.CreateReactionAsync(DiscordEmoji.FromName(client: ctx.Client, name: ":thumbsup:"));
             await embed.CreateReactionAsync(DiscordEmoji.FromName(client: ctx.Client, name: ":thumbsdown:"));
             await ctx.RespondAsync($"Feedback sent {DiscordEmoji.FromGuildEmote(client: ctx.Client, id: 724802737635852328)}");
