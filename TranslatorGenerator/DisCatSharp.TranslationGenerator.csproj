@@ -65,9 +65,34 @@
     <NoWarn>1701;1702;CA1824;DV2001</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Entities\**" />
+    <Compile Remove="Enums\**" />
+    <EmbeddedResource Remove="Entities\**" />
+    <EmbeddedResource Remove="Enums\**" />
+    <None Remove="Entities\**" />
+    <None Remove="Enums\**" />
+    <Page Remove="Entities\**" />
+    <Page Remove="Enums\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="resources\cm_cmd.png" />
+    <None Remove="resources\s_cmd.png" />
+    <None Remove="Themes\resources\cm_cmd.png" />
+    <None Remove="Themes\resources\s_cmd.png" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="discatsharp.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
+    </None>
+    <None Update="in\translation_generator_export-shard0-GROUP-1_of_2.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="in\translation_generator_export-shard0-SINGLE-1_of_2.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="in\translation_generator_export-shard0-SINGLE-2_of_2.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="out\README.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -75,9 +100,6 @@
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <None Update="Themes\images\slash.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -91,6 +113,20 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="resources\cm_cmd.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\s_cmd.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\resources\cm_cmd.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Themes\resources\s_cmd.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="discatsharp.ico" />
@@ -108,11 +144,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\DisCatSharp\DisCatSharp.ApplicationCommands\DisCatSharp.ApplicationCommands.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Entities\" />
-    <Folder Include="Enums\" />
-    <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

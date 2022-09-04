@@ -1,56 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace DisCatSharp.TranslationGenerator;
 
-/// <summary>
-/// Follow steps 1a or 1b and then 2 to use this custom control in a XAML file.
-///
-/// Step 1a) Using this custom control in a XAML file that exists in the current project.
-/// Add this XmlNamespace attribute to the root element of the markup file where it is 
-/// to be used:
-///
-///     xmlns:MyNamespace="clr-namespace:DisCatSharp.TranslationGenerator"
-///
-///
-/// Step 1b) Using this custom control in a XAML file that exists in a different project.
-/// Add this XmlNamespace attribute to the root element of the markup file where it is 
-/// to be used:
-///
-///     xmlns:MyNamespace="clr-namespace:DisCatSharp.TranslationGenerator;assembly=DisCatSharp.TranslationGenerator"
-///
-/// You will also need to add a project reference from the project where the XAML file lives
-/// to this project and Rebuild to avoid compilation errors:
-///
-///     Right click on the target project in the Solution Explorer and
-///     "Add Reference"->"Projects"->[Browse to and select this project]
-///
-///
-/// Step 2)
-/// Go ahead and use your control in the XAML file.
-///
-///     <MyNamespace:ApplicationCommand/>
-///
-/// </summary>
 public class ApplicationCommand : UserControl
 {
 	static ApplicationCommand()
 	{
 		DefaultStyleKeyProperty.OverrideMetadata(typeof(ApplicationCommand), new FrameworkPropertyMetadata(typeof(ApplicationCommand)));
 	}
+
 	public static readonly DependencyProperty ACNameProperty =
 			DependencyProperty.Register(
 				"ACName", typeof(string), typeof(ApplicationCommand),
@@ -63,28 +22,6 @@ public class ApplicationCommand : UserControl
 				new PropertyMetadata(
 					new PropertyChangedCallback(ACDescChangedCallback)), new ValidateValueCallback(ValidContent));
 
-	public static readonly DependencyProperty ImagePropery =
-			DependencyProperty.Register(
-				 "ImageSource", typeof(Stream), typeof(ApplicationCommand),
-				null);
-
-	private static bool ValidContent(object value)
-	{
-		return true;
-	}
-
-	public Stream ImageSource
-	{
-		get
-		{
-			return (Stream)GetValue(ImagePropery);
-		}
-
-		set
-		{
-			SetValue(ImagePropery, value);
-		}
-	}
 	public string ACName
 	{
 		get
@@ -143,7 +80,24 @@ public class ApplicationCommand : UserControl
 				newValue));
 	}
 
-	private void UpdateStates(bool useTransitions)
+	private static bool ValidContent(object value)
+	{
+		return true;
+	}
+
+	protected override void OnGotFocus(RoutedEventArgs e)
+	{
+		base.OnGotFocus(e);
+		UpdateStates(true);
+	}
+
+	protected override void OnLostFocus(RoutedEventArgs e)
+	{
+		base.OnLostFocus(e);
+		UpdateStates(true);
+	}
+
+	internal void UpdateStates(bool useTransitions)
 	{
 		if (IsFocused)
 		{
@@ -159,7 +113,6 @@ public class ApplicationCommand : UserControl
 		EventManager.RegisterRoutedEvent("ACNameChanged", RoutingStrategy.Direct,
 					  typeof(ACNameChangedEventHandler), typeof(ApplicationCommand));
 
-
 	public static readonly RoutedEvent ACDescChangedEvent =
 		EventManager.RegisterRoutedEvent("ACDescChanged", RoutingStrategy.Direct,
 					  typeof(ACDescChangedEventHandler), typeof(ApplicationCommand));
@@ -174,18 +127,6 @@ public class ApplicationCommand : UserControl
 	{
 		add { AddHandler(ACDescChangedEvent, value); }
 		remove { RemoveHandler(ACDescChangedEvent, value); }
-	}
-
-	protected override void OnGotFocus(RoutedEventArgs e)
-	{
-		base.OnGotFocus(e);
-		UpdateStates(true);
-	}
-
-	protected override void OnLostFocus(RoutedEventArgs e)
-	{
-		base.OnLostFocus(e);
-		UpdateStates(true);
 	}
 
 	protected virtual void OnACNameChanged(ACNameChangedEventArgs e)

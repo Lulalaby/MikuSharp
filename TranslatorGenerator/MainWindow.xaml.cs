@@ -1,10 +1,12 @@
 ﻿using AdonisUI;
 using AdonisUI.Controls;
 
+using DisCatSharp.ApplicationCommands.Entities;
 using DisCatSharp.Enums;
 using DisCatSharp.TranslationGenerator;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -122,9 +124,9 @@ public partial class MainWindow : AdonisWindow
 			var data = App.LoadedGroupTranslationTemplates[curFile];
 			foreach (var dat in data)
 			{
-				ApplicationCommand box = new()
+				SlashCommand box = new()
 				{
-					ACName = $"/{dat.Name}",
+					ACName = dat.Name,
 					ACDesc = dat.Description,
 					Height = 60,
 					Width = 600,
@@ -132,21 +134,36 @@ public partial class MainWindow : AdonisWindow
 				};
 				translationEditStackPanel.Children.Add(box);
 			}
-		} else
+		}
+		else
 		{
 			var data = App.LoadedNormalTranslationTemplates[curFile];
 			foreach (var dat in data)
 			{
-				var prefix = dat.Type == ApplicationCommandType.ChatInput ? "/" : "#";
-				ApplicationCommand box = new()
+				if (dat.Type == ApplicationCommandType.ChatInput)
 				{
-					ACName = $"{prefix}{dat.Name}",
-					ACDesc = dat.Description ?? "Not applicable",
-					Height = 60,
-					Width = 600,
-					Name = dat.Name.Replace("-", "").Replace(" ", "")
-				};
-				translationEditStackPanel.Children.Add(box);
+					SlashCommand box = new()
+					{
+						ACName = dat.Name,
+						ACDesc = dat.Description ?? "Not applicable",
+						Height = 60,
+						Width = 600,
+						Name = dat.Name.Replace("-", "").Replace(" ", "")
+					};
+					translationEditStackPanel.Children.Add(box);
+				}
+				else
+				{
+					ContextMenuCommand box = new()
+					{
+						ACName = dat.Name,
+						ACDesc = dat.Description ?? "Not applicable",
+						Height = 60,
+						Width = 600,
+						Name = dat.Name.Replace("-", "").Replace(" ", "")
+					};
+					translationEditStackPanel.Children.Add(box);
+				}
 			}
 		}
 	}

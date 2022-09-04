@@ -29,7 +29,8 @@
 		<GroupBox x:Name="translationGroupBox" Header="Translation Editor" Margin="10,59,854,10" Background="{x:Null}" BorderBrush="{x:Null}" FontFamily="Comic Sans MS" FontSize="14" ClipToBounds="False" SnapsToDevicePixels="False" Grid.IsSharedSizeScope="True">
 			<Grid x:Name="translationEditGrid">
 				<StackPanel x:Name="translationEditStackPanel" Orientation="Vertical" HorizontalAlignment="Left">
-					<local:ApplicationCommand Height="60" Width="600" x:Name="test"/>
+					<local:SlashCommand x:Name="slash_command" ACName="slash_command" ACDesc="My awesome description"/>
+					<local:ContextMenuCommand x:Name="context_menu_command" ACName="Message or User Command" ACDesc="Not applicable"/>
 				</StackPanel>
 			</Grid>
 		</GroupBox>
