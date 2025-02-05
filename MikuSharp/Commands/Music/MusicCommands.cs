@@ -58,6 +58,7 @@ public partial class MusicCommands : ApplicationCommandsModule
 	[SlashCommand("test", "Test UI Kit"), ApplicationCommandRequireTeamMember, DeferResponseAsync]
 	public async Task TestAsync(InteractionContext ctx, [Option("identifier", "The identifier (lavalink identifier, url, etc..)")] string identifier)
 	{
+		DiscordWebhookBuilder builder = new();
 		LavalinkTrack track;
 		var session = ctx.Client.GetLavalink().DefaultSession()!;
 		var loadResult = await session.LoadTracksAsync(identifier);
@@ -76,6 +77,8 @@ public partial class MusicCommands : ApplicationCommandsModule
 			default:
 				throw new ArgumentOutOfRangeException(null, "Unsupported result type");
 		}
+
+		var lyrics = await session.GetLyricsAsync(track);
 
 		var artistArtworkUrl = track.PluginInfo.AdditionalProperties.TryGetValue("artistArtworkUrl", out var url1) ? url1.ToString()! : null;
 		var albumName = track.PluginInfo.AdditionalProperties.TryGetValue("albumName", out var url2) ? url2.ToString() : null;
@@ -108,19 +111,36 @@ public partial class MusicCommands : ApplicationCommandsModule
 
 		infoComponents.AddRange([separator, additionalTrackInfo]);
 
+		MemoryStream? ms = null;
+		if (lyrics is not null)
+		{
+			var lyricString = $"Lyrics for {lyrics.SourceName} by {lyrics.Provider}\n\n";
+			lyricString += string.Join("\n", lyrics.Lines.Select(line => string.IsNullOrEmpty(line.Line) ? string.Empty : $"{TimeSpan.FromMilliseconds(line.Timestamp).FormatTimeSpan()}{(line.Duration.HasValue ? $" {TimeSpan.FromMilliseconds(line.Duration.Value).FormatTimeSpan()}" : string.Empty)}: {line.Line}"));
+			ms = new(Encoding.UTF8.GetBytes(lyricString));
+			ms.Position = 0;
+			builder.AddFile("lyrics.txt", ms, description: $"Lyrics for {track.Info.Title}");
+			DiscordFileDisplayComponent lyricsComponent = new("attachment://lyrics.txt", null);
+			infoComponents.AddRange([separator, lyricsComponent]);
+		}
+
 		DiscordContainerComponent infoContainer = new([..infoComponents]);
 		try
 		{
-			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(infoContainer));
+			await ctx.EditResponseAsync(builder.WithV2Components().AddComponents(infoContainer));
 		}
 		catch (BadRequestException ex)
 		{
-			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(ex.Errors?.BlockCode("json") ?? ex.Message));
+			await ctx.EditResponseAsync(builder.WithContent(ex.Errors?.BlockCode("json") ?? ex.Message));
+		}
+		finally
+		{
+			if (ms is not null)
+				await ms.DisposeAsync();
 		}
 
 		return;
 
-		ulong GetEmojiBasedOnIdentifier(string ident)
+		static ulong GetEmojiBasedOnIdentifier(string ident)
 			=> ident.ToLowerInvariant().Contains("spotify")
 				? 1336571943687688252
 				: (ulong)1336587088132440115;
