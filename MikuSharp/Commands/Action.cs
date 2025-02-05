@@ -25,7 +25,7 @@ internal class Action : ApplicationCommandsModule
 		{
 			builder.WithV2Components();
 			builder.AddFile($"image.{wsh.Extension}", wsh.ImgData);
-			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## A wild hug appears!"), new DiscordMediaGalleryComponent([new($"attachment://image.{wsh.Extension}")]), new DiscordTextDisplayComponent($"{ctx.User.Mention} hugs {user.Mention} uwu")]));
+			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## A wild hug appears!"), new DiscordTextDisplayComponent($"{ctx.User.Mention} hugs {user.Mention} uwu"), new DiscordMediaGalleryComponent([new($"attachment://image.{wsh.Extension}")])]));
 			builder.WithAllowedMentions([new UserMention(ctx.User), new UserMention(user)]);
 			await ctx.EditResponseAsync(builder);
 			return;
@@ -45,7 +45,7 @@ internal class Action : ApplicationCommandsModule
 		var wsh = await ctx.Client.RestClient.GetWeebShAsync("kiss");
 		if (wsh is null)
 		{
-			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"{ctx.User.Mention} hugs {user.Mention} uwu").WithAllowedMentions([new UserMention(ctx.User), new UserMention(user)]));
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"{ctx.User.Mention} kisses {user.Mention} >~<").WithAllowedMentions([new UserMention(ctx.User), new UserMention(user)]));
 			await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AsEphemeral().WithContent("Failed to get image"));
 			return;
 		}
@@ -56,7 +56,7 @@ internal class Action : ApplicationCommandsModule
 		{
 			builder.WithV2Components();
 			builder.AddFile($"image.{wsh.Extension}", wsh.ImgData);
-			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## A kiss!"), new DiscordMediaGalleryComponent([new($"attachment://image.{wsh.Extension}")]), new DiscordTextDisplayComponent($"{ctx.User.Mention} kisses {user.Mention} >~<")]));
+			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## A kiss!"), new DiscordTextDisplayComponent($"{ctx.User.Mention} kisses {user.Mention} >~<"), new DiscordMediaGalleryComponent([new($"attachment://image.{wsh.Extension}")])]));
 			builder.WithAllowedMentions([new UserMention(ctx.User), new UserMention(user)]);
 			await ctx.EditResponseAsync(builder);
 			return;
@@ -87,7 +87,7 @@ internal class Action : ApplicationCommandsModule
 		{
 			builder.WithV2Components();
 			builder.AddFile($"image.{wsh.Extension}", wsh.ImgData);
-			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## Slurp~"), new DiscordMediaGalleryComponent([new($"attachment://image.{wsh.Extension}")]), new DiscordTextDisplayComponent($"{ctx.User.Mention} licks {user.Mention} owo")]));
+			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## Slurp~"), new DiscordTextDisplayComponent($"{ctx.User.Mention} licks {user.Mention} owo"), new DiscordMediaGalleryComponent([new($"attachment://image.{wsh.Extension}")])]));
 			builder.WithAllowedMentions([new UserMention(ctx.User), new UserMention(user)]);
 			await ctx.EditResponseAsync(builder);
 			return;
@@ -119,7 +119,7 @@ internal class Action : ApplicationCommandsModule
 		{
 			builder.WithV2Components();
 			builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
-			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## Pat pat :3"), new DiscordMediaGalleryComponent([new($"attachment://image.{MimeGuesser.GuessExtension(img)}")]), new DiscordTextDisplayComponent($"{ctx.User.Mention} pats {user.Mention} #w#")]));
+			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## Pat pat :3"), new DiscordTextDisplayComponent($"{ctx.User.Mention} pats {user.Mention} #w#"), new DiscordMediaGalleryComponent([new($"attachment://image.{MimeGuesser.GuessExtension(img)}")])]));
 			builder.WithAllowedMentions([new UserMention(ctx.User), new UserMention(user)]);
 			await ctx.EditResponseAsync(builder);
 			return;
@@ -154,7 +154,7 @@ internal class Action : ApplicationCommandsModule
 		{
 			builder.WithV2Components();
 			builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
-			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## Poke poke :p"), new DiscordMediaGalleryComponent([new($"attachment://image.{MimeGuesser.GuessExtension(img)}")]), new DiscordTextDisplayComponent($"{ctx.User.Mention} pokes {user.Mention} ÓwÒ")]));
+			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## Poke poke :p"), new DiscordTextDisplayComponent($"{ctx.User.Mention} pokes {user.Mention} ÓwÒ"), new DiscordMediaGalleryComponent([new($"attachment://image.{MimeGuesser.GuessExtension(img)}")])]));
 			builder.WithAllowedMentions([new UserMention(ctx.User), new UserMention(user)]);
 			await ctx.EditResponseAsync(builder);
 			return;
@@ -189,7 +189,7 @@ internal class Action : ApplicationCommandsModule
 		{
 			builder.WithV2Components();
 			builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
-			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## Slap x~x"), new DiscordMediaGalleryComponent([new($"attachment://image.{MimeGuesser.GuessExtension(img)}")]), new DiscordTextDisplayComponent($"{ctx.User.Mention} slaps {user.Mention} ÒwÓ")]));
+			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## Slap x~x"), new DiscordTextDisplayComponent($"{ctx.User.Mention} slaps {user.Mention} ÒwÓ"), new DiscordMediaGalleryComponent([new($"attachment://image.{MimeGuesser.GuessExtension(img)}")])]));
 			builder.WithAllowedMentions([new UserMention(ctx.User), new UserMention(user)]);
 			await ctx.EditResponseAsync(builder);
 			return;
@@ -224,7 +224,7 @@ internal class Action : ApplicationCommandsModule
 		{
 			builder.WithV2Components();
 			builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
-			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## Bite~"), new DiscordMediaGalleryComponent([new($"attachment://image.{MimeGuesser.GuessExtension(img)}")]), new DiscordTextDisplayComponent($"{ctx.User.Mention} bites {user.Mention} x~x")]));
+			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## Bite~"), new DiscordTextDisplayComponent($"{ctx.User.Mention} bites {user.Mention} x~x"), new DiscordMediaGalleryComponent([new($"attachment://image.{MimeGuesser.GuessExtension(img)}")])]));
 			builder.WithAllowedMentions([new UserMention(ctx.User), new UserMention(user)]);
 			await ctx.EditResponseAsync(builder);
 			return;
@@ -259,7 +259,7 @@ internal class Action : ApplicationCommandsModule
 		{
 			builder.WithV2Components();
 			builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
-			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## Noms~"), new DiscordMediaGalleryComponent([new($"attachment://image.{MimeGuesser.GuessExtension(img)}")]), new DiscordTextDisplayComponent($"{ctx.User.Mention} noms {user.Mention} >:3c")]));
+			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## Noms~"), new DiscordTextDisplayComponent($"{ctx.User.Mention} noms {user.Mention} >:3c"), new DiscordMediaGalleryComponent([new($"attachment://image.{MimeGuesser.GuessExtension(img)}")])]));
 			builder.WithAllowedMentions([new UserMention(ctx.User), new UserMention(user)]);
 			await ctx.EditResponseAsync(builder);
 			return;
@@ -294,7 +294,7 @@ internal class Action : ApplicationCommandsModule
 		{
 			builder.WithV2Components();
 			builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
-			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## Stare O.o"), new DiscordMediaGalleryComponent([new($"attachment://image.{MimeGuesser.GuessExtension(img)}")]), new DiscordTextDisplayComponent($"{ctx.User.Mention} stares at {user.Mention} O.o")]));
+			builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## Stare O.o"), new DiscordTextDisplayComponent($"{ctx.User.Mention} stares at {user.Mention} O.o"), new DiscordMediaGalleryComponent([new($"attachment://image.{MimeGuesser.GuessExtension(img)}")])]));
 			builder.WithAllowedMentions([new UserMention(ctx.User), new UserMention(user)]);
 			await ctx.EditResponseAsync(builder);
 			return;
