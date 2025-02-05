@@ -86,47 +86,44 @@ public partial class MusicCommands : ApplicationCommandsModule
 		var artistUrl = track.PluginInfo.AdditionalProperties.TryGetValue("artistUrl", out var url4) ? url4.ToString() : null;
 
 		DiscordSeparatorComponent separator = new(false, SeparatorSpacingSize.Small);
-		DiscordTextDisplayComponent trackInfo = new($"### {track.Info.Title}\n**Artist:** {track.Info.Author.InlineCode()}\n**Length:** {track.Info.Length.FormatTimeSpan().InlineCode()}{(!string.IsNullOrEmpty(albumName) ? $"\n**Album:** {albumName.InlineCode()}" : "")}");
+		DiscordTextDisplayComponent trackInfo = new($"### {track.Info.Title}\n**Artist:** {track.Info.Author.InlineCode()}\n**Length:** {track.Info.Length.FormatTimeSpan().InlineCode()}{(!string.IsNullOrEmpty(albumName) ? $"\n**Album:** {albumName.InlineCode()}" : "")}\n**Stream:** {track.Info.IsStream.ToString().ToLowerInvariant().InlineCode()}");
 		DiscordSectionComponent trackInfoSection = new([trackInfo]);
 		trackInfoSection.WithThumbnailComponent(artistArtworkUrl!, "Artist Artwork");
 		DiscordTextDisplayComponent additionalTrackInfo = new($"-# **ISrc:** {track.Info.Isrc?.InlineCode() ?? "none".InlineCode()} **Identifier:** {track.Info.Identifier.InlineCode()}");
 		DiscordMediaGalleryItem trackCover = new(track.Info.ArtworkUrl!.AbsoluteUri, "Song Artwork");
 		DiscordMediaGalleryComponent trackMediaGallery = new([trackCover]);
-		DiscordLinkButtonComponent trackLink = new(track.Info.Uri.AbsoluteUri, "View Track", emoji: new(GetEmojiBasedOnIdentifier(identifier)));
+		DiscordLinkButtonComponent trackLink = new(track.Info.Uri.AbsoluteUri, "View", emoji: new(track.Info.SourceName.GetEmojiBasedOnSourceName()));
 		DiscordActionRowComponent links1 = new([trackLink]);
 		List<DiscordComponent> infoComponents = [string.IsNullOrEmpty(artistArtworkUrl) ? trackInfo : trackInfoSection, separator, trackMediaGallery, separator, links1];
 		if (!string.IsNullOrEmpty(albumUrl))
 		{
-			DiscordLinkButtonComponent albumLink = new(albumUrl, "View Album", emoji: new(GetEmojiBasedOnIdentifier(identifier)));
+			DiscordLinkButtonComponent albumLink = new(albumUrl, "View Album", emoji: new(track.Info.SourceName.GetEmojiBasedOnSourceName()));
 			DiscordActionRowComponent links2 = new([albumLink]);
 			infoComponents.Add(links2);
 		}
 
 		if (!string.IsNullOrEmpty(artistUrl))
 		{
-			DiscordLinkButtonComponent artistLink = new(artistUrl, "View Artist", emoji: new(GetEmojiBasedOnIdentifier(identifier)));
+			DiscordLinkButtonComponent artistLink = new(artistUrl, "View Artist", emoji: new(track.Info.SourceName.GetEmojiBasedOnSourceName()));
 			DiscordActionRowComponent links3 = new([artistLink]);
 			infoComponents.Add(links3);
 		}
 
 		infoComponents.AddRange([separator, additionalTrackInfo]);
 
-		MemoryStream? ms = null;
-		if (lyrics is not null)
-		{
-			var lyricString = $"Lyrics for {lyrics.SourceName} by {lyrics.Provider}\n\n";
-			lyricString += string.Join("\n", lyrics.Lines.Select(line => string.IsNullOrEmpty(line.Line) ? string.Empty : $"{TimeSpan.FromMilliseconds(line.Timestamp).FormatTimeSpan()}{(line.Duration.HasValue ? $" {TimeSpan.FromMilliseconds(line.Duration.Value).FormatTimeSpan()}" : string.Empty)}: {line.Line}"));
-			ms = new(Encoding.UTF8.GetBytes(lyricString));
-			ms.Position = 0;
-			builder.AddFile("lyrics.txt", ms, description: $"Lyrics for {track.Info.Title}");
-			DiscordFileDisplayComponent lyricsComponent = new("attachment://lyrics.txt", null);
-			infoComponents.AddRange([separator, lyricsComponent]);
-		}
-
 		DiscordContainerComponent infoContainer = new([..infoComponents]);
+		MemoryStream? ms = null;
 		try
 		{
 			await ctx.EditResponseAsync(builder.WithV2Components().AddComponents(infoContainer));
+
+			if (lyrics is not null && lyrics.Lines.Count > 0)
+			{
+				var lyricString = string.Join("\n", lyrics.Lines.Select(line => string.IsNullOrEmpty(line.Line) ? string.Empty : $"{TimeSpan.FromMilliseconds(line.Timestamp).FormatTimeSpan()}{(line.Duration.HasValue ? $" {TimeSpan.FromMilliseconds(line.Duration.Value).FormatTimeSpan()}" : string.Empty)}: {line.Line}"));
+				ms = new(Encoding.UTF8.GetBytes(lyricString));
+				ms.Position = 0;
+				await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"Lyrics for {lyrics.SourceName}{(!string.IsNullOrEmpty(lyrics.Provider) ? $" by {lyrics.Provider}" : string.Empty)}").AddFile("SPOILER_lyrics.txt", ms, description: $"Lyrics for {track.Info.Title}"));
+			}
 		}
 		catch (BadRequestException ex)
 		{
@@ -137,12 +134,5 @@ public partial class MusicCommands : ApplicationCommandsModule
 			if (ms is not null)
 				await ms.DisposeAsync();
 		}
-
-		return;
-
-		static ulong GetEmojiBasedOnIdentifier(string ident)
-			=> ident.ToLowerInvariant().Contains("spotify")
-				? 1336571943687688252
-				: (ulong)1336587088132440115;
 	}
 }
