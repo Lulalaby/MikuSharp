@@ -60,10 +60,11 @@ internal static class MusicSessionExtensionMethods
 	/// <param name="musicSession">The music session.</param>
 	/// <param name="ctx">The interaction context.</param>
 	/// <param name="identifier">The identifier to load.</param>
+	/// <param name="shufflePlaylists">Whether to shuffle playlists. Defaults to <see langword="false"/>.</param>
 	/// <param name="searchType">The optional search type. Defaults to <see cref="LavalinkSearchType.Plain" />.</param>
 	/// <returns>Whether the track was successfully loaded and added to the queue.</returns>
 	/// <exception cref="ArgumentOutOfRangeException"></exception>
-	public static async Task<MusicSession> LoadAndPlayTrackAsync(this MusicSession musicSession, InteractionContext ctx, string identifier, LavalinkSearchType searchType = LavalinkSearchType.Plain)
+	public static async Task<MusicSession> LoadAndPlayTrackAsync(this MusicSession musicSession, InteractionContext ctx, string identifier, bool shufflePlaylists = false, LavalinkSearchType searchType = LavalinkSearchType.Plain)
 	{
 		var loadResult = await musicSession.LavalinkGuildPlayer.LoadTracksAsync(searchType, identifier);
 		switch (loadResult.LoadType)
@@ -76,6 +77,8 @@ internal static class MusicSessionExtensionMethods
 			case LavalinkLoadResultType.Playlist:
 				var playlist = loadResult.GetResultAs<LavalinkPlaylist>();
 				musicSession.LavalinkGuildPlayer.AddToQueue(playlist);
+				if (shufflePlaylists)
+					musicSession.LavalinkGuildPlayer.ShuffleQueue();
 				await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Added playlist {playlist.Info.Name.Bold()} to the queue."));
 				break;
 			case LavalinkLoadResultType.Search:

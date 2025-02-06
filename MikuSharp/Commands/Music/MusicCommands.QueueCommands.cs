@@ -8,7 +8,7 @@ public partial class MusicCommands
 	/// <summary>
 	///     The queue commands.
 	/// </summary>
-	[SlashCommandGroup("queue", "Music queue commands"), RequireUserAndBotVoicechatConnection]
+	[SlashCommandGroup("queue", "Music queue commands"), RequireUserAndBotVoicechatConnection, DeferResponseAsync(true)]
 	public class QueueCommands : ApplicationCommandsModule
 	{
 		/// <summary>

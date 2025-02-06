@@ -89,6 +89,7 @@ internal class AutocompleteProviders
 		{
 			return await ctx.ExecuteWithMusicSessionAsync((_, musicSession) =>
 			{
+				var value = ctx.FocusedOption.Value?.ToString();
 				var queue = musicSession.LavalinkGuildPlayer?.Queue.ToList();
 				if (queue is null || queue.Count is 0)
 					return Task.FromResult<IEnumerable<DiscordApplicationCommandAutocompleteChoice>>([new("The queue is empty", -1)]);
@@ -96,7 +97,6 @@ internal class AutocompleteProviders
 				var queueEntries = queue
 					.Select((entry, index) => (index: index + 1, entry))
 					.ToDictionary(x => x.index, x => x.entry);
-				var value = ctx.FocusedOption.Value as string;
 				var filteredQueueEntries = string.IsNullOrEmpty(value)
 					? queueEntries.Take(25)
 					: queueEntries.Where(x => x.Value.Info.Title.ToLower().Contains(value.ToLower())).Take(25);

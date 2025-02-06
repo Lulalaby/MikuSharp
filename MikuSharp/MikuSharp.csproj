@@ -48,6 +48,7 @@
 		<ProjectReference Include="..\..\DisCatSharp\DisCatSharp.ApplicationCommands\DisCatSharp.ApplicationCommands.csproj" />
 		<ProjectReference Include="..\..\DisCatSharp\DisCatSharp.CommandsNext\DisCatSharp.CommandsNext.csproj" />
 		<ProjectReference Include="..\..\DisCatSharp\DisCatSharp.Common\DisCatSharp.Common.csproj" />
+		<ProjectReference Include="..\..\DisCatSharp\DisCatSharp.Experimental\DisCatSharp.Experimental.csproj" />
 		<ProjectReference Include="..\..\DisCatSharp\DisCatSharp.Interactivity\DisCatSharp.Interactivity.csproj" />
 		<ProjectReference Include="..\..\DisCatSharp\DisCatSharp.Lavalink\DisCatSharp.Lavalink.csproj" />
 		<PackageReference Include="DisCatSharp.Analyzer.Roselyn" Version="6.2.5">
@@ -61,6 +62,7 @@
 		<PackageReference Include="DisCatSharp.ApplicationCommands" Version="10.6.6" />
 		<PackageReference Include="DisCatSharp.CommandsNext" Version="10.6.6" />
 		<PackageReference Include="DisCatSharp.Common" Version="10.6.6" />
+		<PackageReference Include="DisCatSharp.Experimental" Version="10.6.6" />
 		<PackageReference Include="DisCatSharp.Interactivity" Version="10.6.6" />
 		<PackageReference Include="DisCatSharp.Lavalink" Version="10.6.6" />
 	</ItemGroup>

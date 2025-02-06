@@ -9,7 +9,7 @@ public partial class MusicCommands
 	/// <summary>
 	///     The playback commands.
 	/// </summary>
-	[SlashCommandGroup("playback", "Music playback commands"), RequireUserAndBotVoicechatConnection]
+	[SlashCommandGroup("playback", "Music playback commands"), RequireUserAndBotVoicechatConnection, DeferResponseAsync(true)]
 	public class PlaybackCommands : ApplicationCommandsModule
 	{
 		/// <summary>
@@ -103,11 +103,12 @@ public partial class MusicCommands
 		/// </summary>
 		/// <param name="ctx">The interaction context.</param>
 		/// <param name="url">The url to play.</param>
+		/// <param name="shufflePlaylists">Whether to shuffle playlists.</param>
 		[SlashCommand("play", "Plays a url")]
-		public async Task PlayUrlAsync(InteractionContext ctx, [Option("url", "The url to play")] string url)
+		public async Task PlayUrlAsync(InteractionContext ctx, [Option("url", "The url to play")] string url, [Option("shuffle_playlist", "Shuffle playlists")] bool shufflePlaylists = false)
 		{
 			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Searching for `{url}`.."));
-			await ctx.ExecuteWithMusicSessionAsync(async (_, musicSession) => await musicSession.LoadAndPlayTrackAsync(ctx, url));
+			await ctx.ExecuteWithMusicSessionAsync(async (_, musicSession) => await musicSession.LoadAndPlayTrackAsync(ctx, url, shufflePlaylists));
 		}
 	}
 }

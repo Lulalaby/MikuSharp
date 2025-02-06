@@ -1,3 +1,7 @@
+using System.Net;
+
+using AngleSharp.Text;
+
 using HeyRed.Mime;
 
 using MikuSharp.Attributes;
@@ -35,7 +39,7 @@ internal class Fun : ApplicationCommandsModule
 	[SlashCommand("clyde", "Say something as clyde bot")]
 	public static async Task ClydeAsync(InteractionContext ctx, [Option("text", "Text to modify")] string text)
 	{
-		var e = JsonConvert.DeserializeObject<NekoBot>(await ctx.Client.RestClient.GetStringAsync($"https://nekobot.xyz/api/imagegen?type=clyde&text={text}"));
+		var e = JsonConvert.DeserializeObject<NekoBot>(await ctx.Client.RestClient.GetStringAsync($"https://nekobot.xyz/api/imagegen?type=clyde&text={WebUtility.UrlEncode(text)}"));
 		if (e is null)
 		{
 			await ctx.EditResponseAsync("Something went wrong while fetching the image.");

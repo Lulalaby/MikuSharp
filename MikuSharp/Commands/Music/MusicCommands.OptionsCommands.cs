@@ -8,7 +8,7 @@ public partial class MusicCommands
 	/// <summary>
 	///     The options commands.
 	/// </summary>
-	[SlashCommandGroup("options", "Music options commands"), RequireUserAndBotVoicechatConnection]
+	[SlashCommandGroup("options", "Music options commands"), RequireUserAndBotVoicechatConnection, DeferResponseAsync(true)]
 	public class OptionsCommands : ApplicationCommandsModule
 	{
 		/// <summary>
