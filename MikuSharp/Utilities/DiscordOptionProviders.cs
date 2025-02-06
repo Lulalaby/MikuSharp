@@ -27,7 +27,7 @@ internal class AutocompleteProviders
 			List<DiscordBan> bannedUsers = new(25);
 			bannedUsers.AddRange(ctx.FocusedOption.Value is not string value
 				? bans.Take(25)
-				: bans.Where(x => x.User.Username.ToLower().Contains(Convert.ToString(value))).Take(25));
+				: bans.Where(x => x.User.Username.ToLowerInvariant().Contains(Convert.ToString(value))).Take(25));
 
 			return bannedUsers.Select(x => new DiscordApplicationCommandAutocompleteChoice(x.User.UsernameWithGlobalName, x.User.Id.ToString()));
 		}
@@ -99,7 +99,7 @@ internal class AutocompleteProviders
 					.ToDictionary(x => x.index, x => x.entry);
 				var filteredQueueEntries = string.IsNullOrEmpty(value)
 					? queueEntries.Take(25)
-					: queueEntries.Where(x => x.Value.Info.Title.ToLower().Contains(value.ToLower())).Take(25);
+					: queueEntries.Where(x => x.Value.Info.Title.ToLowerInvariant().Contains(value.ToLower())).Take(25);
 				return Task.FromResult(filteredQueueEntries.Select(x => new DiscordApplicationCommandAutocompleteChoice($"{x.Key}: {x.Value.Info.Title}", x.Key - 1)));
 			}, null, [new("The queue is empty", -1)]);
 		}

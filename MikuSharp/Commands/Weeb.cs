@@ -9,20 +9,6 @@ namespace MikuSharp.Commands;
 [SlashCommandGroup("weeb", "Weeb Stuff!", allowedContexts: [InteractionContextType.Guild, InteractionContextType.PrivateChannel], integrationTypes: [ApplicationCommandIntegrationTypes.GuildInstall, ApplicationCommandIntegrationTypes.UserInstall]), DeferResponseAsync]
 internal class Weeb : ApplicationCommandsModule
 {
-	[SlashCommand("awooify", "Awooify your or someones avatar!")]
-	public static async Task AwooifyAsync(InteractionContext ctx, [Option("user", "User to awooify")] DiscordUser? user = null)
-	{
-		var url = (await (user ?? ctx.User).ConvertToMember(ctx.Guild)).GuildAvatarUrl;
-		var e = JsonConvert.DeserializeObject<NekoBot?>(await ctx.Client.RestClient.GetStringAsync($"https://nekobot.xyz/api/imagegen?type=awooify&url={url}"));
-		if (e is null)
-		{
-			await ctx.EditResponseAsync("Something went wrong while fetching the image.");
-			return;
-		}
-
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder().WithImageUrl(e.Message).Build()));
-	}
-
 	[SlashCommand("diva", "Radnom PJD Loading image")]
 	public static async Task DivaPic(InteractionContext ctx)
 	{

@@ -1,7 +1,3 @@
-using System.Net;
-
-using AngleSharp.Text;
-
 using HeyRed.Mime;
 
 using MikuSharp.Attributes;
@@ -16,8 +12,75 @@ internal class Fun : ApplicationCommandsModule
 	[SlashCommand("8ball", "Yes? No? Maybe?")]
 	public static async Task EightBallAsync(InteractionContext ctx, [Option("text", "Text to modify")] string text)
 	{
-		var responses = new[] { "It is certain.", "It is decidedly so.", "Without a doubt.", "Yes - definitely.", "You may rely on it.", "As I see it, yes.", "Most likely.", "Outlook good.", "Yes.", "Signs point to yes.", "Reply hazy, try again", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Concentrate and ask again.", "Don't count on it.", "My reply is no.", "My sources say no.", "Outlook not so good.", "Very doubtful.", "No." };
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"> {text}\n\n{responses[new Random().Next(0, responses.Length)]}"));
+		var responses = new[]
+		{
+			"It is certain.",
+			"It is decidedly so.",
+			"Without a doubt.",
+			"Yes - definitely.",
+			"You may rely on it.",
+			"As I see it, yes.",
+			"Most likely.",
+			"Outlook good.",
+			"Yes.",
+			"Signs point to yes.",
+			"Absolutely!",
+			"Of course!",
+			"No doubt about it.",
+			"The universe says yes.",
+			"You got it!",
+			"Definitely!",
+			"All signs point to yes.",
+			"The answer is crystal clear.",
+			"Yes, in due time.",
+			"The stars align in your favor.",
+			"Reply hazy, try again.",
+			"Ask again later.",
+			"Better not tell you now.",
+			"Cannot predict now.",
+			"Concentrate and ask again.",
+			"Maybe, maybe not.",
+			"Uncertain, check back later.",
+			"Hard to say.",
+			"Try flipping a coin.",
+			"Your guess is as good as mine.",
+			"The future is unclear.",
+			"I can't say for sure.",
+			"It's a mystery.",
+			"Only time will tell.",
+			"50/50 chance.",
+			"Don't count on it.",
+			"My reply is no.",
+			"My sources say no.",
+			"Outlook not so good.",
+			"Very doubtful.",
+			"No.",
+			"Absolutely not.",
+			"I wouldn’t bet on it.",
+			"No way!",
+			"Highly unlikely.",
+			"Not in a million years.",
+			"Doubtful at best.",
+			"The odds aren’t in your favor.",
+			"The universe says no.",
+			"Nope."
+		};
+
+		var chosenAnswer = responses[new Random().Next(0, responses.Length)];
+		if (ctx.GuildId is 1317206872763404478)
+		{
+			DiscordTextDisplayComponent question = new($"### Question\n{text}");
+			DiscordSectionComponent questionComponent = new([question]);
+			questionComponent.WithThumbnailComponent(ctx.User.AvatarUrl);
+			DiscordSeparatorComponent seperator = new(false, SeparatorSpacingSize.Small);
+			DiscordTextDisplayComponent answer = new($"### Answer\n{chosenAnswer}");
+			DiscordSectionComponent answerComponent = new([answer]);
+			answerComponent.WithThumbnailComponent(ctx.Client.CurrentUser.AvatarUrl);
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(new DiscordContainerComponent([questionComponent]), seperator, new DiscordContainerComponent([answerComponent])));
+			return;
+		}
+
+		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"> {text}\n\n{chosenAnswer}"));
 	}
 
 	[SlashCommand("cat", "Get a random cat image!")]
@@ -33,23 +96,6 @@ internal class Fun : ApplicationCommandsModule
 		DiscordWebhookBuilder builder = new();
 		builder.AddFile($"image.{imgUrl.Filetype}", imgUrl.Data);
 		builder.AddEmbed(imgUrl.Embed);
-		await ctx.EditResponseAsync(builder);
-	}
-
-	[SlashCommand("clyde", "Say something as clyde bot")]
-	public static async Task ClydeAsync(InteractionContext ctx, [Option("text", "Text to modify")] string text)
-	{
-		var e = JsonConvert.DeserializeObject<NekoBot>(await ctx.Client.RestClient.GetStringAsync($"https://nekobot.xyz/api/imagegen?type=clyde&text={WebUtility.UrlEncode(text)}"));
-		if (e is null)
-		{
-			await ctx.EditResponseAsync("Something went wrong while fetching the image.");
-			return;
-		}
-
-		var img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(e.Message));
-
-		DiscordWebhookBuilder builder = new();
-		builder.AddFile("clyde.png", img);
 		await ctx.EditResponseAsync(builder);
 	}
 
@@ -82,33 +128,28 @@ internal class Fun : ApplicationCommandsModule
 		builder.AddEmbed(em.Build());
 		await ctx.EditResponseAsync(builder);
 	}
-	/*
+
 	[SlashCommand("duck", "Random duck image")]
 	public static async Task DuckAsync(InteractionContext ctx)
 	{
-	    var dc = JsonConvert.DeserializeObject<Random_D>(await ctx.Client.RestClient.GetStringAsync("https://random-d.uk/api/v1/random"));
-	    Stream img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(Other.resizeLink(dc.message)));
-	    var em = new DiscordEmbedBuilder();
-	    em.WithImageUrl($"attachment://image.{MimeGuesser.GuessExtension(img)}");
-	    em.WithFooter("by random-d.uk", "https://random-d.uk/favicon.png");
-	    em.WithDescription($"[Full Image]({dc.message})");
+		var dc = JsonConvert.DeserializeObject<RandomD>(await ctx.Client.RestClient.GetStringAsync("https://random-d.uk/api/v1/random"));
+		if (dc is null)
+		{
+			await ctx.EditResponseAsync("Something went wrong while fetching the image.");
+			return;
+		}
 
-	    DiscordWebhookBuilder builder = new DiscordWebhookBuilder();
-	    builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
-	    builder.WithEmbed(em.Build());
-	    await ctx.EditResponseAsync(builder);
-	}*/
-	/*
-	[SlashCommand("lion", "Get a random lion image")]
-	public static async Task Lion(InteractionContext ctx)
-	{
-	    var ImgLink = JsonConvert.DeserializeObject<AnIdiotsGuide>(await ctx.Client.RestClient.GetStringAsync("https://animals.anidiots.guide/lion"));
-	    Stream img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(Other.resizeLink(ImgLink.link)));
+		var img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(dc.Message.ResizeLink()));
+		var em = new DiscordEmbedBuilder();
+		em.WithImageUrl($"attachment://image.{MimeGuesser.GuessExtension(img)}");
+		em.WithFooter("by random-d.uk", "https://random-d.uk/favicon.png");
+		em.WithDescription($"[Full Image]({dc.Message})");
 
-	    DiscordWebhookBuilder builder = new DiscordWebhookBuilder();
-	    builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
-	    await ctx.EditResponseAsync(builder);
-	}*/
+		var builder = new DiscordWebhookBuilder();
+		builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
+		builder.AddEmbed(em.Build());
+		await ctx.EditResponseAsync(builder);
+	}
 
 	[SlashCommand("lizard", "Get a random lizard image")]
 	public static async Task LizardAsync(InteractionContext ctx)
@@ -126,40 +167,6 @@ internal class Fun : ApplicationCommandsModule
 		builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
 		await ctx.EditResponseAsync(builder);
 	}
-	/*
-	[SlashCommand("panda", "Random panda image")]
-	public static async Task PandaAsync(InteractionContext ctx)
-	{
-	    var ImgLink = JsonConvert.DeserializeObject<AnIdiotsGuide>(await ctx.Client.RestClient.GetStringAsync("https://animals.anidiots.guide/panda"));
-	    Stream img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(Other.resizeLink(ImgLink.link)));
-
-	    DiscordWebhookBuilder builder = new DiscordWebhookBuilder();
-	    builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
-	    await ctx.EditResponseAsync(builder);
-	}
-
-	[SlashCommand("penguin", "Radnom penguin image")]
-	public static async Task PenguinAsync(InteractionContext ctx)
-	{
-	    var ImgLink = JsonConvert.DeserializeObject<AnIdiotsGuide>(await ctx.Client.RestClient.GetStringAsync("https://animals.anidiots.guide/penguin"));
-	    Stream img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(Other.resizeLink(ImgLink.link)));
-
-	    DiscordWebhookBuilder builder = new DiscordWebhookBuilder();
-	    builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
-	    await ctx.EditResponseAsync(builder);
-	}*/
-
-	/*
-	[SlashCommand("redpanda", "Random red panda image")]
-	public static async Task RedPandaAsync(InteractionContext ctx)
-	{
-	    var ImgLink = JsonConvert.DeserializeObject<AnIdiotsGuide>(await ctx.Client.RestClient.GetStringAsync("https://animals.anidiots.guide/red_panda"));
-	    Stream img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(Other.resizeLink(ImgLink.link)));
-
-	    DiscordWebhookBuilder builder = new DiscordWebhookBuilder();
-	    builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
-	    await ctx.EditResponseAsync(builder);
-	}*/
 
 	[SlashCommand("rps", "Play rock paper scissors!")]
 	public static async Task RpsAsync(InteractionContext ctx, [Option("rps", "Your rock paper scissor choice")] string rps)
@@ -167,28 +174,203 @@ internal class Fun : ApplicationCommandsModule
 		var rock = new[] { $"Rock {DiscordEmoji.FromName(ctx.Client, ":black_circle:")}", $"Paper {DiscordEmoji.FromName(ctx.Client, ":pencil:")}", $"Scissors {DiscordEmoji.FromName(ctx.Client, ":scissors:")}" };
 		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"{ctx.User.Mention} choose {rps}!\n\nI choose {rock[new Random().Next(0, rock.Length)]}"));
 	}
-	/*
-	[SlashCommand("tiger", "Random tiger image")]
-	public static async Task TigerAsync(InteractionContext ctx)
+
+	[SlashCommand("stickbug", "Get stickbugged!")]
+	public static async Task StickbugAsync(InteractionContext ctx, [Option("user", "User to stickbug")] DiscordUser? user = null)
 	{
-	    var ImgLink = JsonConvert.DeserializeObject<AnIdiotsGuide>(await ctx.Client.RestClient.GetStringAsync("https://animals.anidiots.guide/tiger"));
-	    Stream img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(Other.resizeLink(ImgLink.link)));
+		user ??= ctx.User;
+		await GenerateImageAsync(ctx, "stickbug", new()
+		{
+			{ "url", user.AvatarUrl }
+		});
+	}
 
-	    DiscordWebhookBuilder builder = new DiscordWebhookBuilder();
-	    builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
-	    await ctx.EditResponseAsync(builder);
-	}*/
-
-	/*
-	[SlashCommand("trumptweet", "generate a tweet by Trump")]
-	public static async Task TrumpTweetAsync(InteractionContext ctx, [RemainingText]string text)
+	[SlashCommand("trash", "Trash waifu image generator.")]
+	public static async Task TrashAsync(InteractionContext ctx, [Option("user", "User to trash")] DiscordUser? user = null)
 	{
-	    //https://nekobot.xyz/api/imagegen?type=trumptweet&text=
-	    var e = JsonConvert.DeserializeObject<NekoBot>(await ctx.Client.RestClient.GetStringAsync($"https://nekobot.xyz/api/imagegen?type=trumptweet&text={text}"));
-	    Stream img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(e.message));
+		user ??= ctx.User;
+		await GenerateImageAsync(ctx, "trash", new()
+		{
+			{ "url", user.AvatarUrl }
+		});
+	}
 
-	    DiscordWebhookBuilder builder = new DiscordWebhookBuilder();
-	    builder.AddFile($"trump.png", img);
-	    await ctx.EditResponseAsync(builder);
-	}*/
+	[SlashCommand("magik", "Magikify an image!")]
+	public static async Task MagikAsync(InteractionContext ctx, [Option("user", "User to magikify")] DiscordUser? user = null, [Option("intensity", "Magik intensity (0-10)")] int intensity = 5)
+	{
+		user ??= ctx.User;
+		await GenerateImageAsync(ctx, "magik", new()
+		{
+			{ "image", user.AvatarUrl },
+			{ "intensity", intensity.ToString() }
+		});
+	}
+
+	[SlashCommand("phcomment", "Make a PH comment!")]
+	public static async Task PhCommentAsync(InteractionContext ctx, [Option("text", "Text to comment.")] string text, [Option("username", "Username to use")] string? username = null)
+	{
+		username ??= ctx.User.Username;
+		await GenerateImageAsync(ctx, "phcomment", new()
+		{
+			{ "image", ctx.User.AvatarUrl },
+			{ "text", text },
+			{ "username", username }
+		});
+	}
+
+	[SlashCommand("blurpify", "Blurpify an image!")]
+	public static async Task BlurpifyAsync(InteractionContext ctx, [Option("user", "User to blurpify")] DiscordUser? user = null)
+	{
+		user ??= ctx.User;
+		await GenerateImageAsync(ctx, "blurpify", new()
+		{
+			{ "url", user.AvatarUrl }
+		});
+	}
+
+	[SlashCommand("deepfry", "Deepfry an image!")]
+	public static async Task DeepfryAsync(InteractionContext ctx, [Option("user", "User to deepfry")] DiscordUser? user = null)
+	{
+		user ??= ctx.User;
+		await GenerateImageAsync(ctx, "deepfry", new()
+		{
+			{ "image", user.AvatarUrl }
+		});
+	}
+
+	[SlashCommand("kidnap", "Kidnap a user!")]
+	public static async Task KidnapAsync(InteractionContext ctx, [Option("user", "User to kidnap")] DiscordUser? user = null)
+	{
+		user ??= ctx.User;
+		await GenerateImageAsync(ctx, "kidnap", new()
+		{
+			{ "image", user.AvatarUrl }
+		});
+	}
+
+	[SlashCommand("tweet", "Generate a fake tweet!")]
+	public static async Task TweetAsync(InteractionContext ctx, [Option("text", "Text of the tweet")] string text, [Option("username", "Username for tweet")] string? username = null)
+	{
+		username ??= ctx.User.Username;
+		await GenerateImageAsync(ctx, "tweet", new()
+		{
+			{ "username", username },
+			{ "text", text }
+		});
+	}
+
+	[SlashCommand("trap", "Trap someone!")]
+	public static async Task TrapAsync(InteractionContext ctx, [Option("user", "User to trap")] DiscordUser user, [Option("author", "User trapping them")] DiscordUser? author = null)
+	{
+		author ??= ctx.User;
+		await GenerateImageAsync(ctx, "trap", new()
+		{
+			{ "name", user.Username },
+			{ "author", author.Username },
+			{ "image", user.AvatarUrl }
+		});
+	}
+
+	[SlashCommand("iphonex", "Insert an image into an iPhone X frame.")]
+	public static async Task IPhoneXAsync(InteractionContext ctx, [Option("user", "User to insert")] DiscordUser? user = null)
+	{
+		user ??= ctx.User;
+		await GenerateImageAsync(ctx, "iphonex", new()
+		{
+			{ "url", user.AvatarUrl }
+		});
+	}
+
+	[SlashCommand("lolice", "Call the lolice!")]
+	public static async Task LoliceAsync(InteractionContext ctx, [Option("user", "User to call lolice on")] DiscordUser? user = null)
+	{
+		user ??= ctx.User;
+		await GenerateImageAsync(ctx, "lolice", new()
+		{
+			{ "url", user.AvatarUrl }
+		});
+	}
+
+	[SlashCommand("kannagen", "Kanna says something!")]
+	public static async Task KannaGenAsync(InteractionContext ctx, [Option("text", "Text for Kanna")] string text)
+	{
+		await GenerateImageAsync(ctx, "kannagen", new()
+		{
+			{ "text", text }
+		});
+	}
+
+	[SlashCommand("changemymind", "Change my mind meme generator.")]
+	public static async Task ChangeMyMindAsync(InteractionContext ctx, [Option("text", "Change my mind text")] string text)
+	{
+		await GenerateImageAsync(ctx, "changemymind", new()
+		{
+			{ "text", text }
+		});
+	}
+
+	[SlashCommand("whowouldwin", "Who would win?")]
+	public static async Task WhoWouldWinAsync(InteractionContext ctx, [Option("user1", "First user")] DiscordUser user1, [Option("user2", "Second user")] DiscordUser user2)
+	{
+		await GenerateImageAsync(ctx, "whowouldwin", new()
+		{
+			{ "user1", user1.AvatarUrl },
+			{ "user2", user2.AvatarUrl }
+		});
+	}
+
+	[SlashCommand("captcha", "Generate a fake captcha!")]
+	public static async Task CaptchaAsync(InteractionContext ctx, [Option("username", "Username to display")] string? username = null)
+	{
+		username ??= ctx.User.Username;
+		await GenerateImageAsync(ctx, "captcha", new()
+		{
+			{ "url", ctx.User.AvatarUrl },
+			{ "username", username }
+		});
+	}
+
+	[SlashCommand("ship", "Ship two users!")]
+	public static async Task ShipAsync(InteractionContext ctx, [Option("user1", "First user")] DiscordUser user1, [Option("user2", "Second user")] DiscordUser user2)
+	{
+		await GenerateImageAsync(ctx, "ship", new()
+		{
+			{ "user1", user1.AvatarUrl },
+			{ "user2", user2.AvatarUrl }
+		});
+	}
+
+	[SlashCommand("baguette", "Baguette someone!")]
+	public static async Task BaguetteAsync(InteractionContext ctx, [Option("user", "User to baguette")] DiscordUser? user = null)
+	{
+		user ??= ctx.User;
+		await GenerateImageAsync(ctx, "baguette", new()
+		{
+			{ "url", user.AvatarUrl }
+		});
+	}
+
+	[SlashCommand("clyde", "Say something as clyde bot")]
+	public static async Task ClydeAsync(InteractionContext ctx, [Option("text", "Text to modify")] string text)
+	{
+		await GenerateImageAsync(ctx, "clyde", new()
+		{
+			{ "text", text }
+		});
+	}
+
+	private static async Task GenerateImageAsync(BaseContext ctx, string type, Dictionary<string, string> parameters)
+	{
+		var query = string.Join("&", parameters.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
+		var response = await ctx.Client.RestClient.GetStringAsync($"https://nekobot.xyz/api/imagegen?type={type}&{query}");
+		var result = JsonConvert.DeserializeObject<NekoBot?>(response);
+
+		if (result is null)
+		{
+			await ctx.EditResponseAsync("Something went wrong while fetching the image.");
+			return;
+		}
+
+		await ctx.EditResponseAsync(result.Message);
+	}
 }
