@@ -181,7 +181,7 @@ internal class Fun : ApplicationCommandsModule
 		user ??= ctx.User;
 		await GenerateImageAsync(ctx, "stickbug", new()
 		{
-			{ "url", user.AvatarUrl }
+			{ "url", await GetGuildAvatarIfPossibleAsync(ctx, user) }
 		});
 	}
 
@@ -191,7 +191,7 @@ internal class Fun : ApplicationCommandsModule
 		user ??= ctx.User;
 		await GenerateImageAsync(ctx, "trash", new()
 		{
-			{ "url", user.AvatarUrl }
+			{ "url", await GetGuildAvatarIfPossibleAsync(ctx, user) }
 		});
 	}
 
@@ -201,20 +201,19 @@ internal class Fun : ApplicationCommandsModule
 		user ??= ctx.User;
 		await GenerateImageAsync(ctx, "magik", new()
 		{
-			{ "image", user.AvatarUrl },
+			{ "image", await GetGuildAvatarIfPossibleAsync(ctx, user) },
 			{ "intensity", intensity.ToString() }
 		});
 	}
 
 	[SlashCommand("phcomment", "Make a PH comment!")]
-	public static async Task PhCommentAsync(InteractionContext ctx, [Option("text", "Text to comment.")] string text, [Option("username", "Username to use")] string? username = null)
+	public static async Task PhCommentAsync(InteractionContext ctx, [Option("user", "User to write as")] DiscordUser user, [Option("text", "Text to comment.")] string text)
 	{
-		username ??= ctx.User.Username;
 		await GenerateImageAsync(ctx, "phcomment", new()
 		{
-			{ "image", ctx.User.AvatarUrl },
+			{ "image", await GetGuildAvatarIfPossibleAsync(ctx, user) },
 			{ "text", text },
-			{ "username", username }
+			{ "username", await GetGuildOrGlobalDisplayNameIfPossibleAsync(ctx, user) }
 		});
 	}
 
@@ -224,7 +223,7 @@ internal class Fun : ApplicationCommandsModule
 		user ??= ctx.User;
 		await GenerateImageAsync(ctx, "blurpify", new()
 		{
-			{ "url", user.AvatarUrl }
+			{ "url", await GetGuildAvatarIfPossibleAsync(ctx, user) }
 		});
 	}
 
@@ -234,7 +233,7 @@ internal class Fun : ApplicationCommandsModule
 		user ??= ctx.User;
 		await GenerateImageAsync(ctx, "deepfry", new()
 		{
-			{ "image", user.AvatarUrl }
+			{ "image", await GetGuildAvatarIfPossibleAsync(ctx, user) }
 		});
 	}
 
@@ -244,17 +243,17 @@ internal class Fun : ApplicationCommandsModule
 		user ??= ctx.User;
 		await GenerateImageAsync(ctx, "kidnap", new()
 		{
-			{ "image", user.AvatarUrl }
+			{ "image", await GetGuildAvatarIfPossibleAsync(ctx, user) }
 		});
 	}
 
 	[SlashCommand("tweet", "Generate a fake tweet!")]
-	public static async Task TweetAsync(InteractionContext ctx, [Option("text", "Text of the tweet")] string text, [Option("username", "Username for tweet")] string? username = null)
+	public static async Task TweetAsync(InteractionContext ctx, [Option("text", "Text of the tweet")] string text, [Option("user", "User for tweet")] DiscordUser? user = null)
 	{
-		username ??= ctx.User.Username;
+		user ??= ctx.User;
 		await GenerateImageAsync(ctx, "tweet", new()
 		{
-			{ "username", username },
+			{ "username", await GetGuildOrGlobalDisplayNameIfPossibleAsync(ctx, user) },
 			{ "text", text }
 		});
 	}
@@ -265,9 +264,9 @@ internal class Fun : ApplicationCommandsModule
 		author ??= ctx.User;
 		await GenerateImageAsync(ctx, "trap", new()
 		{
-			{ "name", user.Username },
-			{ "author", author.Username },
-			{ "image", user.AvatarUrl }
+			{ "name", await GetGuildOrGlobalDisplayNameIfPossibleAsync(ctx, user) },
+			{ "author", await GetGuildOrGlobalDisplayNameIfPossibleAsync(ctx, author) },
+			{ "image", await GetGuildAvatarIfPossibleAsync(ctx, user) }
 		});
 	}
 
@@ -277,7 +276,7 @@ internal class Fun : ApplicationCommandsModule
 		user ??= ctx.User;
 		await GenerateImageAsync(ctx, "iphonex", new()
 		{
-			{ "url", user.AvatarUrl }
+			{ "url", await GetGuildAvatarIfPossibleAsync(ctx, user) }
 		});
 	}
 
@@ -287,7 +286,7 @@ internal class Fun : ApplicationCommandsModule
 		user ??= ctx.User;
 		await GenerateImageAsync(ctx, "lolice", new()
 		{
-			{ "url", user.AvatarUrl }
+			{ "url", await GetGuildAvatarIfPossibleAsync(ctx, user) }
 		});
 	}
 
@@ -314,19 +313,19 @@ internal class Fun : ApplicationCommandsModule
 	{
 		await GenerateImageAsync(ctx, "whowouldwin", new()
 		{
-			{ "user1", user1.AvatarUrl },
-			{ "user2", user2.AvatarUrl }
+			{ "user1", await GetGuildAvatarIfPossibleAsync(ctx, user1) },
+			{ "user2", await GetGuildAvatarIfPossibleAsync(ctx, user2) }
 		});
 	}
 
 	[SlashCommand("captcha", "Generate a fake captcha!")]
-	public static async Task CaptchaAsync(InteractionContext ctx, [Option("username", "Username to display")] string? username = null)
+	public static async Task CaptchaAsync(InteractionContext ctx, [Option("user", "User to display (their name)")] DiscordUser? user = null)
 	{
-		username ??= ctx.User.Username;
+		user ??= ctx.User;
 		await GenerateImageAsync(ctx, "captcha", new()
 		{
-			{ "url", ctx.User.AvatarUrl },
-			{ "username", username }
+			{ "url", await GetGuildAvatarIfPossibleAsync(ctx, ctx.User) },
+			{ "username", await GetGuildOrGlobalDisplayNameIfPossibleAsync(ctx, user) }
 		});
 	}
 
@@ -335,8 +334,8 @@ internal class Fun : ApplicationCommandsModule
 	{
 		await GenerateImageAsync(ctx, "ship", new()
 		{
-			{ "user1", user1.AvatarUrl },
-			{ "user2", user2.AvatarUrl }
+			{ "user1", await GetGuildAvatarIfPossibleAsync(ctx, user1) },
+			{ "user2", await GetGuildAvatarIfPossibleAsync(ctx, user2) }
 		});
 	}
 
@@ -346,7 +345,7 @@ internal class Fun : ApplicationCommandsModule
 		user ??= ctx.User;
 		await GenerateImageAsync(ctx, "baguette", new()
 		{
-			{ "url", user.AvatarUrl }
+			{ "url", await GetGuildAvatarIfPossibleAsync(ctx, user) }
 		});
 	}
 
@@ -372,5 +371,27 @@ internal class Fun : ApplicationCommandsModule
 		}
 
 		await ctx.EditResponseAsync(result.Message);
+	}
+
+	private static async Task<string> GetGuildAvatarIfPossibleAsync(BaseContext ctx, DiscordUser user)
+	{
+		if (ctx.Guild is null)
+			return user.AvatarUrl;
+
+		var member = await ctx.Guild.TryGetMemberAsync(user.Id);
+		return member is null
+			? user.AvatarUrl
+			: member.GuildAvatarUrl;
+	}
+
+	private static async Task<string> GetGuildOrGlobalDisplayNameIfPossibleAsync(BaseContext ctx, DiscordUser user)
+	{
+		if (ctx.Guild is null)
+			return user.GlobalName ?? user.Username;
+
+		var member = await ctx.Guild.TryGetMemberAsync(user.Id);
+		return member is null
+			? user.GlobalName ?? user.Username
+			: member.DisplayName;
 	}
 }
