@@ -19,9 +19,9 @@ public static class WebExtensionMethods
 	/// <param name="client">The http client.</param>
 	/// <param name="url">The url.</param>
 	/// <returns>The nekos.life response.</returns>
-	public static async Task<NekosLife?> GetNekosLifeAsync(this HttpClient client, string url)
+	public static async Task<NekosLifeImage?> GetNekosLifeAsync(this HttpClient client, string url)
 	{
-		var dl = JsonConvert.DeserializeObject<NekosLife>(await client.GetStringAsync(url));
+		var dl = JsonConvert.DeserializeObject<NekosLifeImage>(await client.GetStringAsync(url));
 		if (dl is null)
 			return null;
 
@@ -45,10 +45,10 @@ public static class WebExtensionMethods
 	/// <param name="tag">The tag.</param>
 	/// <param name="nsfw">Whether the search should include NSFW results.</param>
 	/// <returns>The ksoft.si response.</returns>
-	public static async Task<KsoftSiRanImg?> GetKsoftSiRanImgAsync(this HttpClient client, string tag = "hentai_gif", bool nsfw = true)
+	public static async Task<KsoftSiImage?> GetKsoftSiImgageAsync(this HttpClient client, string tag = "hentai_gif", bool nsfw = true)
 	{
 		client.DefaultRequestHeaders.Authorization = new("Bearer", MikuBot.Config.KsoftSiToken);
-		var dl = JsonConvert.DeserializeObject<KsoftSiRanImg>(await client.GetStringAsync($"https://api.ksoft.si/images/random-image?tag={tag}&nsfw={nsfw.ToString().ToLowerInvariant()}"));
+		var dl = JsonConvert.DeserializeObject<KsoftSiImage>(await client.GetStringAsync($"https://api.ksoft.si/images/random-image?tag={tag}&nsfw={nsfw.ToString().ToLowerInvariant()}"));
 		if (dl is null)
 			return null;
 
@@ -63,14 +63,35 @@ public static class WebExtensionMethods
 	}
 
 	/// <summary>
+	/// Generates an image using the Nekobot API.
+	/// </summary>
+	/// <param name="ctx">The context.</param>
+	/// <param name="type">The type of image to generate.</param>
+	/// <param name="parameters">The parameters.</param>
+	public static async Task GenerateNekobotImageAsync(this BaseContext ctx, string type, Dictionary<string, string> parameters)
+	{
+		var query = string.Join("&", parameters.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
+		var response = await ctx.Client.RestClient.GetStringAsync($"https://nekobot.xyz/api/imagegen?type={type}&{query}");
+		var result = JsonConvert.DeserializeObject<NekoBotImage?>(response);
+
+		if (result is null)
+		{
+			await ctx.EditResponseAsync("Something went wrong while fetching the image.");
+			return;
+		}
+
+		await ctx.EditResponseAsync(result.Message);
+	}
+
+	/// <summary>
 	///     Gets a random image from nekobot.xyz.
 	/// </summary>
 	/// <param name="client">The http client.</param>
 	/// <param name="url">The url.</param>
 	/// <returns>The nekobot response.</returns>
-	public static async Task<NekoBot?> GetNekobotAsync(this HttpClient client, string url)
+	public static async Task<NekoBotImage?> GetNekobotAsync(this HttpClient client, string url)
 	{
-		var dl = JsonConvert.DeserializeObject<NekoBot>(await client.GetStringAsync(url));
+		var dl = JsonConvert.DeserializeObject<NekoBotImage>(await client.GetStringAsync(url));
 		if (dl is null)
 			return null;
 

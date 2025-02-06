@@ -179,7 +179,7 @@ internal class Fun : ApplicationCommandsModule
 	public static async Task StickbugAsync(InteractionContext ctx, [Option("user", "User to stickbug")] DiscordUser? user = null)
 	{
 		user ??= ctx.User;
-		await GenerateImageAsync(ctx, "stickbug", new()
+		await ctx.GenerateNekobotImageAsync("stickbug", new()
 		{
 			{ "url", await GetGuildAvatarIfPossibleAsync(ctx, user) }
 		});
@@ -189,7 +189,7 @@ internal class Fun : ApplicationCommandsModule
 	public static async Task TrashAsync(InteractionContext ctx, [Option("user", "User to trash")] DiscordUser? user = null)
 	{
 		user ??= ctx.User;
-		await GenerateImageAsync(ctx, "trash", new()
+		await ctx.GenerateNekobotImageAsync("trash", new()
 		{
 			{ "url", await GetGuildAvatarIfPossibleAsync(ctx, user) }
 		});
@@ -199,7 +199,7 @@ internal class Fun : ApplicationCommandsModule
 	public static async Task MagikAsync(InteractionContext ctx, [Option("user", "User to magikify")] DiscordUser? user = null, [Option("intensity", "Magik intensity (0-10)")] int intensity = 5)
 	{
 		user ??= ctx.User;
-		await GenerateImageAsync(ctx, "magik", new()
+		await ctx.GenerateNekobotImageAsync( "magik", new()
 		{
 			{ "image", await GetGuildAvatarIfPossibleAsync(ctx, user) },
 			{ "intensity", intensity.ToString() }
@@ -209,7 +209,7 @@ internal class Fun : ApplicationCommandsModule
 	[SlashCommand("phcomment", "Make a PH comment!")]
 	public static async Task PhCommentAsync(InteractionContext ctx, [Option("user", "User to write as")] DiscordUser user, [Option("text", "Text to comment.")] string text)
 	{
-		await GenerateImageAsync(ctx, "phcomment", new()
+		await ctx.GenerateNekobotImageAsync( "phcomment", new()
 		{
 			{ "image", await GetGuildAvatarIfPossibleAsync(ctx, user) },
 			{ "text", text },
@@ -221,7 +221,7 @@ internal class Fun : ApplicationCommandsModule
 	public static async Task BlurpifyAsync(InteractionContext ctx, [Option("user", "User to blurpify")] DiscordUser? user = null)
 	{
 		user ??= ctx.User;
-		await GenerateImageAsync(ctx, "blurpify", new()
+		await ctx.GenerateNekobotImageAsync( "blurpify", new()
 		{
 			{ "url", await GetGuildAvatarIfPossibleAsync(ctx, user) }
 		});
@@ -231,7 +231,7 @@ internal class Fun : ApplicationCommandsModule
 	public static async Task DeepfryAsync(InteractionContext ctx, [Option("user", "User to deepfry")] DiscordUser? user = null)
 	{
 		user ??= ctx.User;
-		await GenerateImageAsync(ctx, "deepfry", new()
+		await ctx.GenerateNekobotImageAsync("deepfry", new()
 		{
 			{ "image", await GetGuildAvatarIfPossibleAsync(ctx, user) }
 		});
@@ -241,7 +241,7 @@ internal class Fun : ApplicationCommandsModule
 	public static async Task KidnapAsync(InteractionContext ctx, [Option("user", "User to kidnap")] DiscordUser? user = null)
 	{
 		user ??= ctx.User;
-		await GenerateImageAsync(ctx, "kidnap", new()
+		await ctx.GenerateNekobotImageAsync("kidnap", new()
 		{
 			{ "image", await GetGuildAvatarIfPossibleAsync(ctx, user) }
 		});
@@ -251,7 +251,7 @@ internal class Fun : ApplicationCommandsModule
 	public static async Task TweetAsync(InteractionContext ctx, [Option("text", "Text of the tweet")] string text, [Option("user", "User for tweet")] DiscordUser? user = null)
 	{
 		user ??= ctx.User;
-		await GenerateImageAsync(ctx, "tweet", new()
+		await ctx.GenerateNekobotImageAsync("tweet", new()
 		{
 			{ "username", await GetGuildOrGlobalDisplayNameIfPossibleAsync(ctx, user) },
 			{ "text", text }
@@ -262,7 +262,7 @@ internal class Fun : ApplicationCommandsModule
 	public static async Task TrapAsync(InteractionContext ctx, [Option("user", "User to trap")] DiscordUser user, [Option("author", "User trapping them")] DiscordUser? author = null)
 	{
 		author ??= ctx.User;
-		await GenerateImageAsync(ctx, "trap", new()
+		await ctx.GenerateNekobotImageAsync("trap", new()
 		{
 			{ "name", await GetGuildOrGlobalDisplayNameIfPossibleAsync(ctx, user) },
 			{ "author", await GetGuildOrGlobalDisplayNameIfPossibleAsync(ctx, author) },
@@ -274,7 +274,7 @@ internal class Fun : ApplicationCommandsModule
 	public static async Task IPhoneXAsync(InteractionContext ctx, [Option("user", "User to insert")] DiscordUser? user = null)
 	{
 		user ??= ctx.User;
-		await GenerateImageAsync(ctx, "iphonex", new()
+		await ctx.GenerateNekobotImageAsync("iphonex", new()
 		{
 			{ "url", await GetGuildAvatarIfPossibleAsync(ctx, user) }
 		});
@@ -284,7 +284,7 @@ internal class Fun : ApplicationCommandsModule
 	public static async Task LoliceAsync(InteractionContext ctx, [Option("user", "User to call lolice on")] DiscordUser? user = null)
 	{
 		user ??= ctx.User;
-		await GenerateImageAsync(ctx, "lolice", new()
+		await ctx.GenerateNekobotImageAsync("lolice", new()
 		{
 			{ "url", await GetGuildAvatarIfPossibleAsync(ctx, user) }
 		});
@@ -293,7 +293,7 @@ internal class Fun : ApplicationCommandsModule
 	[SlashCommand("kannagen", "Kanna says something!")]
 	public static async Task KannaGenAsync(InteractionContext ctx, [Option("text", "Text for Kanna")] string text)
 	{
-		await GenerateImageAsync(ctx, "kannagen", new()
+		await ctx.GenerateNekobotImageAsync("kannagen", new()
 		{
 			{ "text", text }
 		});
@@ -302,7 +302,7 @@ internal class Fun : ApplicationCommandsModule
 	[SlashCommand("changemymind", "Change my mind meme generator.")]
 	public static async Task ChangeMyMindAsync(InteractionContext ctx, [Option("text", "Change my mind text")] string text)
 	{
-		await GenerateImageAsync(ctx, "changemymind", new()
+		await ctx.GenerateNekobotImageAsync("changemymind", new()
 		{
 			{ "text", text }
 		});
@@ -311,7 +311,7 @@ internal class Fun : ApplicationCommandsModule
 	[SlashCommand("whowouldwin", "Who would win?")]
 	public static async Task WhoWouldWinAsync(InteractionContext ctx, [Option("user1", "First user")] DiscordUser user1, [Option("user2", "Second user")] DiscordUser user2)
 	{
-		await GenerateImageAsync(ctx, "whowouldwin", new()
+		await ctx.GenerateNekobotImageAsync("whowouldwin", new()
 		{
 			{ "user1", await GetGuildAvatarIfPossibleAsync(ctx, user1) },
 			{ "user2", await GetGuildAvatarIfPossibleAsync(ctx, user2) }
@@ -322,7 +322,7 @@ internal class Fun : ApplicationCommandsModule
 	public static async Task CaptchaAsync(InteractionContext ctx, [Option("user", "User to display (their name)")] DiscordUser? user = null)
 	{
 		user ??= ctx.User;
-		await GenerateImageAsync(ctx, "captcha", new()
+		await ctx.GenerateNekobotImageAsync("captcha", new()
 		{
 			{ "url", await GetGuildAvatarIfPossibleAsync(ctx, ctx.User) },
 			{ "username", await GetGuildOrGlobalDisplayNameIfPossibleAsync(ctx, user) }
@@ -332,7 +332,7 @@ internal class Fun : ApplicationCommandsModule
 	[SlashCommand("ship", "Ship two users!")]
 	public static async Task ShipAsync(InteractionContext ctx, [Option("user1", "First user")] DiscordUser user1, [Option("user2", "Second user")] DiscordUser user2)
 	{
-		await GenerateImageAsync(ctx, "ship", new()
+		await ctx.GenerateNekobotImageAsync("ship", new()
 		{
 			{ "user1", await GetGuildAvatarIfPossibleAsync(ctx, user1) },
 			{ "user2", await GetGuildAvatarIfPossibleAsync(ctx, user2) }
@@ -343,7 +343,7 @@ internal class Fun : ApplicationCommandsModule
 	public static async Task BaguetteAsync(InteractionContext ctx, [Option("user", "User to baguette")] DiscordUser? user = null)
 	{
 		user ??= ctx.User;
-		await GenerateImageAsync(ctx, "baguette", new()
+		await ctx.GenerateNekobotImageAsync("baguette", new()
 		{
 			{ "url", await GetGuildAvatarIfPossibleAsync(ctx, user) }
 		});
@@ -352,25 +352,10 @@ internal class Fun : ApplicationCommandsModule
 	[SlashCommand("clyde", "Say something as clyde bot")]
 	public static async Task ClydeAsync(InteractionContext ctx, [Option("text", "Text to modify")] string text)
 	{
-		await GenerateImageAsync(ctx, "clyde", new()
+		await ctx.GenerateNekobotImageAsync("clyde", new()
 		{
 			{ "text", text }
 		});
-	}
-
-	private static async Task GenerateImageAsync(BaseContext ctx, string type, Dictionary<string, string> parameters)
-	{
-		var query = string.Join("&", parameters.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));
-		var response = await ctx.Client.RestClient.GetStringAsync($"https://nekobot.xyz/api/imagegen?type={type}&{query}");
-		var result = JsonConvert.DeserializeObject<NekoBot?>(response);
-
-		if (result is null)
-		{
-			await ctx.EditResponseAsync("Something went wrong while fetching the image.");
-			return;
-		}
-
-		await ctx.EditResponseAsync(result.Message);
 	}
 
 	private static async Task<string> GetGuildAvatarIfPossibleAsync(BaseContext ctx, DiscordUser user)
