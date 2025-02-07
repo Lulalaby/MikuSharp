@@ -1,3 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
+
+using HeyRed.Mime;
+
+using MikuSharp.Entities;
+
+using Weeb.net.Data;
+
 namespace MikuSharp.Utilities;
 
 /// <summary>
@@ -28,10 +36,103 @@ public static class DiscordExtensionMethods
 			: user.GetGlobalOrUsername();
 
 	/// <summary>
-	///    Gets the global name of the user, using the username if the global name is not set.
+	///     Gets the global name of the user, using the username if the global name is not set.
 	/// </summary>
 	/// <param name="user">The user.</param>
 	/// <returns>The global name or username.</returns>
 	public static string GetGlobalOrUsername(this DiscordUser user)
 		=> user.GlobalName ?? user.Username;
+
+	/// <summary>
+	///     Tries to build and send a components V2 action message.
+	/// </summary>
+	/// <param name="context">The context.</param>
+	/// <param name="image">The image.</param>
+	/// <param name="title">The title.</param>
+	/// <param name="content">The content.</param>
+	/// <param name="user">The user.</param>
+	/// <returns>Whether the message was sent successfully.</returns>
+	public static async Task<bool> TryBuildV2ActionMessageAsync(this BaseContext context, MemoryStream image, string title, string content, DiscordUser user)
+	{
+		if (context.GuildId is not 1317206872763404478)
+			return false;
+
+		DiscordWebhookBuilder builder = new();
+		builder.WithV2Components();
+		builder.AddFile($"image.{MimeGuesser.GuessExtension(image)}", image);
+		builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent(title), new DiscordTextDisplayComponent(content), new DiscordMediaGalleryComponent([new($"attachment://image.{MimeGuesser.GuessExtension(image)}")])]));
+		builder.WithAllowedMentions([new UserMention(context.User), new UserMention(user)]);
+		await context.EditResponseAsync(builder);
+		return true;
+	}
+
+	/// <summary>
+	///     Sends an old-style embed message.
+	/// </summary>
+	/// <param name="context">The context.</param>
+	/// <param name="image">The image.</param>
+	/// <param name="content">The content.</param>
+	/// <param name="user">The user.</param>
+	public static async Task SendOldStyleMessageAsync(this BaseContext context, MemoryStream image, string content, DiscordUser user)
+	{
+		DiscordWebhookBuilder builder = new();
+		var em = new DiscordEmbedBuilder();
+		em.WithDescription(content);
+		em.WithImageUrl($"attachment://image.{MimeGuesser.GuessExtension(image)}");
+		em.WithFooter("by nekos.life");
+		builder.AddFile($"image.{MimeGuesser.GuessExtension(image)}", image);
+		builder.AddEmbed(em.Build());
+		builder.WithContent(user.Mention);
+		builder.WithAllowedMention(new UserMention(user));
+		await context.EditResponseAsync(builder);
+	}
+
+	/// <summary>
+	///     Tries to get an image from the Weeb.net API.
+	/// </summary>
+	/// <param name="context">The context.</param>
+	/// <param name="data">The data.</param>
+	/// <param name="stream">The stream.</param>
+	/// <returns>Whether the image was successfully retrieved.</returns>
+	public static bool TryGetWeebNetImage(this BaseContext context, RandomData? data, [NotNullWhen(true)] out MemoryStream? stream)
+	{
+		if (data is null)
+		{
+			stream = null;
+			return false;
+		}
+
+		stream = new(context.Client.RestClient.GetByteArrayAsync(data.Url.ResizeLink()).Result);
+		return true;
+	}
+
+	/// <summary>
+	///     Tries to get an image from the Weeb.sh API.
+	/// </summary>
+	/// <param name="data">The data.</param>
+	/// <param name="stream">The stream.</param>
+	/// <returns>Whether the image was successfully retrieved.</returns>
+	public static bool TryGetWeebShImage(this WeebSh? data, [NotNullWhen(true)] out MemoryStream? stream)
+	{
+		if (data is null)
+		{
+			stream = null;
+			return false;
+		}
+
+		stream = data.ImgData;
+		return true;
+	}
+
+	/// <summary>
+	///     Responds with an error message.
+	/// </summary>
+	/// <param name="ctx">The context.</param>
+	/// <param name="content">The content.</param>
+	/// <param name="user">The user.</param>
+	public static async Task ActionResponseWithErrorAsync(this BaseContext ctx, string content, DiscordUser user)
+	{
+		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(content).WithAllowedMentions([new UserMention(ctx.User), new UserMention(user)]));
+		await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AsEphemeral().WithContent("Failed to get image"));
+	}
 }
