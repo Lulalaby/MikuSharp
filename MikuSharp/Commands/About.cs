@@ -108,31 +108,7 @@ internal class About : ApplicationCommandsModule
 	[SlashCommand("stats", "Some stats of the MikuBot!"), DeferResponseAsync(true)]
 	public static async Task StatsAsync(InteractionContext ctx)
 	{
-#pragma warning disable IDE0004
-		var guildCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Count));
-		var userCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.MemberCount ?? 0))));
-		var channelCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.Channels.Count))));
-		var threadCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.Threads.Count))));
-		var roleCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.Roles.Count))));
-		var emojiCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.Emojis.Count))));
-		var stickerCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.Stickers.Count))));
-		var soundboardSoundsCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.SoundboardSoundsInternal.Count))));
-		var stageInstancesCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.StageInstances.Count))));
-		var scheduledEventsCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.ScheduledEvents.Count))));
-#pragma warning restore IDE0004
-		Dictionary<string, int> counts = new()
-		{
-			["Guilds"] = guildCount,
-			["Users (no distinct)"] = userCount,
-			["Channels"] = channelCount,
-			["Known Threads"] = threadCount,
-			["Roles"] = roleCount,
-			["Emojis"] = emojiCount,
-			["Stickers"] = stickerCount,
-			["Soundboard Sounds"] = soundboardSoundsCount,
-			["Stage Instances"] = stageInstancesCount,
-			["Scheduled Events"] = scheduledEventsCount
-		};
+		var statsitcs = MikuBot.ShardedClient.Statistics;
 
 		var knownGuildFeatures = MikuBot.ShardedClient.ShardClients.Values.SelectMany(client => client.Guilds.Values).SelectMany(guild => guild.RawFeatures ?? ["None"]).Distinct().ToList();
 
@@ -141,8 +117,8 @@ internal class About : ApplicationCommandsModule
 		DiscordEmbedBuilder builder = new();
 		builder.WithTitle("Stats");
 		builder.WithDescription($"Some stats about {ctx.Client.CurrentApplication.Name}!\n\nKnown Guild Features:\n{string.Join("\n", knownGuildFeatures.Where(feature => feature is not "None")).BlockCode()}");
-		foreach (var (key, value) in counts)
-			builder.AddField(new(key, value.ToString().InlineCode(), true));
+		foreach (var (key, value) in statsitcs)
+			builder.AddField(new(key.ToString(), value.ToString().InlineCode(), true));
 		builder.AddField(new("Ping", $"{averagePing}ms".InlineCode(), true));
 		if (ctx.Client.VersionString.Contains('+'))
 			builder.AddField(new("Lib (Version)", $"{ctx.Client.BotLibrary}@{ctx.Client.VersionString}".MaskedUrl(new($"https://github.com/Aiko-IT-Systems/DisCatSharp/tree/{ctx.Client.VersionString.Split('+').Last()}")), true));
