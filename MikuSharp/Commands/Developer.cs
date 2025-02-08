@@ -18,15 +18,14 @@ public class Developer : ApplicationCommandsModule
 	/// </summary>
 	/// <param name="ctx">The context menu context.</param>
 	[ContextMenu(ApplicationCommandType.Message, "Eval - Miku Dev")]
-	public static async Task EvalCsAsync(ContextMenuContext ctx)
+	public static async Task EvalAsync(ContextMenuContext ctx)
 	{
 		await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Eval request").AsEphemeral());
 		var msg = ctx.TargetMessage;
-		var code = ctx.TargetMessage.Content;
+		var code = msg.Content;
 		var cs1 = code.IndexOf("```", StringComparison.Ordinal) + 3;
 		cs1 = code.IndexOf('\n', cs1) + 1;
 		var cs2 = code.LastIndexOf("```", StringComparison.Ordinal);
-		var c = await ctx.Guild.GetActiveThreadsAsync();
 
 		if (cs1 == -1 || cs2 == -1)
 		{
@@ -44,14 +43,14 @@ public class Developer : ApplicationCommandsModule
 
 		try
 		{
-			var globals = new SgTestVariables(ctx.TargetMessage, ctx.Client, ctx, MikuBot.ShardedClient);
+			var globals = new MikuDeveloperEvalVariables(ctx.TargetMessage, ctx.Client, ctx, MikuBot.ShardedClient);
 
 			var sopts = ScriptOptions.Default;
 			sopts = sopts.WithImports("System", "System.Collections.Generic", "System.Linq", "System.Text", "System.Threading.Tasks", "DisCatSharp", "DisCatSharp.Entities", "DisCatSharp.CommandsNext", "DisCatSharp.CommandsNext.Attributes",
 				"DisCatSharp.Interactivity", "DisCatSharp.Interactivity.Extensions", "DisCatSharp.Enums", "Microsoft.Extensions.Logging", "MikuSharp.Entities");
 			sopts = sopts.WithReferences(AppDomain.CurrentDomain.GetAssemblies().Where(xa => !xa.IsDynamic && !string.IsNullOrWhiteSpace(xa.Location)));
 
-			var script = CSharpScript.Create(cs, sopts, typeof(SgTestVariables));
+			var script = CSharpScript.Create(cs, sopts, typeof(MikuDeveloperEvalVariables));
 			script.Compile();
 			var result = await script.RunAsync(globals).ConfigureAwait(false);
 
@@ -184,12 +183,12 @@ public class Developer : ApplicationCommandsModule
 }
 
 /// <remarks>
-///     Initializes a new instance of the <see cref="SgTestVariables" /> class.
+///     Initializes a new instance of the <see cref="MikuDeveloperEvalVariables" /> class.
 /// </remarks>
 /// <param name="msg">The message.</param>
 /// <param name="client">The client.</param>
 /// <param name="ctx">The context menu context.</param>
-public sealed class SgTestVariables(DiscordMessage msg, DiscordClient client, ContextMenuContext ctx, DiscordShardedClient shard)
+public sealed class MikuDeveloperEvalVariables(DiscordMessage msg, DiscordClient client, ContextMenuContext ctx, DiscordShardedClient shard)
 {
 	/// <summary>
 	///     Gets or sets the message.
