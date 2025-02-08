@@ -30,7 +30,6 @@ internal class Weeb : ApplicationCommandsModule
 		};
 		emim.WithAuthor("via api.meek.moe", "https://api.meek.moe/");
 		emim.WithFooter("Requested by " + ctx.User.UsernameWithGlobalName, ctx.User.AvatarUrl);
-		//ctx.Client.Logger.LogDebug(MimeGuesser.GuessExtension(img));
 
 		DiscordWebhookBuilder builder = new();
 		builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
