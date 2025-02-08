@@ -1,4 +1,5 @@
 using MikuSharp.Attributes;
+using MikuSharp.Utilities;
 
 namespace MikuSharp.Commands;
 
@@ -9,9 +10,9 @@ internal class About : ApplicationCommandsModule
 	public static async Task DonateAsync(InteractionContext ctx)
 	{
 		var emb = new DiscordEmbedBuilder();
-		emb.WithThumbnail(ctx.Client.CurrentUser.AvatarUrl).WithTitle("Donate Page!").WithAuthor("Miku MikuBot uwu").WithUrl("https://meek.moe/").WithColor(new("#348573"))
-			.WithDescription("Thank you for your interest in supporting the bot's development!\n" + "Here are some links that may interest you").AddField(new("Patreon", "[Link](https://patreon.com/sekoree)", true))
-			.AddField(new("PayPal", "[Link](https://paypal.me/speyd3r)", true));
+		emb.WithThumbnail(ctx.Client.CurrentUser.AvatarUrl).WithTitle("Donate Page!").WithAuthor("Miku MikuBot uwu").WithColor(new("#348573"))
+			.WithDescription("Thank you for your interest in supporting the bot's development!\n" + "Here are some links that may interest you").AddField(new("Patreon (Owner)", "[sekoree](https://patreon.com/sekoree)"))
+			.AddField(new("PayPal (Owner)", "[speyd3r](https://paypal.me/speyd3r)")).AddField(new("PayPal (Current Developer)", "[aitsys](https://paypal.me/aitsys)")).AddField(new("GitHub Sponsers (Current Developer)", "[Lulalaby](https://github.com/sponsors/Lulalaby)"));
 		await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(emb.Build()).AsEphemeral());
 	}
 
@@ -19,7 +20,7 @@ internal class About : ApplicationCommandsModule
 	public static async Task BotAsync(InteractionContext ctx)
 	{
 		var emb = new DiscordEmbedBuilder();
-		emb.WithThumbnail(ctx.Client.CurrentUser.AvatarUrl).WithTitle($"About {ctx.Client.CurrentUser.UsernameWithGlobalName}!").WithAuthor("Miku MikuBot uwu").WithUrl("https://meek.moe/").WithColor(new("#348573"));
+		emb.WithThumbnail(ctx.Client.CurrentUser.AvatarUrl).WithTitle($"About {ctx.Client.CurrentApplication.Name}!").WithAuthor("Miku MikuBot uwu").WithColor(new("#348573"));
 		if (ctx.Client.CurrentApplication.Description is not null)
 			emb.WithDescription(ctx.Client.CurrentApplication.Description);
 		if (ctx.Client.CurrentApplication.Team is not null)
@@ -98,25 +99,27 @@ internal class About : ApplicationCommandsModule
 
 	[SlashCommand("ping", "Current ping to discord's services")]
 	public static async Task PingAsync(InteractionContext ctx)
-		=> await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithContent($"Ping: {ctx.Client.Ping}ms"));
+		=> await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithContent($"Ping: {$"{ctx.Client.Ping}ms".InlineCode()}"));
 
 	[SlashCommand("which_shard", "What shard am I on?")]
 	public static async Task GetExecutingShardAsync(InteractionContext ctx)
-		=> await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithContent($"Shard {ctx.Client.ShardId}"));
+		=> await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithContent($"Shard: {ctx.Client.ShardId.ToString().InlineCode()}"));
 
 	[SlashCommand("stats", "Some stats of the MikuBot!"), DeferResponseAsync(true)]
 	public static async Task StatsAsync(InteractionContext ctx)
 	{
-		var guildCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Count);
-		var userCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.MemberCount ?? 0));
-		var channelCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.Channels.Count));
-		var threadCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.Threads.Count));
-		var roleCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.Roles.Count));
-		var emojiCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.Emojis.Count));
-		var stickerCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.Stickers.Count));
-		var soundboardSoundsCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.SoundboardSoundsInternal.Count));
-		var stageInstancesCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.StageInstances.Count));
-		var scheduledEventsCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.ScheduledEvents.Count));
+#pragma warning disable IDE0004
+		var guildCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Count));
+		var userCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.MemberCount ?? 0))));
+		var channelCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.Channels.Count))));
+		var threadCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.Threads.Count))));
+		var roleCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.Roles.Count))));
+		var emojiCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.Emojis.Count))));
+		var stickerCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.Stickers.Count))));
+		var soundboardSoundsCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.SoundboardSoundsInternal.Count))));
+		var stageInstancesCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.StageInstances.Count))));
+		var scheduledEventsCount = MikuBot.ShardedClient.ShardClients.Values.Sum((Func<DiscordClient, int>)(client => client.Guilds.Values.Sum((Func<DiscordGuild, int>)(guild => guild.ScheduledEvents.Count))));
+#pragma warning restore IDE0004
 		Dictionary<string, int> counts = new()
 		{
 			["Guilds"] = guildCount,
@@ -137,14 +140,19 @@ internal class About : ApplicationCommandsModule
 
 		DiscordEmbedBuilder builder = new();
 		builder.WithTitle("Stats");
-		builder.WithDescription($"Some stats of the MikuBot!\n\nKnown Guild Features:\n{string.Join("\n", knownGuildFeatures.Where(feature => feature is not "None")).BlockCode()}");
+		builder.WithDescription($"Some stats about {ctx.Client.CurrentApplication.Name}!\n\nKnown Guild Features:\n{string.Join("\n", knownGuildFeatures.Where(feature => feature is not "None")).BlockCode()}");
 		foreach (var (key, value) in counts)
-			builder.AddField(new(key, value.ToString(), true));
-		builder.AddField(new("Ping", $"{averagePing.ToString()}ms".InlineCode(), true));
+			builder.AddField(new(key, value.ToString().InlineCode(), true));
+		builder.AddField(new("Ping", $"{averagePing}ms".InlineCode(), true));
 		if (ctx.Client.VersionString.Contains('+'))
 			builder.AddField(new("Lib (Version)", $"{ctx.Client.BotLibrary}@{ctx.Client.VersionString}".MaskedUrl(new($"https://github.com/Aiko-IT-Systems/DisCatSharp/tree/{ctx.Client.VersionString.Split('+').Last()}")), true));
 		else
 			builder.AddField(new("Lib (Version)", $"{ctx.Client.BotLibrary}@{ctx.Client.VersionString}".MaskedUrl(new($"https://github.com/Aiko-IT-Systems/DisCatSharp/tree/v{ctx.Client.VersionString.Trim()}")), true));
+		builder.AddField(new("API Channel (Discord)", ctx.Client.Configuration.ApiChannel.ToString().InlineCode(), true));
+		builder.AddField(new("API Version (Discord)", ctx.Client.Configuration.ApiVersion.InlineCode(), true));
+		var lavalinkDefaultSession = ctx.Client.GetLavalink()?.DefaultSession();
+		if (lavalinkDefaultSession is not null)
+			builder.AddField(new("Lavalink Version", $"{await lavalinkDefaultSession.GetLavalinkVersionAsync()}".InlineCode(), true));
 		builder.WithThumbnail(ctx.Client.CurrentUser.AvatarUrl);
 		if (ctx.Client.CurrentUser.BannerUrl is not null)
 			builder.WithImageUrl(ctx.Client.CurrentUser.BannerUrl);
