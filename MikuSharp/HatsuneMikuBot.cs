@@ -139,8 +139,6 @@ public sealed class HatsuneMikuBot : IDisposable
 		};
 
 		this.LavalinkModules = ShardedClient.UseLavalinkAsync().Result;
-
-		DiscordBotListApi = new(ShardedClient.CurrentApplication.Id, Config.DiscordBotListToken);
 	}
 
 	/// <summary>
@@ -366,6 +364,7 @@ public sealed class HatsuneMikuBot : IDisposable
 				success = false;
 			}
 
+		DiscordBotListApi = new(ShardedClient.CurrentApplication.Id, Config.DiscordBotListToken);
 		this.GameSetThread = Task.Run(RotateActivityAsync);
 		//BotListThread = Task.Run(UpdateBotList);
 		while (!MikuCancellationTokenSource.IsCancellationRequested)
