@@ -9,7 +9,7 @@ namespace MikuSharp.Commands;
 ///     The developer commands.
 /// </summary>
 [ApplicationCommandRequireTeamMember]
-public class Developer : ApplicationCommandsModule
+public class DeveloperOnlyCommands : ApplicationCommandsModule
 {
 	private static readonly string[] s_units = ["", "ki", "Mi", "Gi"];
 
@@ -43,7 +43,7 @@ public class Developer : ApplicationCommandsModule
 
 		try
 		{
-			var globals = new MikuDeveloperEvalVariables(ctx.TargetMessage, ctx.Client, ctx, MikuBot.ShardedClient);
+			var globals = new MikuDeveloperEvalVariables(ctx.TargetMessage, ctx.Client, ctx, HatsuneMikuBot.ShardedClient);
 
 			var sopts = ScriptOptions.Default;
 			sopts = sopts.WithImports("System", "System.Collections.Generic", "System.Linq", "System.Text", "System.Threading.Tasks", "DisCatSharp", "DisCatSharp.Entities", "DisCatSharp.CommandsNext", "DisCatSharp.CommandsNext.Attributes",
@@ -113,7 +113,7 @@ public class Developer : ApplicationCommandsModule
 		public static async Task GuildTestAsync(InteractionContext ctx)
 		{
 			await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithContent($"Meep meep. Shard {ctx.Client.ShardId}"));
-			foreach (var shard in MikuBot.ShardedClient.ShardClients.Values)
+			foreach (var shard in HatsuneMikuBot.ShardedClient.ShardClients.Values)
 				await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AsEphemeral().WithContent($"Shard {shard.ShardId} has {shard.Guilds.Count} guilds."));
 		}
 

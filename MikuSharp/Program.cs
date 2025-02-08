@@ -1,12 +1,21 @@
 ﻿namespace MikuSharp;
 
-internal class Program
+/// <summary>
+///     The main program class.
+/// </summary>
+public class Program
 {
-	private static void Main(string[] args)
+	/// <summary>
+	///     The main entry point of the application.
+	/// </summary>
+	/// <param name="args">The optional command-line arguments.</param>
+	public static void Main(string[]? args = null)
 	{
-		using (var bot = new MikuBot())
+		Log.Logger.Information("Startup!");
+
+		using (var bot = new HatsuneMikuBot())
 		{
-			MikuBot.RegisterEvents().Wait();
+			HatsuneMikuBot.RegisterEventsAsync().Wait();
 			bot.RegisterCommands();
 			bot.RunAsync().Wait();
 		}

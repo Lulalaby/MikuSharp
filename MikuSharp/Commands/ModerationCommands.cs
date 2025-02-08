@@ -6,7 +6,7 @@ using MikuSharp.Utilities;
 namespace MikuSharp.Commands;
 
 [SlashCommandGroup("mod", "Moderation", (long)Permissions.BanMembers, allowedContexts: [InteractionContextType.Guild], integrationTypes: [ApplicationCommandIntegrationTypes.GuildInstall])]
-internal class Moderation : ApplicationCommandsModule
+internal class ModerationCommands : ApplicationCommandsModule
 {
 	[SlashCommand("disable_invites", "Disable invites usage for guild")]
 	public static async Task DisableInvitesAsync(InteractionContext ctx, [Option("reason", "Auditlog reason")] string? reason = null)

@@ -7,7 +7,7 @@ using MikuSharp.Utilities;
 namespace MikuSharp.Commands;
 
 [SlashCommandGroup("weeb", "Weeb Stuff!", allowedContexts: [InteractionContextType.Guild, InteractionContextType.PrivateChannel], integrationTypes: [ApplicationCommandIntegrationTypes.GuildInstall, ApplicationCommandIntegrationTypes.UserInstall]), DeferResponseAsync]
-internal class Weeb : ApplicationCommandsModule
+internal class WeebCommands : ApplicationCommandsModule
 {
 	[SlashCommand("diva", "Radnom PJD Loading image")]
 	public static async Task DivaPic(InteractionContext ctx)

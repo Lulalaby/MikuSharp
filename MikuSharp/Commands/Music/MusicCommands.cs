@@ -31,7 +31,7 @@ public partial class MusicCommands : ApplicationCommandsModule
 				await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Heya {ctx.Member.Mention}!"));
 				await musicSession.CurrentChannel.SendMessageAsync("Hatsune Miku at your service!");
 				await musicSession.UpdateStatusMessageAsync(musicSession.BuildMusicStatusEmbed("Nothing playing yet"));
-				MikuBot.MusicSessions[guildId] = musicSession;
+				HatsuneMikuBot.MusicSessions[guildId] = musicSession;
 			});
 	}
 
@@ -52,7 +52,7 @@ public partial class MusicCommands : ApplicationCommandsModule
 				await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Cya! 💙"));
 			},
 			async _ => await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("I'm not connected O.o")),
-			guildId => Task.FromResult(MikuBot.MusicSessionLocks.TryRemove(guildId, out _)));
+			guildId => Task.FromResult(HatsuneMikuBot.MusicSessionLocks.TryRemove(guildId, out _)));
 	}
 
 	[SlashCommand("test", "Test UI Kit"), ApplicationCommandRequireTeamMember, DeferResponseAsync]

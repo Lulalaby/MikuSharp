@@ -47,7 +47,7 @@ public static class WebExtensionMethods
 	/// <returns>The ksoft.si response.</returns>
 	public static async Task<KsoftSiImage?> GetKsoftSiImgageAsync(this HttpClient client, string tag = "hentai_gif", bool nsfw = true)
 	{
-		client.DefaultRequestHeaders.Authorization = new("Bearer", MikuBot.Config.KsoftSiToken);
+		client.DefaultRequestHeaders.Authorization = new("Bearer", HatsuneMikuBot.Config.KsoftSiToken);
 		var dl = JsonConvert.DeserializeObject<KsoftSiImage>(await client.GetStringAsync($"https://api.ksoft.si/images/random-image?tag={tag}&nsfw={nsfw.ToString().ToLowerInvariant()}"));
 		if (dl is null)
 			return null;
@@ -126,7 +126,7 @@ public static class WebExtensionMethods
 	/// <returns>The weeb.sh response.</returns>
 	public static async Task<WeebSh?> GetWeebShAsync(this HttpClient client, string query, IEnumerable<string>? tags = null, NsfwSearch nsfw = NsfwSearch.False)
 	{
-		var dl = await MikuBot.WeebClient.GetRandomAsync(query, tags ?? [""], nsfw: nsfw);
+		var dl = await HatsuneMikuBot.WeebClient.GetRandomAsync(query, tags ?? [""], nsfw: nsfw);
 		if (dl is null)
 			return null;
 

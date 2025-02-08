@@ -5,7 +5,7 @@ using MikuSharp.Utilities;
 namespace MikuSharp.Commands;
 
 [SlashCommandGroup("fun", "Fun commands", allowedContexts: [InteractionContextType.Guild, InteractionContextType.PrivateChannel], integrationTypes: [ApplicationCommandIntegrationTypes.GuildInstall, ApplicationCommandIntegrationTypes.UserInstall]), DeferResponseAsync]
-internal class Fun : ApplicationCommandsModule
+internal class FunCommands : ApplicationCommandsModule
 {
 	[SlashCommand("8ball", "Yes? No? Maybe?")]
 	public static async Task EightBallAsync(InteractionContext ctx, [Option("text", "Text to modify")] string text)
@@ -47,7 +47,7 @@ internal class Fun : ApplicationCommandsModule
 	}
 
 	[SlashCommandGroup("random_images", "Random images")]
-	public class RandomImages : ApplicationCommandsModule
+	public class RandomImagesCommands : ApplicationCommandsModule
 	{
 		[SlashCommand("cat", "Get a random cat image!")]
 		public static async Task CatAsync(InteractionContext ctx)
@@ -100,7 +100,7 @@ internal class Fun : ApplicationCommandsModule
 	}
 
 	[SlashCommandGroup("memes", "Meme commands (powered by nekos.life and nekobot.xyz)")]
-	public class Memes : ApplicationCommandsModule
+	public class MemesCommands : ApplicationCommandsModule
 	{
 		[SlashCommand("stickbug", "Get stickbugged!")]
 		public static async Task StickbugAsync(InteractionContext ctx, [Option("user", "User to stickbug")] DiscordUser? user = null)

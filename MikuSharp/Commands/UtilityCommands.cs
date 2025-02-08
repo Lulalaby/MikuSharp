@@ -9,7 +9,7 @@ using MikuSharp.Utilities;
 namespace MikuSharp.Commands;
 
 [SlashCommandGroup("utility", "Utilities")]
-internal class Utility : ApplicationCommandsModule
+internal class UtilityCommands : ApplicationCommandsModule
 {
 	[SlashCommandGroup("am", "Anime & Mange"), DeferResponseAsync]
 	internal class AnimeMangaUtility : ApplicationCommandsModule

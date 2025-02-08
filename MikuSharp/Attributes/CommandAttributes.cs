@@ -120,16 +120,16 @@ public sealed class AutomaticallyDisconnectExistingSessionAttribute : Applicatio
 		ArgumentNullException.ThrowIfNull(ctx.GuildId);
 		ArgumentNullException.ThrowIfNull(ctx.Guild);
 		var guildId = ctx.GuildId.Value;
-		var asyncLock = MikuBot.MusicSessionLocks.GetOrAdd(guildId, _ => new());
-		using (await asyncLock.LockAsync(MikuBot.Cts.Token))
+		var asyncLock = HatsuneMikuBot.MusicSessionLocks.GetOrAdd(guildId, _ => new());
+		using (await asyncLock.LockAsync(HatsuneMikuBot.MikuCancellationTokenSource.Token))
 		{
-			if (!MikuBot.MusicSessions.TryGetValue(guildId, out _))
+			if (!HatsuneMikuBot.MusicSessions.TryGetValue(guildId, out _))
 				return true;
 
 			var player = ctx.Client.GetLavalink().GetGuildPlayer(ctx.Guild);
 			if (player is not null)
 				await player.DisconnectAsync();
-			MikuBot.MusicSessions.TryRemove(ctx.GuildId.Value, out _);
+			HatsuneMikuBot.MusicSessions.TryRemove(ctx.GuildId.Value, out _);
 		}
 
 		return true;
@@ -153,10 +153,10 @@ public sealed class RequirePlaybackState(params PlaybackState[] targetStates) : 
 	{
 		ArgumentNullException.ThrowIfNull(ctx.GuildId);
 		var guildId = ctx.GuildId.Value;
-		var asyncLock = MikuBot.MusicSessionLocks.GetOrAdd(guildId, _ => new());
-		using (await asyncLock.LockAsync(MikuBot.Cts.Token))
+		var asyncLock = HatsuneMikuBot.MusicSessionLocks.GetOrAdd(guildId, _ => new());
+		using (await asyncLock.LockAsync(HatsuneMikuBot.MikuCancellationTokenSource.Token))
 		{
-			return MikuBot.MusicSessions.TryGetValue(guildId, out var musicSession) && this.TargetStates.Contains(musicSession.PlaybackState);
+			return HatsuneMikuBot.MusicSessions.TryGetValue(guildId, out var musicSession) && this.TargetStates.Contains(musicSession.PlaybackState);
 		}
 	}
 }

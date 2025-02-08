@@ -4,7 +4,7 @@ using MikuSharp.Utilities;
 namespace MikuSharp.Commands;
 
 [SlashCommandGroup("about", "About")]
-internal class About : ApplicationCommandsModule
+internal class AboutCommands : ApplicationCommandsModule
 {
 	[SlashCommand("donate", "Financial support information")]
 	public static async Task DonateAsync(InteractionContext ctx)
@@ -56,7 +56,7 @@ internal class About : ApplicationCommandsModule
 		memoryStream.Position = 0;
 		await webhook.ModifyAsync(name, memoryStream, reason: "Dev update follow");
 		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(
-			$"News setup complete {DiscordEmoji.FromGuildEmote(MikuBot.ShardedClient.GetShard(483279257431441410), 623933340520546306)}\n\nYou'll get the newest news about the bot in your server in {channel.Mention}!"));
+			$"News setup complete {DiscordEmoji.FromGuildEmote(HatsuneMikuBot.ShardedClient.GetShard(483279257431441410), 623933340520546306)}\n\nYou'll get the newest news about the bot in your server in {channel.Mention}!"));
 	}
 
 	[SlashCommand("feedback", "Send feedback to the developers")]
@@ -75,7 +75,7 @@ internal class About : ApplicationCommandsModule
 			await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
 			var title = res.Result.Interaction.Data.Components.First(x => x.CustomId is "feedbacktitle").Value;
 			var body = res.Result.Interaction.Data.Components.First(x => x.CustomId is "feedbackbody").Value;
-			var guild = await MikuBot.ShardedClient.GetShard(483279257431441410).GetGuildAsync(483279257431441410);
+			var guild = await HatsuneMikuBot.ShardedClient.GetShard(483279257431441410).GetGuildAsync(483279257431441410);
 			var emb = new DiscordEmbedBuilder();
 			emb.WithAuthor($"{ctx.User.UsernameWithGlobalName}", iconUrl: ctx.User.AvatarUrl).WithTitle(title).WithDescription(body);
 			if (ctx.Guild is not null)
@@ -91,7 +91,7 @@ internal class About : ApplicationCommandsModule
 			var msg = await thread.GetMessageAsync(thread.Id);
 			await msg.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":thumbsdown:"));
 			await msg.CreateReactionAsync(DiscordEmoji.FromName(ctx.Client, ":thumbsup:"));
-			await res.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"Feedback sent {DiscordEmoji.FromGuildEmote(MikuBot.ShardedClient.GetShard(483279257431441410), 623933340520546306)}"));
+			await res.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"Feedback sent {DiscordEmoji.FromGuildEmote(HatsuneMikuBot.ShardedClient.GetShard(483279257431441410), 623933340520546306)}"));
 		}
 		else
 			await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("You were too slow :(\nThe time limit is two minutes.").AsEphemeral());
@@ -108,11 +108,11 @@ internal class About : ApplicationCommandsModule
 	[SlashCommand("stats", "Statistics about the bot!"), DeferResponseAsync(true)]
 	public static async Task StatsAsync(InteractionContext ctx)
 	{
-		var statsitcs = MikuBot.ShardedClient.Statistics;
+		var statsitcs = HatsuneMikuBot.ShardedClient.Statistics;
 
-		var knownGuildFeatures = MikuBot.ShardedClient.ShardClients.Values.SelectMany(client => client.Guilds.Values).SelectMany(guild => guild.RawFeatures ?? ["None"]).Distinct().ToList();
+		var knownGuildFeatures = HatsuneMikuBot.ShardedClient.ShardClients.Values.SelectMany(client => client.Guilds.Values).SelectMany(guild => guild.RawFeatures ?? ["None"]).Distinct().ToList();
 
-		var averagePing = (int)MikuBot.ShardedClient.ShardClients.Values.Average(client => client.Ping);
+		var averagePing = (int)HatsuneMikuBot.ShardedClient.ShardClients.Values.Average(client => client.Ping);
 
 		DiscordEmbedBuilder builder = new();
 		builder.WithTitle("Stats");
@@ -138,7 +138,7 @@ internal class About : ApplicationCommandsModule
 	[SlashCommand("support", "Link to the support server"), DeferResponseAsync(true)]
 	public static async Task SupportAsybc(InteractionContext ctx)
 	{
-		var guild = await MikuBot.ShardedClient.GetShard(483279257431441410).GetGuildAsync(483279257431441410);
+		var guild = await HatsuneMikuBot.ShardedClient.GetShard(483279257431441410).GetGuildAsync(483279257431441410);
 		var widget = await guild.GetWidgetAsync();
 		var emb = new DiscordEmbedBuilder().WithTitle("Support Server").WithDescription("Need help or is something broken?").WithThumbnail(ctx.Client.CurrentUser.AvatarUrl);
 		await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(emb.Build()).AddComponents(new DiscordLinkButtonComponent(widget.InstantInviteUrl, "Support Server", false, new(704733597655105634))));

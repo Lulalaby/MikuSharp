@@ -109,7 +109,7 @@ public sealed class MusicSession(DiscordChannel channel, DiscordGuild guild, Lav
 			else
 			{
 				var messages = await this.CurrentChannel.GetMessagesAsync(50);
-				var mikuMessages = messages.Where(msg => msg.Author.Id == MikuBot.ShardedClient.CurrentUser.Id).OrderByDescending(msg => msg.CreationTimestamp).ToList();
+				var mikuMessages = messages.Where(msg => msg.Author.Id == HatsuneMikuBot.ShardedClient.CurrentUser.Id).OrderByDescending(msg => msg.CreationTimestamp).ToList();
 				var targetMessage = mikuMessages.FirstOrDefault(msg => msg.Embeds.Count is 1);
 				if (targetMessage is not null)
 					await targetMessage.DeleteAsync("Updating miku status");

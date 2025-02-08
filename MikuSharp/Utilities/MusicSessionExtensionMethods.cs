@@ -28,7 +28,7 @@ internal static class MusicSessionExtensionMethods
 	public static DiscordEmbed BuildMusicStatusEmbed(this MusicSession session, string description, List<DiscordEmbedField>? additionalEmbedFields = null)
 	{
 		var builder = new DiscordEmbedBuilder()
-			.WithAuthor(MikuBot.ShardedClient.CurrentUser.UsernameWithGlobalName, iconUrl: MikuBot.ShardedClient.CurrentUser.AvatarUrl)
+			.WithAuthor(HatsuneMikuBot.ShardedClient.CurrentUser.UsernameWithGlobalName, iconUrl: HatsuneMikuBot.ShardedClient.CurrentUser.AvatarUrl)
 			.WithColor(DiscordColor.Black)
 			.WithTitle("Miku Music Status")
 			.WithDescription(description);
@@ -149,10 +149,10 @@ internal static class MusicSessionExtensionMethods
 	/// <returns>A task that represents the asynchronous operation.</returns>
 	public static async Task ExecuteWithMusicSessionAsync(this ulong guildId, Func<ulong, MusicSession, Task> successAction, Func<ulong, Task>? failureAction = null, Func<ulong, Task>? finalAction = null)
 	{
-		var asyncLock = MikuBot.MusicSessionLocks.GetOrAdd(guildId, _ => new());
-		using (await asyncLock.LockAsync(MikuBot.Cts.Token))
+		var asyncLock = HatsuneMikuBot.MusicSessionLocks.GetOrAdd(guildId, _ => new());
+		using (await asyncLock.LockAsync(HatsuneMikuBot.MikuCancellationTokenSource.Token))
 		{
-			if (MikuBot.MusicSessions.TryGetValue(guildId, out var musicSession))
+			if (HatsuneMikuBot.MusicSessions.TryGetValue(guildId, out var musicSession))
 				await successAction(guildId, musicSession);
 			else if (failureAction is not null)
 				await failureAction(guildId);
@@ -209,10 +209,10 @@ internal static class MusicSessionExtensionMethods
 	/// <returns>The result of the action or the default value with given type from <typeparamref name="T" />.</returns>
 	public static async Task<T> ExecuteWithMusicSessionAsync<T>(this ulong guildId, Func<ulong, MusicSession, Task<T>> successAction, Func<ulong, Task<T>>? failureAction = null, T defaultValue = default)
 	{
-		var asyncLock = MikuBot.MusicSessionLocks.GetOrAdd(guildId, _ => new());
-		using (await asyncLock.LockAsync(MikuBot.Cts.Token))
+		var asyncLock = HatsuneMikuBot.MusicSessionLocks.GetOrAdd(guildId, _ => new());
+		using (await asyncLock.LockAsync(HatsuneMikuBot.MikuCancellationTokenSource.Token))
 		{
-			if (MikuBot.MusicSessions.TryGetValue(guildId, out var musicSession))
+			if (HatsuneMikuBot.MusicSessions.TryGetValue(guildId, out var musicSession))
 				return await successAction(guildId, musicSession);
 			if (failureAction is not null)
 				return await failureAction(guildId);
