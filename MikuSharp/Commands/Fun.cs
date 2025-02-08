@@ -1,5 +1,3 @@
-using HeyRed.Mime;
-
 using MikuSharp.Attributes;
 using MikuSharp.Entities;
 using MikuSharp.Utilities;
@@ -86,7 +84,6 @@ internal class Fun : ApplicationCommandsModule
 	[SlashCommand("coinflip", "Flip a coin lol")]
 	public static async Task CoinflipAsync(InteractionContext ctx)
 	{
-		await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new());
 		var flip = new[] { $"Heads {DiscordEmoji.FromName(ctx.Client, ":arrow_up_small:")}", $"Tails {DiscordEmoji.FromName(ctx.Client, ":arrow_down_small:")}" };
 		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(flip[new Random().Next(0, flip.Length)]));
 	}
@@ -104,78 +101,50 @@ internal class Fun : ApplicationCommandsModule
 		[SlashCommand("cat", "Get a random cat image!")]
 		public static async Task CatAsync(InteractionContext ctx)
 		{
-			var imgUrl = await ctx.Client.RestClient.GetNekosLifeAsync("https://nekos.life/api/v2/img/meow");
-			if (imgUrl is null)
-			{
-				await ctx.EditResponseAsync("Something went wrong while fetching the image.");
+			var nekosLifeImage = await ctx.Client.RestClient.GetNekosLifeAsync("https://nekos.life/api/v2/img/meow");
+			if (!await ctx.CheckForProperImageResultAsync(nekosLifeImage))
 				return;
-			}
 
-			DiscordWebhookBuilder builder = new();
-			builder.AddFile($"image.{imgUrl.Filetype}", imgUrl.Data);
-			builder.AddEmbed(imgUrl.Embed);
-			await ctx.EditResponseAsync(builder);
+			if (!await ctx.TryBuildV2ActionMessageAsync(nekosLifeImage!.Data, content: $"[Full Image]({nekosLifeImage.Url})", footer: "by nekos.life"))
+				await ctx.SendOldStyleMessageAsync(nekosLifeImage.Data, $"[Full Image]({nekosLifeImage.Url})", footer: "by nekos.life");
 		}
 
 		[SlashCommand("dog", "Random Dog Image")]
 		public static async Task DogAsync(InteractionContext ctx)
 		{
-			var dc = JsonConvert.DeserializeObject<DogCeo>(await ctx.Client.RestClient.GetStringAsync("https://dog.ceo/api/breeds/image/random"));
-			if (dc is null)
-			{
-				await ctx.EditResponseAsync("Something went wrong while fetching the image.");
+			var dogCeo = JsonConvert.DeserializeObject<DogCeo>(await ctx.Client.RestClient.GetStringAsync("https://dog.ceo/api/breeds/image/random"));
+			if (!await ctx.CheckForProperImageResultAsync(dogCeo))
 				return;
-			}
 
-			var img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(dc.Message.ResizeLink()));
-			var em = new DiscordEmbedBuilder();
-			em.WithImageUrl($"attachment://image.{MimeGuesser.GuessExtension(img)}");
-			em.WithFooter("by dog.ceo", "https://dog.ceo/img/favicon.png");
-			em.WithDescription($"[Full Image]({dc.Message})");
+			var img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(dogCeo.Message.ResizeLink()));
 
-			DiscordWebhookBuilder builder = new();
-			builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
-			builder.AddEmbed(em.Build());
-			await ctx.EditResponseAsync(builder);
+			if (!await ctx.TryBuildV2ActionMessageAsync(img, content: $"[Full Image]({dogCeo.Message})", footer: "by dog.ceo"))
+				await ctx.SendOldStyleMessageAsync(img, $"[Full Image]({dogCeo.Message})", footer: "by dog.ceo");
 		}
 
 		[SlashCommand("duck", "Random duck image")]
 		public static async Task DuckAsync(InteractionContext ctx)
 		{
-			var dc = JsonConvert.DeserializeObject<RandomD>(await ctx.Client.RestClient.GetStringAsync("https://random-d.uk/api/v1/random"));
-			if (dc is null)
-			{
-				await ctx.EditResponseAsync("Something went wrong while fetching the image.");
+			var randomData = JsonConvert.DeserializeObject<RandomD>(await ctx.Client.RestClient.GetStringAsync("https://random-d.uk/api/v1/random"));
+			if (!await ctx.CheckForProperImageResultAsync(randomData))
 				return;
-			}
 
-			var img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(dc.Message.ResizeLink()));
-			var em = new DiscordEmbedBuilder();
-			em.WithImageUrl($"attachment://image.{MimeGuesser.GuessExtension(img)}");
-			em.WithFooter("by random-d.uk", "https://random-d.uk/favicon.png");
-			em.WithDescription($"[Full Image]({dc.Message})");
-
-			var builder = new DiscordWebhookBuilder();
-			builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
-			builder.AddEmbed(em.Build());
-			await ctx.EditResponseAsync(builder);
+			var img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(randomData.Message.ResizeLink()));
+			if (!await ctx.TryBuildV2ActionMessageAsync(img, content: $"[Full Image]({randomData.Message})", footer: "by random-d.uk"))
+				await ctx.SendOldStyleMessageAsync(img, $"[Full Image]({randomData.Message})", footer: "by random-d.uk");
 		}
 
 		[SlashCommand("lizard", "Get a random lizard image")]
 		public static async Task LizardAsync(InteractionContext ctx)
 		{
-			var get = await ctx.Client.RestClient.GetNekosLifeAsync("https://nekos.life/api/lizard");
-			if (get is null)
-			{
-				await ctx.EditResponseAsync("Something went wrong while fetching the image.");
+			var nekosLifeImage = await ctx.Client.RestClient.GetNekosLifeAsync("https://nekos.life/api/lizard");
+			if (!await ctx.CheckForProperImageResultAsync(nekosLifeImage))
 				return;
-			}
 
-			var img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(get.Url.ResizeLink()));
+			var img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(nekosLifeImage.Url.ResizeLink()));
 
-			DiscordWebhookBuilder builder = new();
-			builder.AddFile($"image.{MimeGuesser.GuessExtension(img)}", img);
-			await ctx.EditResponseAsync(builder);
+			if (!await ctx.TryBuildV2ActionMessageAsync(img, footer: "by nekos.life"))
+				await ctx.SendOldStyleMessageAsync(img, footer: "by nekos.life");
 		}
 	}
 
@@ -239,16 +208,6 @@ internal class Fun : ApplicationCommandsModule
 		{
 			user ??= ctx.User;
 			await ctx.GenerateNekobotImageAsync("deepfry", new()
-			{
-				{ "image", ctx.GetGuildAvatarIfPossible(user) }
-			});
-		}
-
-		[SlashCommand("kidnap", "Kidnap a user!")]
-		public static async Task KidnapAsync(InteractionContext ctx, [Option("user", "User to kidnap")] DiscordUser? user = null)
-		{
-			user ??= ctx.User;
-			await ctx.GenerateNekobotImageAsync("kidnap", new()
 			{
 				{ "image", ctx.GetGuildAvatarIfPossible(user) }
 			});

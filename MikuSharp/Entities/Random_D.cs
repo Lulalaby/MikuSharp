@@ -1,7 +1,10 @@
-﻿namespace MikuSharp.Entities;
+namespace MikuSharp.Entities;
 
-public class RandomD
+public sealed class RandomD : ImgData
 {
+	[JsonProperty("url")]
 	public string Url { get; set; }
+
+	[JsonProperty("message")]
 	public string Message { get; set; }
 }

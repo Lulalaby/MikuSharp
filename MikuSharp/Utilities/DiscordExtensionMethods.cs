@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 
 using HeyRed.Mime;
 
@@ -52,8 +51,12 @@ public static class DiscordExtensionMethods
 	/// <param name="title">The optional title.</param>
 	/// <param name="content">The optional content.</param>
 	/// <param name="user">The additional user to allow to be pinged (author is already added).</param>
+	/// <param name="footer">
+	///     The optional footer. Tho footer is not really the correct word for the new components. We use a
+	///     section instead.
+	/// </param>
 	/// <returns>Whether the message was sent successfully.</returns>
-	public static async Task<bool> TryBuildV2ActionMessageAsync(this BaseContext context, MemoryStream image, string? title = null, string? content = null, DiscordUser? user = null)
+	public static async Task<bool> TryBuildV2ActionMessageAsync(this BaseContext context, MemoryStream image, string? title = null, string? content = null, DiscordUser? user = null, string? footer = null)
 	{
 		if (context.GuildId is not 1317206872763404478)
 			return false;
@@ -67,6 +70,8 @@ public static class DiscordExtensionMethods
 		if (content is not null)
 			container.AddComponent(new DiscordTextDisplayComponent(content));
 		container.AddComponent(new DiscordMediaGalleryComponent([new($"attachment://image.{MimeGuesser.GuessExtension(image)}")]));
+		if (footer is not null)
+			container.AddComponent(new DiscordTextDisplayComponent(footer.Subtext()));
 		builder.AddComponents(container);
 		builder.WithAllowedMention(new UserMention(context.User));
 		if (user is not null)
@@ -83,13 +88,16 @@ public static class DiscordExtensionMethods
 	/// <param name="image">The image.</param>
 	/// <param name="content">The optional content.</param>
 	/// <param name="user">The additional user to allow to be pinged (author is already added).</param>
-	public static async Task SendOldStyleMessageAsync(this BaseContext context, MemoryStream image, string? content = null, DiscordUser? user = null)
+	/// <param name="footer">The optional footer.</param>
+	public static async Task SendOldStyleMessageAsync(this BaseContext context, MemoryStream image, string? content = null, DiscordUser? user = null, string? footer = null)
 	{
 		DiscordWebhookBuilder builder = new();
 		var em = new DiscordEmbedBuilder();
 		if (content is not null)
 			em.WithDescription(content);
 		em.WithImageUrl($"attachment://image.{MimeGuesser.GuessExtension(image)}");
+		if (footer is not null)
+			em.WithFooter(footer);
 		builder.AddFile($"image.{MimeGuesser.GuessExtension(image)}", image);
 		builder.AddEmbed(em.Build());
 		if (user is not null)
@@ -144,9 +152,24 @@ public static class DiscordExtensionMethods
 	/// <param name="ctx">The context.</param>
 	/// <param name="content">The content.</param>
 	/// <param name="user">The user.</param>
-	public static async Task ActionResponseWithErrorAsync(this BaseContext ctx, string content, DiscordUser user)
+	public static async Task ActionRespondWithErrorAsync(this BaseContext ctx, string content, DiscordUser user)
 	{
 		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(content).WithAllowedMentions([new UserMention(ctx.User), new UserMention(user)]));
 		await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AsEphemeral().WithContent("Failed to get image"));
+	}
+
+	/// <summary>
+	///    Responds with an error message if the <paramref name="imgData"/> is null.
+	/// </summary>
+	/// <param name="ctx">The context.</param>
+	/// <param name="imgData">The image data to check.</param>
+	/// <returns>Whether the image data is not null.</returns>
+	public static async Task<bool> CheckForProperImageResultAsync(this BaseContext ctx, [NotNullWhen(true)] ImgData? imgData)
+	{
+		if (imgData is not null)
+			return true;
+
+		await ctx.FollowUpAsync("Something went wrong while fetching the image");
+		return false;
 	}
 }

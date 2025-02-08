@@ -9,7 +9,7 @@ public class ImgData
 	///     Gets the data.
 	/// </summary>
 	[JsonIgnore]
-	public Stream Data { get; set; }
+	public MemoryStream Data { get; set; }
 
 	/// <summary>
 	///     Gets the file type.
