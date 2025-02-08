@@ -67,7 +67,7 @@ internal class About : ApplicationCommandsModule
 		modalBuilder.AddTextComponent(new(TextComponentStyle.Paragraph, "Your feedback", "feedbackbody", null, 20));
 		await ctx.CreateModalResponseAsync(modalBuilder);
 
-		var res = await ctx.Client.GetInteractivity().WaitForModalAsync(modalBuilder.CustomId, TimeSpan.FromMinutes(1));
+		var res = await ctx.Client.GetInteractivity().WaitForModalAsync(modalBuilder.CustomId, TimeSpan.FromMinutes(2));
 
 		if (!res.TimedOut)
 		{
@@ -93,7 +93,7 @@ internal class About : ApplicationCommandsModule
 			await res.Result.Interaction.EditOriginalResponseAsync(new DiscordWebhookBuilder().WithContent($"Feedback sent {DiscordEmoji.FromGuildEmote(MikuBot.ShardedClient.GetShard(483279257431441410), 623933340520546306)}"));
 		}
 		else
-			await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("You were too slow :(\nThe time limit is one minute.").AsEphemeral());
+			await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent("You were too slow :(\nThe time limit is two minutes.").AsEphemeral());
 	}
 
 	[SlashCommand("ping", "Current ping to discord's services")]
@@ -107,25 +107,48 @@ internal class About : ApplicationCommandsModule
 	[SlashCommand("stats", "Some stats of the MikuBot!"), DeferResponseAsync(true)]
 	public static async Task StatsAsync(InteractionContext ctx)
 	{
-		var guildCount = 0;
-		var userCount = 0;
-		var channelCount = 0;
-
-		foreach (var client in MikuBot.ShardedClient.ShardClients)
+		var guildCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Count);
+		var userCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.MemberCount ?? 0));
+		var channelCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.Channels.Count));
+		var threadCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.Threads.Count));
+		var roleCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.Roles.Count));
+		var emojiCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.Emojis.Count));
+		var stickerCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.Stickers.Count));
+		var soundboardSoundsCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.SoundboardSoundsInternal.Count));
+		var stageInstancesCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.StageInstances.Count));
+		var scheduledEventsCount = MikuBot.ShardedClient.ShardClients.Values.Sum(client => client.Guilds.Values.Sum(guild => guild.ScheduledEvents.Count));
+		Dictionary<string, int> counts = new()
 		{
-			guildCount += client.Value.Guilds.Count;
+			["Guilds"] = guildCount,
+			["Users (no distinct)"] = userCount,
+			["Channels"] = channelCount,
+			["Known Threads"] = threadCount,
+			["Roles"] = roleCount,
+			["Emojis"] = emojiCount,
+			["Stickers"] = stickerCount,
+			["Soundboard Sounds"] = soundboardSoundsCount,
+			["Stage Instances"] = stageInstancesCount,
+			["Scheduled Events"] = scheduledEventsCount
+		};
 
-			foreach (var guild in client.Value.Guilds)
-			{
-				userCount += guild.Value.MemberCount!.Value;
-				channelCount += guild.Value.Channels.Count;
-			}
-		}
+		var knownGuildFeatures = MikuBot.ShardedClient.ShardClients.Values.SelectMany(client => client.Guilds.Values).SelectMany(guild => guild.RawFeatures ?? ["None"]).Distinct().ToList();
 
-		var emb = new DiscordEmbedBuilder().WithTitle("Stats").WithDescription("Some stats of the MikuBot!").AddField(new("Guilds", guildCount.ToString(), true)).AddField(new("Users", userCount.ToString(), true))
-			.AddField(new("Channels", channelCount.ToString(), true)).AddField(new("Ping", ctx.Client.Ping.ToString(), true))
-			.AddField(new("Lib (Version)", ctx.Client.BotLibrary + " " + ctx.Client.VersionString, true)).WithThumbnail(ctx.Client.CurrentUser.AvatarUrl);
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(emb.Build()));
+		var averagePing = (int)MikuBot.ShardedClient.ShardClients.Values.Average(client => client.Ping);
+
+		DiscordEmbedBuilder builder = new();
+		builder.WithTitle("Stats");
+		builder.WithDescription($"Some stats of the MikuBot!\n\nKnown Guild Features:\n{string.Join("\n", knownGuildFeatures.Where(feature => feature is not "None")).BlockCode()}");
+		foreach (var (key, value) in counts)
+			builder.AddField(new(key, value.ToString(), true));
+		builder.AddField(new("Ping", $"{averagePing.ToString()}ms".InlineCode(), true));
+		if (ctx.Client.VersionString.Contains('+'))
+			builder.AddField(new("Lib (Version)", $"{ctx.Client.BotLibrary}@{ctx.Client.VersionString}".MaskedUrl(new($"https://github.com/Aiko-IT-Systems/DisCatSharp/tree/{ctx.Client.VersionString.Split('+').Last()}")), true));
+		else
+			builder.AddField(new("Lib (Version)", $"{ctx.Client.BotLibrary}@{ctx.Client.VersionString}".MaskedUrl(new($"https://github.com/Aiko-IT-Systems/DisCatSharp/tree/v{ctx.Client.VersionString.Trim()}")), true));
+		builder.WithThumbnail(ctx.Client.CurrentUser.AvatarUrl);
+		if (ctx.Client.CurrentUser.BannerUrl is not null)
+			builder.WithImageUrl(ctx.Client.CurrentUser.BannerUrl);
+		await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(builder.Build()));
 	}
 
 	[SlashCommand("support", "Link to my support server"), DeferResponseAsync(true)]
