@@ -1,6 +1,8 @@
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 
+using MikuSharp.Attributes;
+
 namespace MikuSharp.Commands;
 
 /// <summary>
@@ -11,85 +13,6 @@ public class Developer : ApplicationCommandsModule
 {
 	private static readonly string[] s_units = ["", "ki", "Mi", "Gi"];
 
-	[SlashCommand("test", "Testing")]
-	public static async Task TestAsync(InteractionContext ctx)
-		=> await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithContent($"Meep meep. Shard {ctx.Client.ShardId}"));
-
-	[SlashCommand("guild_shard_test", "Testing")]
-	public static async Task GuildTestAsync(InteractionContext ctx)
-	{
-		await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent($"Meep meep. Shard {ctx.Client.ShardId}"));
-		foreach (var shard in MikuBot.ShardedClient.ShardClients.Values)
-			await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent($"Shard {shard.ShardId} has {shard.Guilds.Count} guilds."));
-	}
-
-	[ContextMenu(ApplicationCommandType.Message, "Remove message - Miku Dev")]
-	public static async Task DeleteMessageAsync(ContextMenuContext ctx)
-	{
-		await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Log request").AsEphemeral());
-
-		if (ctx.Client.CurrentApplication.Team.Members.All(x => x.User != ctx.User) && ctx.User.Id != 856780995629154305)
-		{
-			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You are not allowed to execute this request!"));
-			return;
-		}
-
-		await ctx.TargetMessage.DeleteAsync();
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Done"));
-	}
-
-	/// <summary>
-	///     Gets the debug log.
-	/// </summary>
-	/// <param name="ctx">The interaction context.</param>
-	[SlashCommand("dbg", "Get the logs of today")]
-	public static async Task GetDebugLogAsync(InteractionContext ctx)
-	{
-		await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Log request"));
-
-		if (ctx.Client.CurrentApplication.Team.Members.All(x => x.User != ctx.User) && ctx.User.Id != 856780995629154305)
-		{
-			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You are not allowed to execute this request!"));
-			return;
-		}
-
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Trying to get log"));
-		var now = DateTime.Now;
-		var targetFile = $"miku_log{now.ToString("yyyy/MM/dd").Replace("/", "")}.txt";
-
-		if (!File.Exists(targetFile))
-		{
-			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Failed to get log"));
-			return;
-		}
-
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Found log {targetFile.Bold()}"));
-
-		try
-		{
-			if (!File.Exists($"temp-{targetFile}"))
-				File.Copy(targetFile, $"temp-{targetFile}");
-			else
-			{
-				File.Delete($"temp-{targetFile}");
-				File.Copy(targetFile, $"temp-{targetFile}");
-			}
-
-			FileStream log = new($"temp-{targetFile}", FileMode.Open, FileAccess.Read);
-			await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AddFile(targetFile, log, true).WithContent($"Log {targetFile.Bold()}").AsEphemeral());
-			log.Close();
-			await log.DisposeAsync();
-			File.Delete($"temp-{targetFile}");
-		}
-		catch (Exception ex)
-		{
-			await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent(ex.Message).AsEphemeral());
-			await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent(ex.StackTrace).AsEphemeral());
-		}
-
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Done"));
-	}
-
 	/// <summary>
 	///     Evals the csharp script.
 	/// </summary>
@@ -98,13 +21,6 @@ public class Developer : ApplicationCommandsModule
 	public static async Task EvalCsAsync(ContextMenuContext ctx)
 	{
 		await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Eval request").AsEphemeral());
-
-		if (ctx.Client.CurrentApplication.Team.Members.All(x => x.User != ctx.User) && ctx.User.Id != 856780995629154305)
-		{
-			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You are not allowed to execute this request!"));
-			return;
-		}
-
 		var msg = ctx.TargetMessage;
 		var code = ctx.TargetMessage.Content;
 		var cs1 = code.IndexOf("```", StringComparison.Ordinal) + 3;
@@ -165,21 +81,12 @@ public class Developer : ApplicationCommandsModule
 		}
 	}
 
-	[SlashCommand("lstats", "Displays Lavalink statistics"), ApplicationCommandRequireTeamDeveloper]
-	public static async Task GetLavalinkStatsAsync(InteractionContext ctx)
+	[ContextMenu(ApplicationCommandType.Message, "Remove message - Miku Dev")]
+	public static async Task DeleteMessageAsync(ContextMenuContext ctx)
 	{
-		var stats = ctx.Client.GetLavalink().ConnectedSessions.First().Value.Statistics;
-		var sb = new StringBuilder();
-		sb.Append("Lavalink resources usage statistics: ```")
-			.Append("Uptime:                    ").Append(stats.Uptime).AppendLine()
-			.Append("Players:                   ").Append($"{stats.PlayingPlayers} active / {stats.Players} total").AppendLine()
-			.Append("CPU Cores:                 ").Append(stats.Cpu.Cores).AppendLine()
-			.Append("CPU Usage:                 ").Append($"{stats.Cpu.LavalinkLoad:#,##0.0%} lavalink / {stats.Cpu.SystemLoad:#,##0.0%} system").AppendLine()
-			.Append("RAM Usage:                 ")
-			.Append($"{SizeToString(stats.Memory.Allocated)} allocated / {SizeToString(stats.Memory.Used)} used / {SizeToString(stats.Memory.Free)} free / {SizeToString(stats.Memory.Reservable)} reservable").AppendLine()
-			.Append("Audio frames (per minute): ").Append($"{stats.Frames.Sent:#,##0} sent / {stats.Frames.Nulled:#,##0} nulled / {stats.Frames.Deficit:#,##0} deficit").AppendLine()
-			.Append("```");
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(sb.ToString()));
+		await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Log request").AsEphemeral());
+		await ctx.TargetMessage.DeleteAsync();
+		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Done"));
 	}
 
 	private static string SizeToString(long l)
@@ -195,68 +102,132 @@ public class Developer : ApplicationCommandsModule
 
 		return $"{d:#,##0.00} {s_units[u]}B";
 	}
+
+	[SlashCommandGroup("dev", "Developer commands")]
+	public class DeveloperCommands : ApplicationCommandsModule
+	{
+		[SlashCommand("test", "Testing")]
+		public static async Task TestAsync(InteractionContext ctx)
+			=> await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithContent($"Meep meep. Shard {ctx.Client.ShardId}"));
+
+		[SlashCommand("guild_shard_test", "Testing")]
+		public static async Task GuildTestAsync(InteractionContext ctx)
+		{
+			await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithContent($"Meep meep. Shard {ctx.Client.ShardId}"));
+			foreach (var shard in MikuBot.ShardedClient.ShardClients.Values)
+				await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AsEphemeral().WithContent($"Shard {shard.ShardId} has {shard.Guilds.Count} guilds."));
+		}
+
+		[SlashCommand("lstats", "Displays Lavalink statistics"), DeferResponseAsync(true)]
+		public static async Task GetLavalinkStatsAsync(InteractionContext ctx)
+		{
+			var stats = ctx.Client.GetLavalink().ConnectedSessions.First().Value.Statistics;
+			var sb = new StringBuilder();
+			sb.Append("Lavalink resources usage statistics: ```")
+				.Append("Uptime:                    ").Append(stats.Uptime).AppendLine()
+				.Append("Players:                   ").Append($"{stats.PlayingPlayers} active / {stats.Players} total").AppendLine()
+				.Append("CPU Cores:                 ").Append(stats.Cpu.Cores).AppendLine()
+				.Append("CPU Usage:                 ").Append($"{stats.Cpu.LavalinkLoad:#,##0.0%} lavalink / {stats.Cpu.SystemLoad:#,##0.0%} system").AppendLine()
+				.Append("RAM Usage:                 ")
+				.Append($"{SizeToString(stats.Memory.Allocated)} allocated / {SizeToString(stats.Memory.Used)} used / {SizeToString(stats.Memory.Free)} free / {SizeToString(stats.Memory.Reservable)} reservable").AppendLine()
+				.Append("Audio frames (per minute): ").Append($"{stats.Frames?.Sent:#,##0} sent / {stats.Frames?.Nulled:#,##0} nulled / {stats.Frames?.Deficit:#,##0} deficit").AppendLine()
+				.Append("```");
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(sb.ToString()));
+		}
+
+		/// <summary>
+		///     Gets the debug log.
+		/// </summary>
+		/// <param name="ctx">The interaction context.</param>
+		[SlashCommand("dbg", "Get the logs of today")]
+		public static async Task GetDebugLogAsync(InteractionContext ctx)
+		{
+			await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithContent("Log request"));
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Trying to get log"));
+			var now = DateTime.Now;
+			var targetFile = $"miku_log{now.ToString("yyyy/MM/dd").Replace("/", "")}.txt";
+
+			if (!File.Exists(targetFile))
+			{
+				await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Failed to get log"));
+				return;
+			}
+
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"Found log {targetFile.Bold()}"));
+
+			try
+			{
+				if (!File.Exists($"temp-{targetFile}"))
+					File.Copy(targetFile, $"temp-{targetFile}");
+				else
+				{
+					File.Delete($"temp-{targetFile}");
+					File.Copy(targetFile, $"temp-{targetFile}");
+				}
+
+				FileStream log = new($"temp-{targetFile}", FileMode.Open, FileAccess.Read);
+				await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AddFile(targetFile, log, true).WithContent($"Log {targetFile.Bold()}").AsEphemeral());
+				log.Close();
+				await log.DisposeAsync();
+				File.Delete($"temp-{targetFile}");
+			}
+			catch (Exception ex)
+			{
+				await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent(ex.Message).AsEphemeral());
+				if (ex.StackTrace is not null)
+					await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().WithContent(ex.StackTrace).AsEphemeral());
+			}
+
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Done"));
+		}
+	}
 }
 
-/// <summary>
-///     The test variables.
-/// </summary>
-public sealed class SgTestVariables
+/// <remarks>
+///     Initializes a new instance of the <see cref="SgTestVariables" /> class.
+/// </remarks>
+/// <param name="msg">The message.</param>
+/// <param name="client">The client.</param>
+/// <param name="ctx">The context menu context.</param>
+public sealed class SgTestVariables(DiscordMessage msg, DiscordClient client, ContextMenuContext ctx, DiscordShardedClient shard)
 {
-	//public Dictionary<ulong, Guild> Bot = MikuBot.Guilds;
-
-	/// <summary>
-	///     Initializes a new instance of the <see cref="SgTestVariables" /> class.
-	/// </summary>
-	/// <param name="msg">The message.</param>
-	/// <param name="client">The client.</param>
-	/// <param name="ctx">The context menu context.</param>
-	public SgTestVariables(DiscordMessage msg, DiscordClient client, ContextMenuContext ctx, DiscordShardedClient shard)
-	{
-		this.Client = client;
-		this.ShardClient = shard;
-
-		this.Message = msg;
-		this.Channel = ctx.Channel;
-		this.Guild = ctx.Guild;
-		this.User = ctx.User;
-		this.Member = ctx.Member;
-		this.Context = ctx;
-		this.Inter = this.Client.GetInteractivity();
-	}
-
 	/// <summary>
 	///     Gets or sets the message.
 	/// </summary>
-	public DiscordMessage Message { get; set; }
-
-	public InteractivityExtension Inter { get; set; }
+	public DiscordMessage Message { get; set; } = msg;
 
 	/// <summary>
 	///     Gets or sets the channel.
 	/// </summary>
-	public DiscordChannel Channel { get; set; }
+	public DiscordChannel Channel { get; set; } = ctx.Channel;
 
 	/// <summary>
 	///     Gets or sets the guild.
 	/// </summary>
-	public DiscordGuild Guild { get; set; }
+	public DiscordGuild? Guild { get; set; } = ctx.Guild;
 
 	/// <summary>
 	///     Gets or sets the user.
 	/// </summary>
-	public DiscordUser User { get; set; }
+	public DiscordUser User { get; set; } = ctx.User;
 
 	/// <summary>
 	///     Gets or sets the member.
 	/// </summary>
-	public DiscordMember Member { get; set; }
+	public DiscordMember? Member { get; set; } = ctx.Member;
 
 	/// <summary>
 	///     Gets or sets the context menu context.
 	/// </summary>
-	public ContextMenuContext Context { get; set; }
+	public ContextMenuContext Context { get; set; } = ctx;
 
-	public DiscordShardedClient ShardClient { get; set; }
+	/// <summary>
+	///     Gets or sets the shard client.
+	/// </summary>
+	public DiscordShardedClient ShardClient { get; set; } = shard;
 
-	public DiscordClient Client { get; set; }
+	/// <summary>
+	///     Gets or sets the client.
+	/// </summary>
+	public DiscordClient Client { get; set; } = client;
 }
