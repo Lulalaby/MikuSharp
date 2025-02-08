@@ -124,8 +124,8 @@ internal class About : ApplicationCommandsModule
 			builder.AddField(new("Lib (Version)", $"{ctx.Client.BotLibrary}@{ctx.Client.VersionString}".MaskedUrl(new($"https://github.com/Aiko-IT-Systems/DisCatSharp/tree/{ctx.Client.VersionString.Split('+').Last()}")), true));
 		else
 			builder.AddField(new("Lib (Version)", $"{ctx.Client.BotLibrary}@{ctx.Client.VersionString}".MaskedUrl(new($"https://github.com/Aiko-IT-Systems/DisCatSharp/tree/v{ctx.Client.VersionString.Trim()}")), true));
-		builder.AddField(new("API Channel (Discord)", ctx.Client.Configuration.ApiChannel.ToString().InlineCode(), true));
-		builder.AddField(new("API Version (Discord)", ctx.Client.Configuration.ApiVersion.InlineCode(), true));
+		builder.AddField(new("API Channel (Discord)", ctx.Client.ApiChannel.ToString().InlineCode(), true));
+		builder.AddField(new("API Version (Discord)", ctx.Client.ApiVersion.InlineCode(), true));
 		var lavalinkDefaultSession = ctx.Client.GetLavalink()?.DefaultSession();
 		if (lavalinkDefaultSession is not null)
 			builder.AddField(new("Lavalink Version", $"{await lavalinkDefaultSession.GetLavalinkVersionAsync()}".InlineCode(), true));
