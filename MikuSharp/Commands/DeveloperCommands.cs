@@ -179,6 +179,41 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 
 			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Done"));
 		}
+
+		[SlashCommandGroup("monetization", "Monetization tests")]
+		public class Monetization : ApplicationCommandsModule
+		{
+			private const ulong CONSUMABLE_SKU_ID = 1337743977473900555;
+			private const ulong DURABLE_SKU_ID = 1337744226666151949;
+
+			[SlashCommand("consume_consumable", "Consume a consumable"), ApplicationCommandRequireSkuEntitlement(CONSUMABLE_SKU_ID)]
+			public async Task ConsumeConsumableAsync(InteractionContext ctx)
+			{
+				await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithContent("Testing.."));
+
+				if (ctx.EntitlementSkuIds.Contains(CONSUMABLE_SKU_ID))
+				{
+					await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Consumable works"));
+					if (await ctx.Entitlements.First(x => x.Id == CONSUMABLE_SKU_ID).ConsumeAsync())
+						await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Consumable consumed"));
+					else
+						await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Consumable failed to consume"));
+				}
+				else
+					await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Huh?!"));
+			}
+
+			[SlashCommand("use_durable", "Use a durable"), ApplicationCommandRequireSkuEntitlement(DURABLE_SKU_ID)]
+			public async Task UseDurableAsync(InteractionContext ctx)
+			{
+				await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithContent("Testing.."));
+
+				if (ctx.EntitlementSkuIds.Contains(DURABLE_SKU_ID))
+					await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Durable works"));
+				else
+					await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Huh?!"));
+			}
+		}
 	}
 }
 

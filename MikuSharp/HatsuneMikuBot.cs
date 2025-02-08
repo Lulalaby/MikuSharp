@@ -75,7 +75,8 @@ public sealed class HatsuneMikuBot : IDisposable
 			FeedbackEmail = "aiko@aitsys.dev",
 			DeveloperUserId = 856780995629154305,
 			AttachUserInfo = true,
-			ReconnectIndefinitely = true
+			ReconnectIndefinitely = true,
+			EnableLibraryDeveloperMode = true
 		});
 
 		this.InteractivityModules = ShardedClient.UseInteractivityAsync(new()
