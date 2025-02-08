@@ -19,12 +19,16 @@ internal class About : ApplicationCommandsModule
 	public static async Task BotAsync(InteractionContext ctx)
 	{
 		var emb = new DiscordEmbedBuilder();
-		emb.WithThumbnail(ctx.Client.CurrentUser.AvatarUrl).WithTitle($"About {ctx.Client.CurrentUser.UsernameWithGlobalName}!").WithAuthor("Miku MikuBot uwu").WithUrl("https://meek.moe/").WithColor(new("#348573"))
-			.WithDescription(ctx.Client.CurrentApplication.Description);
-		foreach (var member in ctx.Client.CurrentApplication.Team.Members.OrderByDescending(x => x.User.Username))
-			emb.AddField(new(member.User.Id == ctx.Client.CurrentApplication.Team.Owner.Id
-				? "Owner"
-				: "Developer", member.User.UsernameWithGlobalName));
+		emb.WithThumbnail(ctx.Client.CurrentUser.AvatarUrl).WithTitle($"About {ctx.Client.CurrentUser.UsernameWithGlobalName}!").WithAuthor("Miku MikuBot uwu").WithUrl("https://meek.moe/").WithColor(new("#348573"));
+		if (ctx.Client.CurrentApplication.Description is not null)
+			emb.WithDescription(ctx.Client.CurrentApplication.Description);
+		if (ctx.Client.CurrentApplication.Team is not null)
+			foreach (var member in ctx.Client.CurrentApplication.Team.Members.OrderByDescending(x => x.User.Username))
+				emb.AddField(new(member.User.Id == ctx.Client.CurrentApplication.Team.Owner.Id
+					? "Owner"
+					: "Developer", member.User.UsernameWithGlobalName));
+		else
+			emb.AddField(new("Owner", ctx.Client.CurrentApplication.Owner.UsernameWithGlobalName));
 		await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(emb.Build()));
 	}
 
@@ -59,8 +63,8 @@ internal class About : ApplicationCommandsModule
 	{
 		DiscordInteractionModalBuilder modalBuilder = new();
 		modalBuilder.WithTitle("Feedback modal");
-		modalBuilder.AddTextComponent(new(TextComponentStyle.Small, "feedbacktitle", "Title of feedback", null, 5, null, true, "Feedback"));
-		modalBuilder.AddTextComponent(new(TextComponentStyle.Paragraph, "feedbackbody", "Your feedback", null, 20));
+		modalBuilder.AddTextComponent(new(TextComponentStyle.Small, "Title of feedback", "feedbacktitle", null, 5, null, true, "Feedback"));
+		modalBuilder.AddTextComponent(new(TextComponentStyle.Paragraph, "Your feedback", "feedbackbody", null, 20));
 		await ctx.CreateModalResponseAsync(modalBuilder);
 
 		var res = await ctx.Client.GetInteractivity().WaitForModalAsync(modalBuilder.CustomId, TimeSpan.FromMinutes(1));
@@ -68,19 +72,19 @@ internal class About : ApplicationCommandsModule
 		if (!res.TimedOut)
 		{
 			await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
-			var title = res.Result.Interaction.Data.Components.First(x => x.CustomId == "feedbacktitle").Value;
-			var body = res.Result.Interaction.Data.Components.First(x => x.CustomId == "feedbackbody").Value;
+			var title = res.Result.Interaction.Data.Components.First(x => x.CustomId is "feedbacktitle").Value;
+			var body = res.Result.Interaction.Data.Components.First(x => x.CustomId is "feedbackbody").Value;
 			var guild = await MikuBot.ShardedClient.GetShard(483279257431441410).GetGuildAsync(483279257431441410);
 			var emb = new DiscordEmbedBuilder();
 			emb.WithAuthor($"{ctx.User.UsernameWithGlobalName}", iconUrl: ctx.User.AvatarUrl).WithTitle(title).WithDescription(body);
-			if (ctx.Guild != null)
+			if (ctx.Guild is not null)
 				emb.AddField(new("Guild", $"{ctx.Guild.Id}", true));
-			var forum = guild.GetChannel(1020433162662322257);
+			var forum = await ctx.Client.GetChannelAsync(1020433162662322257, true);
 			List<ForumPostTag> tags =
 			[
-				ctx.Guild != null
-					? forum.AvailableTags.First(x => x.Id == 1020434799493648404)
-					: forum.AvailableTags.First(x => x.Id == 1020434935502360576)
+				ctx.Guild is not null
+					? forum.AvailableTags.First(x => x.Id is 1020434799493648404)
+					: forum.AvailableTags.First(x => x.Id is 1020434935502360576)
 			];
 			var thread = await forum.CreatePostAsync("Feedback", new DiscordMessageBuilder().AddEmbed(emb.Build()).WithContent($"Feedback from {ctx.User.UsernameWithGlobalName}"), null, tags, "Feedback");
 			var msg = await thread.GetMessageAsync(thread.Id);
