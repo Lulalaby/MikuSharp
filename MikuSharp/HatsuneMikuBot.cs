@@ -5,16 +5,13 @@ using DiscordBotsList.Api;
 using MikuSharp.Attributes;
 using MikuSharp.Commands;
 using MikuSharp.Commands.Music;
+using MikuSharp.Commands.Playlist;
 using MikuSharp.Entities;
+using MikuSharp.Events;
 
 using Serilog.Events;
 
 using Weeb.net;
-
-using ActionCommands = MikuSharp.Commands.ActionCommands;
-using MikuGuild = MikuSharp.Events.MikuGuild;
-using PlaylistCommands = MikuSharp.Commands.Playlist.PlaylistCommands;
-using TokenType = DisCatSharp.Enums.TokenType;
 
 namespace MikuSharp;
 
@@ -63,7 +60,7 @@ public sealed class HatsuneMikuBot : IDisposable
 		ShardedClient = new(new()
 		{
 			Token = Config.DiscordToken,
-			TokenType = TokenType.Bot,
+			TokenType = DisCatSharp.Enums.TokenType.Bot,
 			MinimumLogLevel = LogLevel.Debug,
 			AutoReconnect = true,
 			ApiChannel = ApiChannel.Canary,
