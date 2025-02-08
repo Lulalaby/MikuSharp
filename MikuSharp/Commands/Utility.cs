@@ -186,7 +186,7 @@ internal class Utility : ApplicationCommandsModule
 			var emb = new DiscordEmbedBuilder();
 			emb.WithColor(new(0212255));
 			emb.WithTitle("User Info");
-			emb.AddField(new("Username", $"{user.Username}#{user.Discriminator}", true));
+			emb.AddField(new("Username", $"{user.UsernameWithGlobalName}", true));
 			if (member is not null)
 				if (member.DisplayName != user.Username)
 					emb.AddField(new("Nickname", $"{member.DisplayName}", true));
