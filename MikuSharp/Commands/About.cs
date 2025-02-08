@@ -16,7 +16,7 @@ internal class About : ApplicationCommandsModule
 		await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(emb.Build()).AsEphemeral());
 	}
 
-	[SlashCommand("bot", "About the bot"), DeferResponseAsync(true)]
+	[SlashCommand("bot", "Information about the bot"), DeferResponseAsync(true)]
 	public static async Task BotAsync(InteractionContext ctx)
 	{
 		var emb = new DiscordEmbedBuilder();
@@ -59,7 +59,7 @@ internal class About : ApplicationCommandsModule
 			$"News setup complete {DiscordEmoji.FromGuildEmote(MikuBot.ShardedClient.GetShard(483279257431441410), 623933340520546306)}\n\nYou'll get the newest news about the bot in your server in {channel.Mention}!"));
 	}
 
-	[SlashCommand("feedback", "Send feedback!")]
+	[SlashCommand("feedback", "Send feedback to the developers")]
 	public static async Task FeedbackAsync(InteractionContext ctx)
 	{
 		DiscordInteractionModalBuilder modalBuilder = new();
@@ -101,11 +101,11 @@ internal class About : ApplicationCommandsModule
 	public static async Task PingAsync(InteractionContext ctx)
 		=> await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithContent($"Ping: {$"{ctx.Client.Ping}ms".InlineCode()}"));
 
-	[SlashCommand("which_shard", "What shard am I on?")]
+	[SlashCommand("which_shard", "Gets the id of current shard you're using me on")]
 	public static async Task GetExecutingShardAsync(InteractionContext ctx)
 		=> await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithContent($"Shard: {ctx.Client.ShardId.ToString().InlineCode()}"));
 
-	[SlashCommand("stats", "Some stats of the MikuBot!"), DeferResponseAsync(true)]
+	[SlashCommand("stats", "Statistics about the bot!"), DeferResponseAsync(true)]
 	public static async Task StatsAsync(InteractionContext ctx)
 	{
 		var statsitcs = MikuBot.ShardedClient.Statistics;
@@ -135,7 +135,7 @@ internal class About : ApplicationCommandsModule
 		await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(builder.Build()));
 	}
 
-	[SlashCommand("support", "Link to my support server"), DeferResponseAsync(true)]
+	[SlashCommand("support", "Link to the support server"), DeferResponseAsync(true)]
 	public static async Task SupportAsybc(InteractionContext ctx)
 	{
 		var guild = await MikuBot.ShardedClient.GetShard(483279257431441410).GetGuildAsync(483279257431441410);
