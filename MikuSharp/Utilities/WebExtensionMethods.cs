@@ -80,7 +80,15 @@ public static class WebExtensionMethods
 			return;
 		}
 
-		await ctx.EditResponseAsync(result.Message);
+		MemoryStream stream = new(await ctx.Client.RestClient.GetByteArrayAsync(result.Message.ResizeLink()))
+		{
+			Position = 0
+		};
+
+		if (!await ctx.TryBuildV2ActionMessageAsync(stream))
+			await ctx.SendOldStyleMessageAsync(stream);
+
+		await stream.DisposeAsync();
 	}
 
 	/// <summary>

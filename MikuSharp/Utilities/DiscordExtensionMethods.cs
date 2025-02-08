@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 using HeyRed.Mime;
 
@@ -48,11 +49,11 @@ public static class DiscordExtensionMethods
 	/// </summary>
 	/// <param name="context">The context.</param>
 	/// <param name="image">The image.</param>
-	/// <param name="title">The title.</param>
-	/// <param name="content">The content.</param>
-	/// <param name="user">The user.</param>
+	/// <param name="title">The optional title.</param>
+	/// <param name="content">The optional content.</param>
+	/// <param name="user">The additional user to allow to be pinged (author is already added).</param>
 	/// <returns>Whether the message was sent successfully.</returns>
-	public static async Task<bool> TryBuildV2ActionMessageAsync(this BaseContext context, MemoryStream image, string title, string content, DiscordUser user)
+	public static async Task<bool> TryBuildV2ActionMessageAsync(this BaseContext context, MemoryStream image, string? title = null, string? content = null, DiscordUser? user = null)
 	{
 		if (context.GuildId is not 1317206872763404478)
 			return false;
@@ -60,9 +61,18 @@ public static class DiscordExtensionMethods
 		DiscordWebhookBuilder builder = new();
 		builder.WithV2Components();
 		builder.AddFile($"image.{MimeGuesser.GuessExtension(image)}", image);
-		builder.AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent(title), new DiscordTextDisplayComponent(content), new DiscordMediaGalleryComponent([new($"attachment://image.{MimeGuesser.GuessExtension(image)}")])]));
-		builder.WithAllowedMentions([new UserMention(context.User), new UserMention(user)]);
+		DiscordContainerComponent container = new();
+		if (title is not null)
+			container.AddComponent(new DiscordTextDisplayComponent(title));
+		if (content is not null)
+			container.AddComponent(new DiscordTextDisplayComponent(content));
+		container.AddComponent(new DiscordMediaGalleryComponent([new($"attachment://image.{MimeGuesser.GuessExtension(image)}")]));
+		builder.AddComponents(container);
+		builder.WithAllowedMention(new UserMention(context.User));
+		if (user is not null)
+			builder.WithAllowedMention(new UserMention(user));
 		await context.EditResponseAsync(builder);
+		await image.DisposeAsync();
 		return true;
 	}
 
@@ -71,20 +81,24 @@ public static class DiscordExtensionMethods
 	/// </summary>
 	/// <param name="context">The context.</param>
 	/// <param name="image">The image.</param>
-	/// <param name="content">The content.</param>
-	/// <param name="user">The user.</param>
-	public static async Task SendOldStyleMessageAsync(this BaseContext context, MemoryStream image, string content, DiscordUser user)
+	/// <param name="content">The optional content.</param>
+	/// <param name="user">The additional user to allow to be pinged (author is already added).</param>
+	public static async Task SendOldStyleMessageAsync(this BaseContext context, MemoryStream image, string? content = null, DiscordUser? user = null)
 	{
 		DiscordWebhookBuilder builder = new();
 		var em = new DiscordEmbedBuilder();
-		em.WithDescription(content);
+		if (content is not null)
+			em.WithDescription(content);
 		em.WithImageUrl($"attachment://image.{MimeGuesser.GuessExtension(image)}");
-		em.WithFooter("by nekos.life");
 		builder.AddFile($"image.{MimeGuesser.GuessExtension(image)}", image);
 		builder.AddEmbed(em.Build());
-		builder.WithContent(user.Mention);
-		builder.WithAllowedMention(new UserMention(user));
+		if (user is not null)
+			builder.WithContent(user.Mention);
+		builder.WithAllowedMention(new UserMention(context.User));
+		if (user is not null)
+			builder.WithAllowedMention(new UserMention(user));
 		await context.EditResponseAsync(builder);
+		await image.DisposeAsync();
 	}
 
 	/// <summary>
