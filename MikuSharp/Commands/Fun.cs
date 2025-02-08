@@ -10,61 +10,12 @@ internal class Fun : ApplicationCommandsModule
 	[SlashCommand("8ball", "Yes? No? Maybe?")]
 	public static async Task EightBallAsync(InteractionContext ctx, [Option("text", "Text to modify")] string text)
 	{
-		var responses = new[]
-		{
-			"It is certain.",
-			"It is decidedly so.",
-			"Without a doubt.",
-			"Yes - definitely.",
-			"You may rely on it.",
-			"As I see it, yes.",
-			"Most likely.",
-			"Outlook good.",
-			"Yes.",
-			"Signs point to yes.",
-			"Absolutely!",
-			"Of course!",
-			"No doubt about it.",
-			"The universe says yes.",
-			"You got it!",
-			"Definitely!",
-			"All signs point to yes.",
-			"The answer is crystal clear.",
-			"Yes, in due time.",
-			"The stars align in your favor.",
-			"Reply hazy, try again.",
-			"Ask again later.",
-			"Better not tell you now.",
-			"Cannot predict now.",
-			"Concentrate and ask again.",
-			"Maybe, maybe not.",
-			"Uncertain, check back later.",
-			"Hard to say.",
-			"Try flipping a coin.",
-			"Your guess is as good as mine.",
-			"The future is unclear.",
-			"I can't say for sure.",
-			"It's a mystery.",
-			"Only time will tell.",
-			"50/50 chance.",
-			"Don't count on it.",
-			"My reply is no.",
-			"My sources say no.",
-			"Outlook not so good.",
-			"Very doubtful.",
-			"No.",
-			"Absolutely not.",
-			"I wouldn’t bet on it.",
-			"No way!",
-			"Highly unlikely.",
-			"Not in a million years.",
-			"Doubtful at best.",
-			"The odds aren’t in your favor.",
-			"The universe says no.",
-			"Nope."
-		};
+		List<string> responses =
+		[
+			"It is certain.", "It is decidedly so.", "Without a doubt.", "Yes - definitely.", "You may rely on it.", "As I see it, yes.", "Most likely.", "Outlook good.", "Yes.", "Signs point to yes.", "Absolutely!", "Of course!", "No doubt about it.", "The universe says yes.", "You got it!", "Definitely!", "All signs point to yes.", "The answer is crystal clear.", "Yes, in due time.", "The stars align in your favor.", "Reply hazy, try again.", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Concentrate and ask again.", "Maybe, maybe not.", "Uncertain, check back later.", "Hard to say.", "Try flipping a coin.", "Your guess is as good as mine.", "The future is unclear.", "I can't say for sure.", "It's a mystery.", "Only time will tell.", "50/50 chance.", "Don't count on it.", "My reply is no.", "My sources say no.", "Outlook not so good.", "Very doubtful.", "No.", "Absolutely not.", "I wouldn’t bet on it.", "No way!", "Highly unlikely.", "Not in a million years.", "Doubtful at best.", "The odds aren’t in your favor.", "The universe says no.", "Nope."
+		];
 
-		var chosenAnswer = responses[new Random().Next(0, responses.Length)];
+		var chosenAnswer = responses[new Random().Next(0, responses.Count - 1)];
 		if (ctx.GuildId is 1317206872763404478)
 		{
 			DiscordTextDisplayComponent question = new($"### Question\n{text}");
