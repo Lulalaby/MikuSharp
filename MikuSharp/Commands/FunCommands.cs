@@ -1,5 +1,6 @@
 using MikuSharp.Attributes;
 using MikuSharp.Entities;
+using MikuSharp.Entities.Games;
 using MikuSharp.Utilities;
 
 namespace MikuSharp.Commands;
@@ -7,43 +8,49 @@ namespace MikuSharp.Commands;
 [SlashCommandGroup("fun", "Fun commands", allowedContexts: [InteractionContextType.Guild, InteractionContextType.PrivateChannel], integrationTypes: [ApplicationCommandIntegrationTypes.GuildInstall, ApplicationCommandIntegrationTypes.UserInstall]), DeferResponseAsync]
 internal class FunCommands : ApplicationCommandsModule
 {
-	[SlashCommand("8ball", "Yes? No? Maybe?")]
-	public static async Task EightBallAsync(InteractionContext ctx, [Option("text", "Text to modify")] string text)
+	[SlashCommandGroup("games", "Games")]
+	public class GamesCommands : ApplicationCommandsModule
 	{
-		List<string> responses =
-		[
-			"It is certain.", "It is decidedly so.", "Without a doubt.", "Yes - definitely.", "You may rely on it.", "As I see it, yes.", "Most likely.", "Outlook good.", "Yes.", "Signs point to yes.", "Absolutely!", "Of course!", "No doubt about it.", "The universe says yes.", "You got it!", "Definitely!", "All signs point to yes.", "The answer is crystal clear.", "Yes, in due time.", "The stars align in your favor.", "Reply hazy, try again.", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Concentrate and ask again.", "Maybe, maybe not.", "Uncertain, check back later.", "Hard to say.", "Try flipping a coin.", "Your guess is as good as mine.", "The future is unclear.", "I can't say for sure.", "It's a mystery.", "Only time will tell.", "50/50 chance.", "Don't count on it.", "My reply is no.", "My sources say no.", "Outlook not so good.", "Very doubtful.", "No.", "Absolutely not.", "I wouldn’t bet on it.", "No way!", "Highly unlikely.", "Not in a million years.", "Doubtful at best.", "The odds aren’t in your favor.", "The universe says no.", "Nope."
-		];
-
-		var chosenAnswer = responses[new Random().Next(0, responses.Count - 1)];
-		if (ctx.GuildId is 1317206872763404478)
+		[SlashCommand("8ball", "Yes? No? Maybe?")]
+		public static async Task EightBallAsync(InteractionContext ctx, [Option("text", "Text to modify")] string text)
 		{
-			DiscordTextDisplayComponent question = new($"### Question\n{text}");
-			DiscordSectionComponent questionComponent = new([question]);
-			questionComponent.WithThumbnailComponent(ctx.User.AvatarUrl);
-			DiscordSeparatorComponent seperator = new(false, SeparatorSpacingSize.Small);
-			DiscordTextDisplayComponent answer = new($"### Answer\n{chosenAnswer}");
-			DiscordSectionComponent answerComponent = new([answer]);
-			answerComponent.WithThumbnailComponent(ctx.Client.CurrentUser.AvatarUrl);
-			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(new DiscordContainerComponent([questionComponent]), seperator, new DiscordContainerComponent([answerComponent])));
-			return;
+			List<string> responses =
+			[
+				"It is certain.", "It is decidedly so.", "Without a doubt.", "Yes - definitely.", "You may rely on it.", "As I see it, yes.", "Most likely.", "Outlook good.", "Yes.", "Signs point to yes.", "Absolutely!", "Of course!", "No doubt about it.", "The universe says yes.", "You got it!", "Definitely!", "All signs point to yes.", "The answer is crystal clear.", "Yes, in due time.", "The stars align in your favor.", "Reply hazy, try again.", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Concentrate and ask again.", "Maybe, maybe not.", "Uncertain, check back later.", "Hard to say.", "Try flipping a coin.", "Your guess is as good as mine.", "The future is unclear.", "I can't say for sure.", "It's a mystery.", "Only time will tell.", "50/50 chance.", "Don't count on it.", "My reply is no.", "My sources say no.", "Outlook not so good.", "Very doubtful.", "No.", "Absolutely not.", "I wouldn’t bet on it.", "No way!", "Highly unlikely.",
+				"Not in a million years.", "Doubtful at best.", "The odds aren’t in your favor.", "The universe says no.", "Nope."
+			];
+
+			var chosenAnswer = responses[new Random().Next(0, responses.Count - 1)];
+			if (ctx.GuildId is 1317206872763404478)
+			{
+				DiscordTextDisplayComponent question = new($"### Question\n{text}");
+				DiscordSectionComponent questionComponent = new([question]);
+				questionComponent.WithThumbnailComponent(ctx.User.AvatarUrl);
+				DiscordSeparatorComponent seperator = new(false, SeparatorSpacingSize.Small);
+				DiscordTextDisplayComponent answer = new($"### Answer\n{chosenAnswer}");
+				DiscordSectionComponent answerComponent = new([answer]);
+				answerComponent.WithThumbnailComponent(ctx.Client.CurrentUser.AvatarUrl);
+				await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(new DiscordContainerComponent([questionComponent]), seperator, new DiscordContainerComponent([answerComponent])));
+				return;
+			}
+
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"> {text}\n\n{chosenAnswer}"));
 		}
 
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"> {text}\n\n{chosenAnswer}"));
-	}
+		[SlashCommand("coinflip", "Flip a coin!")]
+		public static async Task CoinflipAsync(InteractionContext ctx)
+		{
+			List<string> flip = [$"Heads {DiscordEmoji.FromName(ctx.Client, ":arrow_up_small:")}", $"Tails {DiscordEmoji.FromName(ctx.Client, ":arrow_down_small:")}"];
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(flip[new Random().Next(0, flip.Count - 1)]));
+		}
 
-	[SlashCommand("coinflip", "Flip a coin lol")]
-	public static async Task CoinflipAsync(InteractionContext ctx)
-	{
-		var flip = new[] { $"Heads {DiscordEmoji.FromName(ctx.Client, ":arrow_up_small:")}", $"Tails {DiscordEmoji.FromName(ctx.Client, ":arrow_down_small:")}" };
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(flip[new Random().Next(0, flip.Length)]));
-	}
-
-	[SlashCommand("rps", "Play rock paper scissors!")]
-	public static async Task RpsAsync(InteractionContext ctx, [Option("rps", "Your rock paper scissor choice")] string rps)
-	{
-		var rpsChoices = new[] { $"Rock {DiscordEmoji.FromName(ctx.Client, ":black_circle:")}", $"Paper {DiscordEmoji.FromName(ctx.Client, ":pencil:")}", $"Scissors {DiscordEmoji.FromName(ctx.Client, ":scissors:")}" };
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"{ctx.User.Mention} chooses {rps}!\n\nI choose {rpsChoices[new Random().Next(0, rpsChoices.Length)]}"));
+		[SlashCommand("rps", "Play rock paper scissors!")]
+		public static async Task RpsAsync(InteractionContext ctx, [Option("rps", "Your rock paper scissor choice")] RockPaperScissorsChoiceType userChoice)
+		{
+			var game = userChoice.ResolveRps();
+			if (!await game.TryBuildV2RpsMessageAsync(ctx))
+				await game.SendOldStyleRpsMessageAsync(ctx);
+		}
 	}
 
 	[SlashCommandGroup("random_images", "Random images")]
