@@ -12,36 +12,19 @@ internal class FunCommands : ApplicationCommandsModule
 	public class GamesCommands : ApplicationCommandsModule
 	{
 		[SlashCommand("8ball", "Yes? No? Maybe?")]
-		public static async Task EightBallAsync(InteractionContext ctx, [Option("text", "Text to modify")] string text)
+		public static async Task EightBallAsync(InteractionContext ctx, [Option("question", "The question")] string question)
 		{
-			List<string> responses =
-			[
-				"It is certain.", "It is decidedly so.", "Without a doubt.", "Yes - definitely.", "You may rely on it.", "As I see it, yes.", "Most likely.", "Outlook good.", "Yes.", "Signs point to yes.", "Absolutely!", "Of course!", "No doubt about it.", "The universe says yes.", "You got it!", "Definitely!", "All signs point to yes.", "The answer is crystal clear.", "Yes, in due time.", "The stars align in your favor.", "Reply hazy, try again.", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Concentrate and ask again.", "Maybe, maybe not.", "Uncertain, check back later.", "Hard to say.", "Try flipping a coin.", "Your guess is as good as mine.", "The future is unclear.", "I can't say for sure.", "It's a mystery.", "Only time will tell.", "50/50 chance.", "Don't count on it.", "My reply is no.", "My sources say no.", "Outlook not so good.", "Very doubtful.", "No.", "Absolutely not.", "I wouldn’t bet on it.", "No way!", "Highly unlikely.",
-				"Not in a million years.", "Doubtful at best.", "The odds aren’t in your favor.", "The universe says no.", "Nope."
-			];
-
-			var chosenAnswer = responses[new Random().Next(0, responses.Count - 1)];
-			if (ctx.GuildId is 1317206872763404478)
-			{
-				DiscordTextDisplayComponent question = new($"### Question\n{text}");
-				DiscordSectionComponent questionComponent = new([question]);
-				questionComponent.WithThumbnailComponent(ctx.User.AvatarUrl);
-				DiscordSeparatorComponent seperator = new(false, SeparatorSpacingSize.Small);
-				DiscordTextDisplayComponent answer = new($"### Answer\n{chosenAnswer}");
-				DiscordSectionComponent answerComponent = new([answer]);
-				answerComponent.WithThumbnailComponent(ctx.Client.CurrentUser.AvatarUrl);
-				await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(new DiscordContainerComponent([questionComponent]), seperator, new DiscordContainerComponent([answerComponent])));
-				return;
-			}
-
-			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"> {text}\n\n{chosenAnswer}"));
+			EightBallGame eightBall = new(question);
+			if (!await eightBall.TryBuildV28BallMessageAsync(ctx))
+				await eightBall.SendOldStyle8BallMessageAsync(ctx);
 		}
 
 		[SlashCommand("coinflip", "Flip a coin!")]
 		public static async Task CoinflipAsync(InteractionContext ctx)
 		{
-			List<string> flip = [$"Heads {DiscordEmoji.FromName(ctx.Client, ":arrow_up_small:")}", $"Tails {DiscordEmoji.FromName(ctx.Client, ":arrow_down_small:")}"];
-			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(flip[new Random().Next(0, flip.Count - 1)]));
+			var game = new CointossGame(ctx).TossCoin();
+			if (!await game.TryBuildV2CointossMessageAsync())
+				await game.SendOldStyleCointossMessageAsync();
 		}
 
 		[SlashCommand("rps", "Play rock paper scissors!")]
