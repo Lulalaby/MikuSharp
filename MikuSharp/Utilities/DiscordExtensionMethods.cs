@@ -13,6 +13,9 @@ namespace MikuSharp.Utilities;
 /// </summary>
 public static class DiscordExtensionMethods
 {
+	/// <summary>
+	///     Gets the <c>invisible space</c> string.
+	/// </summary>
 	private const string INVISIBLE_CHARACTER = "\u200e";
 
 	/// <summary>
