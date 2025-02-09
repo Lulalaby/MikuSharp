@@ -14,6 +14,11 @@ namespace MikuSharp.Utilities;
 public static class DiscordExtensionMethods
 {
 	/// <summary>
+	///     Gets an empty component using the <c>\u200e</c> annotation.
+	/// </summary>
+	public static DiscordTextDisplayComponent EmptyComponent { get; } = new("\u200e");
+
+	/// <summary>
 	///     Gets the avatar URL of the user, using the guild avatar URL if possible.
 	/// </summary>
 	/// <param name="ctx">The context.</param>
@@ -159,7 +164,7 @@ public static class DiscordExtensionMethods
 	}
 
 	/// <summary>
-	///    Responds with an error message if the <paramref name="imgData"/> is null.
+	///     Responds with an error message if the <paramref name="imgData" /> is null.
 	/// </summary>
 	/// <param name="ctx">The context.</param>
 	/// <param name="imgData">The image data to check.</param>

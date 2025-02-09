@@ -30,7 +30,7 @@ internal class FunCommands : ApplicationCommandsModule
 		[SlashCommand("rps", "Play rock paper scissors!")]
 		public static async Task RpsAsync(InteractionContext ctx, [Option("rps", "Your rock paper scissor choice")] RockPaperScissorsChoiceType userChoice)
 		{
-			var game = userChoice.ResolveRps();
+			var game = userChoice.ResolveRps(ctx.User);
 			if (!await game.TryBuildV2RpsMessageAsync(ctx))
 				await game.SendOldStyleRpsMessageAsync(ctx);
 		}

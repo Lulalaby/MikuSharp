@@ -1,3 +1,5 @@
+using MikuSharp.Utilities;
+
 namespace MikuSharp.Entities.Games;
 
 /// <summary>
@@ -59,13 +61,13 @@ public sealed class EightBallGame
 			return false;
 
 		DiscordTextDisplayComponent question = new($"### Question\n{this.UserQuestion}");
-		DiscordSectionComponent questionComponent = new([question]);
+		DiscordSectionComponent questionComponent = new([DiscordExtensionMethods.EmptyComponent, question]);
 		questionComponent.WithThumbnailComponent(ctx.User.AvatarUrl);
 		DiscordSeparatorComponent seperator = new(false, SeparatorSpacingSize.Small);
 		DiscordTextDisplayComponent answer = new($"### Answer\n{this.ChosenAnswer}");
-		DiscordSectionComponent answerComponent = new([answer]);
+		DiscordSectionComponent answerComponent = new([DiscordExtensionMethods.EmptyComponent, answer]);
 		answerComponent.WithThumbnailComponent(ctx.Client.CurrentUser.AvatarUrl);
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(new DiscordContainerComponent([questionComponent, seperator, answerComponent])));
+		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## 8Ball"), new DiscordSeparatorComponent(true, SeparatorSpacingSize.Large), questionComponent, seperator, answerComponent])));
 		return true;
 	}
 

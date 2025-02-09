@@ -1,3 +1,5 @@
+using MikuSharp.Utilities;
+
 namespace MikuSharp.Entities.Games;
 
 /// <summary>
@@ -16,13 +18,13 @@ public static class RockPaperScissorsGame
 	/// </summary>
 	/// <param name="userChoice">The user's choice.</param>
 	/// <returns>A <see cref="RockPaperScissorsResponse" /> representing the outcome.</returns>
-	public static RockPaperScissorsResponse ResolveRps(this RockPaperScissorsChoiceType userChoice)
+	public static RockPaperScissorsResponse ResolveRps(this RockPaperScissorsChoiceType userChoice, DiscordUser player)
 	{
 		var random = new Random();
 		var values = Enum.GetValues<RockPaperScissorsChoiceType>();
 		var computerChoice = (RockPaperScissorsChoiceType)values.GetValue(random.Next(values.Length))!;
 
-		return new(userChoice, computerChoice, userChoice == computerChoice
+		return new(player, userChoice, computerChoice, userChoice == computerChoice
 			? RockPaperScissorsWinType.Tie
 			: (userChoice is RockPaperScissorsChoiceType.Rock && computerChoice is RockPaperScissorsChoiceType.Scissors) ||
 			  (userChoice is RockPaperScissorsChoiceType.Paper && computerChoice is RockPaperScissorsChoiceType.Rock) ||
@@ -70,7 +72,7 @@ public sealed class RockPaperScissorsAsset(RockPaperScissorsChoiceType choiceTyp
 /// <param name="userChoiceAsset">The user choice asset.</param>
 /// <param name="computerChoiceAsset">The computer choice asset.</param>
 /// <param name="winType">The win type.</param>
-public sealed class RockPaperScissorsResponse(RockPaperScissorsAsset userChoiceAsset, RockPaperScissorsAsset computerChoiceAsset, RockPaperScissorsWinType winType)
+public sealed class RockPaperScissorsResponse(DiscordUser player, RockPaperScissorsAsset userChoiceAsset, RockPaperScissorsAsset computerChoiceAsset, RockPaperScissorsWinType winType)
 {
 	/// <summary>
 	///     Gets the computer's choice asset.
@@ -95,6 +97,8 @@ public sealed class RockPaperScissorsResponse(RockPaperScissorsAsset userChoiceA
 			? (this.ComputerChoiceAsset.ImageUrl, this.ComputerChoiceAsset.CreativeCommonsLicense)
 			: (this.UserChoiceAsset.ImageUrl, this.UserChoiceAsset.CreativeCommonsLicense);
 
+	public DiscordUser Player { get; } = player;
+
 	/// <summary>
 	///     Tries to build and send a components V2 rock-paper-scissors message.
 	/// </summary>
@@ -107,16 +111,16 @@ public sealed class RockPaperScissorsResponse(RockPaperScissorsAsset userChoiceA
 
 		DiscordWebhookBuilder builder = new();
 		builder.WithV2Components();
-		DiscordTextDisplayComponent userChoiceComponent = new($"### {ctx.User.Mention} chooses {this.UserChoiceAsset.ChoiceType.ToString().InlineCode()}");
-		DiscordSectionComponent userChoiceSection = new([userChoiceComponent]);
-		userChoiceSection.WithThumbnailComponent(ctx.User.AvatarUrl);
-		DiscordSeparatorComponent seperator1 = new(false, SeparatorSpacingSize.Small);
-		DiscordTextDisplayComponent computerChoiceComponent = new($"### I choose {this.ComputerChoiceAsset.ChoiceType.ToString().InlineCode()}");
-		DiscordSectionComponent computerChoiceSection = new([computerChoiceComponent]);
-		computerChoiceSection.WithThumbnailComponent(ctx.Client.CurrentUser.AvatarUrl);
+		DiscordTextDisplayComponent userChoiceComponent = new($"### {ctx.User.Mention} chooses {this.UserChoiceAsset.ChoiceType}");
+		DiscordSectionComponent userChoiceSection = new([DiscordExtensionMethods.EmptyComponent, userChoiceComponent]);
+		userChoiceSection.WithThumbnailComponent(ctx.User.AvatarUrl, "User Avatar");
+		DiscordSeparatorComponent seperator1 = new(false, SeparatorSpacingSize.Large);
+		DiscordTextDisplayComponent computerChoiceComponent = new($"### I choose {this.ComputerChoiceAsset.ChoiceType}");
+		DiscordSectionComponent computerChoiceSection = new([DiscordExtensionMethods.EmptyComponent, computerChoiceComponent]);
+		computerChoiceSection.WithThumbnailComponent(ctx.Client.CurrentUser.AvatarUrl, "Bot Avatar");
 		DiscordSeparatorComponent seperator2 = new(true, SeparatorSpacingSize.Large);
 		DiscordTextDisplayComponent resultTextComponent = new($"### {this}");
-		DiscordSectionComponent resultSectionComponent = new([resultTextComponent]);
+		DiscordSectionComponent resultSectionComponent = new([DiscordExtensionMethods.EmptyComponent, resultTextComponent]);
 		resultSectionComponent.WithThumbnailComponent(this.WinnerAsset.ImageUrl, this.WinnerAsset.CreativeCommonsLicense);
 		builder.AddComponents(new DiscordContainerComponent([userChoiceSection, seperator1, computerChoiceSection, seperator2, resultSectionComponent]));
 		builder.WithAllowedMention(new UserMention(ctx.User));
@@ -142,7 +146,7 @@ public sealed class RockPaperScissorsResponse(RockPaperScissorsAsset userChoiceA
 	public override string? ToString()
 		=> this.WinType switch
 		{
-			RockPaperScissorsWinType.User => "You win :3",
+			RockPaperScissorsWinType.User => $"{this.Player.Mention} wins :3",
 			RockPaperScissorsWinType.Computer => "I win ^~^",
 			RockPaperScissorsWinType.Tie => "It's a tie O.o",
 			_ => null

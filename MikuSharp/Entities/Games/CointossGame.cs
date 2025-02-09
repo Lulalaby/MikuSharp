@@ -1,3 +1,5 @@
+using MikuSharp.Utilities;
+
 namespace MikuSharp.Entities.Games;
 
 /// <summary>
@@ -55,8 +57,7 @@ public sealed class CointossGame(InteractionContext context)
 		if (this.Context.GuildId is not 1317206872763404478)
 			return false;
 
-		DiscordTextDisplayComponent textDisplayComponent = new($"### And the winner is... {this.Result.ToString().InlineCode()}!");
-		DiscordSectionComponent sectionComponent = new([textDisplayComponent]);
+		DiscordSectionComponent sectionComponent = new([DiscordExtensionMethods.EmptyComponent, new("And the winner..."), new($"### {this.Result}")]);
 		sectionComponent.WithThumbnailComponent(this.CoinTossSideImages[this.Result], this.Result.ToString());
 		await this.Context.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(new DiscordContainerComponent([sectionComponent])));
 		return true;
