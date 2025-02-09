@@ -55,8 +55,10 @@ public sealed class CointossGame(InteractionContext context)
 		if (this.Context.GuildId is not 1317206872763404478)
 			return false;
 
-		DiscordMediaGalleryComponent galleryComponent = new([new(this.CoinTossSideImages[this.Result], $"It's {this.Result}!")]);
-		await this.Context.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(new DiscordContainerComponent([galleryComponent])));
+		DiscordTextDisplayComponent textDisplayComponent = new($"### And the winner is... {this.Result.ToString().InlineCode()}!");
+		DiscordSectionComponent sectionComponent = new([textDisplayComponent]);
+		sectionComponent.WithThumbnailComponent(this.CoinTossSideImages[this.Result], this.Result.ToString());
+		await this.Context.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(new DiscordContainerComponent([sectionComponent])));
 		return true;
 	}
 
