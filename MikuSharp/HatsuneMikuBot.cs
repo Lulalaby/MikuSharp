@@ -13,6 +13,8 @@ using Serilog.Events;
 
 using Weeb.net;
 
+using TokenType = DisCatSharp.Enums.TokenType;
+
 namespace MikuSharp;
 
 /// <summary>
@@ -60,7 +62,7 @@ public sealed class HatsuneMikuBot : IDisposable
 		ShardedClient = new(new()
 		{
 			Token = Config.DiscordToken,
-			TokenType = DisCatSharp.Enums.TokenType.Bot,
+			TokenType = TokenType.Bot,
 			MinimumLogLevel = LogLevel.Debug,
 			AutoReconnect = true,
 			ApiChannel = ApiChannel.Canary,
@@ -77,6 +79,8 @@ public sealed class HatsuneMikuBot : IDisposable
 			AttachUserInfo = true,
 			ReconnectIndefinitely = true,
 			EnableLibraryDeveloperMode = true
+			//Proxy = new WebProxy("127.0.0.1", 8004),
+			//GatewayCompressionLevel = GatewayCompressionLevel.None
 		});
 
 		this.InteractivityModules = ShardedClient.UseInteractivityAsync(new()
@@ -361,6 +365,9 @@ public sealed class HatsuneMikuBot : IDisposable
 			{
 				success = false;
 			}
+
+		foreach (var client in ShardedClient.ShardClients.Values)
+			await client.GetApplicationEmojisAsync(true);
 
 		DiscordBotListApi = new(ShardedClient.CurrentApplication.Id, Config.DiscordBotListToken);
 		this.GameSetThread = Task.Run(RotateActivityAsync);
