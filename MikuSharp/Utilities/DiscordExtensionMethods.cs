@@ -13,10 +13,12 @@ namespace MikuSharp.Utilities;
 /// </summary>
 public static class DiscordExtensionMethods
 {
+	private const string INVISIBLE_CHARACTER = "\u200e";
+
 	/// <summary>
 	///     Gets an empty component using the <c>\u200e</c> annotation.
 	/// </summary>
-	public static DiscordTextDisplayComponent EmptyComponent { get; } = new("\u200e");
+	public static DiscordTextDisplayComponent EmptyComponent { get; } = new(INVISIBLE_CHARACTER);
 
 	/// <summary>
 	///     Gets the avatar URL of the user, using the guild avatar URL if possible.
