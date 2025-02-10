@@ -11,6 +11,9 @@ namespace MikuSharp.Commands;
 [ApplicationCommandRequireTeamMember]
 public class DeveloperOnlyCommands : ApplicationCommandsModule
 {
+	/// <summary>
+	///     The units.
+	/// </summary>
 	private static readonly string[] s_units = ["", "ki", "Mi", "Gi"];
 
 	/// <summary>
