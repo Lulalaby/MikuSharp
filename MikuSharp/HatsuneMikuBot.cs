@@ -1,3 +1,5 @@
+using System.Net;
+
 using DisCatSharp.ApplicationCommands.Exceptions;
 
 using DiscordBotsList.Api;
@@ -22,6 +24,21 @@ namespace MikuSharp;
 /// </summary>
 public sealed class HatsuneMikuBot : IDisposable
 {
+	/// <summary>
+	///     Whether to enable the proxy.
+	/// </summary>
+	public const bool ENABLE_PROXY = false;
+
+	/// <summary>
+	///     Whether to disable the gateway compression.
+	/// </summary>
+	public const bool DISABLE_GATEWAY_COMPRESSION = false;
+
+	/// <summary>
+	///     Whether to disable Lavalink.
+	/// </summary>
+	public const bool DISABLE_LAVALINK = true;
+
 	/// <summary>
 	///     Gets the Weeb client.
 	/// </summary>
@@ -50,7 +67,6 @@ public sealed class HatsuneMikuBot : IDisposable
 		Config = config;
 
 		Config.DbConnectString = $"Host={Config.DbConfig.Hostname};Username={Config.DbConfig.User};Password={Config.DbConfig.Password};Database={Config.DbConfig.Database}";
-		MikuCancellationTokenSource = new();
 
 		Log.Logger = new LoggerConfiguration()
 			.MinimumLevel.Debug()
@@ -78,9 +94,9 @@ public sealed class HatsuneMikuBot : IDisposable
 			DeveloperUserId = 856780995629154305,
 			AttachUserInfo = true,
 			ReconnectIndefinitely = true,
-			EnableLibraryDeveloperMode = true
-			//Proxy = new WebProxy("127.0.0.1", 8004),
-			//GatewayCompressionLevel = GatewayCompressionLevel.None
+			EnableLibraryDeveloperMode = true,
+			Proxy = ENABLE_PROXY ? new WebProxy("127.0.0.1", 8004) : null,
+			GatewayCompressionLevel = DISABLE_GATEWAY_COMPRESSION ? GatewayCompressionLevel.None : GatewayCompressionLevel.Stream
 		});
 
 		this.InteractivityModules = ShardedClient.UseInteractivityAsync(new()
@@ -146,7 +162,7 @@ public sealed class HatsuneMikuBot : IDisposable
 	/// <summary>
 	///     Gets the cancellation token source.
 	/// </summary>
-	internal static CancellationTokenSource MikuCancellationTokenSource { get; set; }
+	internal static CancellationTokenSource MikuCancellationTokenSource { get; set; } = new();
 
 	/// <summary>
 	///     Gets the bot configuration.
@@ -338,6 +354,7 @@ public sealed class HatsuneMikuBot : IDisposable
 		this.ApplicationCommandsModules.RegisterGlobalCommands<MusicCommands>();
 		this.ApplicationCommandsModules.RegisterGlobalCommands<PlaylistCommands>();
 		this.ApplicationCommandsModules.RegisterGlobalCommands<UtilityCommands>();
+		this.ApplicationCommandsModules.RegisterGlobalCommands<DiscordUtilityCommands>();
 		this.ApplicationCommandsModules.RegisterGlobalCommands<WeebCommands>();
 
 		// Smolcar command, miku discord guild command
@@ -353,25 +370,30 @@ public sealed class HatsuneMikuBot : IDisposable
 		await ShardedClient.StartAsync();
 		await Task.Delay(5000);
 
-		var success = false;
-		while (!success)
-			try
-			{
-				foreach (var lavalinkShard in this.LavalinkModules)
-					await lavalinkShard.Value.ConnectAsync(this.LavalinkConfig);
-				success = true;
-			}
-			catch
-			{
-				success = false;
-			}
+		if (!DISABLE_LAVALINK)
+		{
+			var success = false;
+			while (!success)
+				try
+				{
+					foreach (var lavalinkShard in this.LavalinkModules)
+						await lavalinkShard.Value.ConnectAsync(this.LavalinkConfig);
+					success = true;
+				}
+				catch
+				{
+					success = false;
+				}
+		}
 
 		foreach (var client in ShardedClient.ShardClients.Values)
 			await client.GetApplicationEmojisAsync(true);
 
 		DiscordBotListApi = new(ShardedClient.CurrentApplication.Id, Config.DiscordBotListToken);
 		this.GameSetThread = Task.Run(RotateActivityAsync);
-		//BotListThread = Task.Run(UpdateBotList);
+#if !DEBUG
+		this.BotListThread = Task.Run(UpdateBotListStatisticsAsync);
+#endif
 		while (!MikuCancellationTokenSource.IsCancellationRequested)
 			await Task.Delay(25);
 		_ = this.LavalinkModules.Select(lavalinkShard => lavalinkShard.Value.ConnectedSessions.Select(async connectedSession => await connectedSession.Value.DestroyAsync()));
