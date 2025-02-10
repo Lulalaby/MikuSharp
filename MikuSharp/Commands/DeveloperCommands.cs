@@ -14,7 +14,7 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 	private static readonly string[] s_units = ["", "ki", "Mi", "Gi"];
 
 	/// <summary>
-	///     Evals the csharp script.
+	///     Evals a csharp script.
 	/// </summary>
 	/// <param name="ctx">The context menu context.</param>
 	[ContextMenu(ApplicationCommandType.Message, "Eval - Miku Dev")]
@@ -80,31 +80,53 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 		}
 	}
 
+	/// <summary>
+	///     Deletes a message sent by the bot.
+	/// </summary>
+	/// <param name="ctx">The context menu context.</param>
 	[ContextMenu(ApplicationCommandType.Message, "Remove message - Miku Dev")]
 	public static async Task DeleteMessageAsync(ContextMenuContext ctx)
 	{
 		await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Log request").AsEphemeral());
+		if (ctx.TargetMessage.Author.Id != ctx.Client.CurrentUser.Id)
+		{
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You can only delete messages sent by me."));
+			return;
+		}
+
 		await ctx.TargetMessage.DeleteAsync();
 		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Done"));
 	}
 
-	private static string SizeToString(long l)
+	/// <summary>
+	///     Converts a size to a human-readable string.
+	/// </summary>
+	/// <param name="size">The size to convert.</param>
+	/// <returns>A human-readable string representing the size.</returns>
+	private static string SizeToString(long size)
 	{
-		double d = l;
+		double convertedSize = size;
 		var u = 0;
 
-		while (d >= 900 && u < s_units.Length - 2)
+		while (convertedSize >= 900 && u < s_units.Length - 2)
 		{
 			u++;
-			d /= 1024;
+			convertedSize /= 1024;
 		}
 
-		return $"{d:#,##0.00} {s_units[u]}B";
+		return $"{convertedSize:#,##0.00} {s_units[u]}B";
 	}
 
+	/// <summary>
+	///     The developer commands.
+	/// </summary>
 	[SlashCommandGroup("dev", "Developer commands")]
 	public class DeveloperCommands : ApplicationCommandsModule
 	{
+		/// <summary>
+		///     A test command.
+		/// </summary>
+		/// <param name="ctx">The interaction context.</param>
 		[SlashCommand("test", "Testing")]
 		public static async Task TestAsync(InteractionContext ctx)
 		{
@@ -113,6 +135,10 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(new DiscordContainerComponent([new DiscordSectionComponent([new("**Catgirlsdsaophifejkgü#äl,lsd gjf bgkfnd lög kjdf gdks flkds fujenaolsf ewj bfiew löf eroiwfb eikmfpsdnifb jkemds wflkoen uje fmj ewofn udesj fckmds mfgoe4wbrhjrf em,  folewbf jew f --s 750 --v 6.1 --p x5nrtis** - <@856780995629154305> (turbo, stealth)".SingleQuote())]).WithThumbnailComponent("https://example.com/image.png"), new DiscordMediaGalleryComponent([..items])])));
 		}
 
+		/// <summary>
+		///     Guild shard test command.
+		/// </summary>
+		/// <param name="ctx">The interaction context.</param>
 		[SlashCommand("guild_shard_test", "Testing")]
 		public static async Task GuildTestAsync(InteractionContext ctx)
 		{
@@ -121,6 +147,10 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 				await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AsEphemeral().WithContent($"Shard {shard.ShardId} has {shard.Guilds.Count} guilds."));
 		}
 
+		/// <summary>
+		///     Gets the Lavalink statistics.
+		/// </summary>
+		/// <param name="ctx">The interaction context.</param>
 		[SlashCommand("lstats", "Displays Lavalink statistics"), DeferResponseAsync(true)]
 		public static async Task GetLavalinkStatsAsync(InteractionContext ctx)
 		{
@@ -184,12 +214,19 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Done"));
 		}
 
+		/// <summary>
+		///     Monetization tests.
+		/// </summary>
 		[SlashCommandGroup("monetization", "Monetization tests")]
 		public class Monetization : ApplicationCommandsModule
 		{
 			private const ulong CONSUMABLE_SKU_ID = 1337743977473900555;
 			private const ulong DURABLE_SKU_ID = 1337744226666151949;
 
+			/// <summary>
+			///     Consumes a consumable.
+			/// </summary>
+			/// <param name="ctx">The interaction context.</param>
 			[SlashCommand("consume_consumable", "Consume a consumable"), ApplicationCommandRequireSkuEntitlement(CONSUMABLE_SKU_ID)]
 			public static async Task ConsumeConsumableAsync(InteractionContext ctx)
 			{
@@ -207,6 +244,10 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 					await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Huh?!"));
 			}
 
+			/// <summary>
+			///     Uses a durable.
+			/// </summary>
+			/// <param name="ctx">The interaction context.</param>
 			[SlashCommand("use_durable", "Use a durable"), ApplicationCommandRequireSkuEntitlement(DURABLE_SKU_ID)]
 			public static async Task UseDurableAsync(InteractionContext ctx)
 			{
