@@ -30,7 +30,7 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 		cs1 = code.IndexOf('\n', cs1) + 1;
 		var cs2 = code.LastIndexOf("```", StringComparison.Ordinal);
 
-		if (cs1 == -1 || cs2 == -1)
+		if (cs1 is -1 || cs2 is -1)
 		{
 			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You need to wrap the code into a code block."));
 			return;
@@ -87,10 +87,9 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 	///     Deletes a message sent by the bot.
 	/// </summary>
 	/// <param name="ctx">The context menu context.</param>
-	[ContextMenu(ApplicationCommandType.Message, "Remove message - Miku Dev")]
+	[ContextMenu(ApplicationCommandType.Message, "Remove message - Miku Dev"), DeferResponseAsync(true)]
 	public static async Task DeleteMessageAsync(ContextMenuContext ctx)
 	{
-		await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Log request").AsEphemeral());
 		if (ctx.TargetMessage.Author.Id != ctx.Client.CurrentUser.Id)
 		{
 			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You can only delete messages sent by me."));
