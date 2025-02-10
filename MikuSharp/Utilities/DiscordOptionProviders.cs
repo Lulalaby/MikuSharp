@@ -1,9 +1,19 @@
 namespace MikuSharp.Utilities;
 
+/// <summary>
+///     Provides fixed options for Discord commands.
+/// </summary>
 internal class FixedOptionProviders
 {
+	/// <summary>
+	///     Provides choices for repeat modes.
+	/// </summary>
 	internal sealed class RepeatModeProvider : ChoiceProvider
 	{
+		/// <summary>
+		///     Provides the choices for repeat modes.
+		/// </summary>
+		/// <returns>A task that represents the asynchronous operation. The task result contains the choices for repeat modes.</returns>
 		public override Task<IEnumerable<DiscordApplicationCommandOptionChoice>> Provider()
 		{
 			var list = new List<DiscordApplicationCommandOptionChoice>(3)
@@ -17,10 +27,24 @@ internal class FixedOptionProviders
 	}
 }
 
+/// <summary>
+///     Provides autocomplete options for Discord commands.
+/// </summary>
 internal class AutocompleteProviders
 {
+	/// <summary>
+	///     Provides autocomplete options for banned users.
+	/// </summary>
 	internal sealed class BanProvider : IAutocompleteProvider
 	{
+		/// <summary>
+		///     Provides the autocomplete options for banned users.
+		/// </summary>
+		/// <param name="ctx">The autocomplete context.</param>
+		/// <returns>
+		///     A task that represents the asynchronous operation. The task result contains the autocomplete options for
+		///     banned users.
+		/// </returns>
 		public async Task<IEnumerable<DiscordApplicationCommandAutocompleteChoice>> Provider(AutocompleteContext ctx)
 		{
 			var bans = await ctx.Guild.GetBansAsync();
@@ -33,58 +57,53 @@ internal class AutocompleteProviders
 		}
 	}
 
-	/*
-	internal class PlaylistProvider : IAutocompleteProvider
+	/// <summary>
+	///     Provides autocomplete options for playlists.
+	/// </summary>
+	internal sealed class PlaylistProvider : IAutocompleteProvider
 	{
-	    public async Task<IEnumerable<DiscordApplicationCommandAutocompleteChoice>> Provider(AutocompleteContext ctx)
-	    {
-	        var plls = await PlaylistDB.GetPlaylistsSimple(ctx.Member.Id);
-	        if (plls.Count == 0)
-	            return new List<DiscordApplicationCommandAutocompleteChoice>() { new("You have no songs", "error") };
-
-	        var DbPlaylists = await PlaylistDB.GetPlaylists(ctx.Guild, ctx.Member.Id);
-
-	        List<KeyValuePair<string, Playlist>> playlists = new(25);
-	        if (ctx.FocusedOption.Value == null)
-	            playlists.AddRange(DbPlaylists.Take(25));
-	        else
-	            playlists.AddRange(DbPlaylists.Where(x => x.Value.Name.Contains(Convert.ToString(ctx.FocusedOption.Value).ToLower())).Take(25));
-
-	        return playlists.Select(x => new DiscordApplicationCommandAutocompleteChoice(x.Value.Name, x.Key));
-	    }
+		/// <summary>
+		///     Provides the autocomplete options for playlists.
+		/// </summary>
+		/// <param name="ctx">The autocomplete context.</param>
+		/// <returns>
+		///     A task that represents the asynchronous operation. The task result contains the autocomplete options for
+		///     playlists.
+		/// </returns>
+		public async Task<IEnumerable<DiscordApplicationCommandAutocompleteChoice>> Provider(AutocompleteContext ctx)
+			=> [];
 	}
 
-	internal class SongProvider : IAutocompleteProvider
+	/// <summary>
+	///     Provides autocomplete options for songs.
+	/// </summary>
+	internal sealed class SongProvider : IAutocompleteProvider
 	{
-	    public async Task<IEnumerable<DiscordApplicationCommandAutocompleteChoice>> Provider(AutocompleteContext ctx)
-	    {
-	        var playlist = Convert.ToString(ctx.Options.First(x => x.Name == "playlist").Value);
-
-	        switch (playlist)
-	        {
-	            case null:
-	                return new List<DiscordApplicationCommandAutocompleteChoice>() { new("You have no playlist selected", "error") };
-	            case "error":
-	                return new List<DiscordApplicationCommandAutocompleteChoice>() { new("You have no valid playlist selected", "error") };
-	        }
-
-	        var pls = await PlaylistDB.GetPlaylist(ctx.Guild, ctx.Member.Id, playlist);
-	        var tracks = await pls.GetEntries();
-	        List<PlaylistEntry> songs = new(25);
-	        if (ctx.FocusedOption.Value == null)
-	            songs.AddRange(tracks.Take(25));
-	        else if (int.TryParse(Convert.ToString(ctx.FocusedOption.Value), out var pos))
-	            songs.AddRange(tracks.Where(x => x.Position.ToString().StartsWith(pos.ToString())).Take(25));
-	        else
-	            songs.AddRange(tracks.Where(x => x.Track.Info.Title.ToLower().Contains(Convert.ToString(ctx.FocusedOption.Value).ToLower())).Take(25));
-
-	        return songs.Select(x => new DiscordApplicationCommandAutocompleteChoice($"{x.Position}: {x.Track.Info.Title}", x.Position.ToString()));
-	    }
+		/// <summary>
+		///     Provides the autocomplete options for songs.
+		/// </summary>
+		/// <param name="ctx">The autocomplete context.</param>
+		/// <returns>
+		///     A task that represents the asynchronous operation. The task result contains the autocomplete options for
+		///     songs.
+		/// </returns>
+		public async Task<IEnumerable<DiscordApplicationCommandAutocompleteChoice>> Provider(AutocompleteContext ctx)
+			=> [];
 	}
-	*/
 
+	/// <summary>
+	///     Provides autocomplete options for the queue.
+	/// </summary>
 	internal sealed class QueueProvider : IAutocompleteProvider
 	{
+		/// <summary>
+		///     Provides the autocomplete options for the queue.
+		/// </summary>
+		/// <param name="ctx">The autocomplete context.</param>
+		/// <returns>
+		///     A task that represents the asynchronous operation. The task result contains the autocomplete options for the
+		///     queue.
+		/// </returns>
 		public async Task<IEnumerable<DiscordApplicationCommandAutocompleteChoice>> Provider(AutocompleteContext ctx)
 		{
 			return await ctx.ExecuteWithMusicSessionAsync((_, musicSession) =>
