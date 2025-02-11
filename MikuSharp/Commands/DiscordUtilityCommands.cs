@@ -21,7 +21,7 @@ internal class DiscordUtilityCommands : ApplicationCommandsModule
 			: ctx.GetGuildAvatarIfPossible(ctx.User)).Build()));
 
 	[SlashCommand("server_info", "Get information about the server"), DeferResponseAsync(true)]
-	public static async Task GuildInfoAsync(InteractionContext ctx)
+	public static async Task GetGuildInfoAsync(InteractionContext ctx)
 	{
 		if (ctx.Guild is null)
 		{
@@ -48,7 +48,7 @@ internal class DiscordUtilityCommands : ApplicationCommandsModule
 	}
 
 	[SlashCommand("user_info", "Get information about a user"), DeferResponseAsync(true)]
-	public static async Task UserInfoAsync(InteractionContext ctx, [Option("user", "The user to view")] DiscordUser? user = null)
+	public static async Task GetUserInfoAsync(InteractionContext ctx, [Option("user", "The user to view")] DiscordUser? user = null)
 	{
 		user ??= ctx.User;
 
@@ -67,7 +67,7 @@ internal class DiscordUtilityCommands : ApplicationCommandsModule
 		emb.WithTitle("User Info");
 		emb.AddField(new("Username", $"{user.UsernameWithGlobalName}", true));
 		if (member is not null)
-			if (member.DisplayName != user.Username)
+			if (member.DisplayName != (user.GlobalName ?? user.Username))
 				emb.AddField(new("Nickname", $"{member.DisplayName}", true));
 		emb.AddField(new("ID", $"{user.Id}", true));
 		emb.AddField(new("Account Creation", $"{user.CreationTimestamp.Timestamp()}", true));
@@ -77,14 +77,64 @@ internal class DiscordUtilityCommands : ApplicationCommandsModule
 		await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(emb.Build()));
 	}
 
-	[SlashCommand("emojilist", "Lists all custom emoji on this server")]
-	public static async Task EmojiListAsync(InteractionContext ctx)
+	[SlashCommand("emojis", "Lists all custom emoji on this server"), DeferResponseAsync(true)]
+	public static async Task ListEmojisAsync(InteractionContext ctx)
 	{
-		var wat = "You have to execute this command in a server!";
+		if (ctx.Guild is null)
+		{
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You have to execute this command on a server!"));
+			return;
+		}
 
-		if (ctx.Guild is not null && ctx.Guild.Emojis.Any())
-			wat = ctx.Guild.Emojis.Values.Aggregate("**Emojies:** ", (current, em) => current + em + " ");
+		if (ctx.Guild.Emojis.Count is 0)
+		{
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("This server has no custom emojis!"));
+			return;
+		}
 
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(wat));
+		var guildEmojis = ctx.Guild.Emojis.Values.ToList();
+		var emojiGroups = guildEmojis.Select((emoji, index) => new
+			{
+				emoji,
+				index
+			})
+			.GroupBy(x => x.index / 9)
+			.Select(g => g.Select(x => x.emoji).ToList())
+			.ToList();
+
+		List<Page> pages = new(emojiGroups.Count);
+		foreach (var group in emojiGroups)
+		{
+			DiscordEmbedBuilder builder = new();
+			builder.WithTitle($"Emojis in {ctx.Guild.Name}");
+			foreach (var emoji in group)
+				builder.AddField(new(emoji.ToString(), $"{emoji.Name} ({emoji.Id})", true));
+			pages.Add(new(embed: builder));
+		}
+
+		await ctx.Client.GetInteractivity().SendPaginatedResponseAsync(ctx.Interaction, true, true, ctx.User, pages.Recalculate());
+	}
+
+	[SlashCommand("stickers", "Lists all custom stickers on this server"), DeferResponseAsync(true)]
+	public static async Task ListStickersAsync(InteractionContext ctx)
+	{
+		if (ctx.Guild is null)
+		{
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You have to execute this command on a server!"));
+			return;
+		}
+
+		if (ctx.Guild.Stickers.Count is 0)
+		{
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("This server has no custom stickers!"));
+			return;
+		}
+
+		var guildStickers = ctx.Guild.Stickers.Values.ToList();
+
+		List<Page> pages = new(guildStickers.Count);
+		pages.AddRange(guildStickers.Select(guildSticker => new Page(embed: new DiscordEmbedBuilder().WithTitle($"Stickers in {ctx.Guild.Name}").AddField(new("Name", guildSticker.Name)).AddField(new("ID", guildSticker.Id.ToString())).AddField(new("Description", string.IsNullOrEmpty(guildSticker.Description) ? "No description" : guildSticker.Description)).WithImageUrl(guildSticker.Url))));
+
+		await ctx.Client.GetInteractivity().SendPaginatedResponseAsync(ctx.Interaction, true, true, ctx.User, pages.Recalculate());
 	}
 }
