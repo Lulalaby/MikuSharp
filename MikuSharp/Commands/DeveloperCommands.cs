@@ -20,10 +20,10 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 	///     Evals a csharp script.
 	/// </summary>
 	/// <param name="ctx">The context menu context.</param>
-	[ContextMenu(ApplicationCommandType.Message, "Eval - Miku Dev")]
+	[ContextMenu(ApplicationCommandType.Message, "Eval - Miku Dev"), DeferResponseAsync(true)]
 	public static async Task EvalAsync(ContextMenuContext ctx)
 	{
-		await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("Eval request").AsEphemeral());
+		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("Eval request"));
 		var msg = ctx.TargetMessage;
 		var code = msg.Content;
 		var cs1 = code.IndexOf("```", StringComparison.Ordinal) + 3;
@@ -42,7 +42,6 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 			.WithColor(new("#FF007F"))
 			.WithDescription("Evaluating...\n\nMeanwhile: https://eval-deez-nuts.xyz/")
 			.Build())).ConfigureAwait(false);
-		await ctx.GetOriginalResponseAsync();
 
 		try
 		{
@@ -54,8 +53,73 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 			sopts = sopts.WithReferences(AppDomain.CurrentDomain.GetAssemblies().Where(xa => !xa.IsDynamic && !string.IsNullOrWhiteSpace(xa.Location)));
 
 			var script = CSharpScript.Create(cs, sopts, typeof(MikuDeveloperEvalVariables));
-			script.Compile();
-			var result = await script.RunAsync(globals).ConfigureAwait(false);
+			script.Compile(HatsuneMikuBot.MikuCancellationTokenSource.Token);
+			var result = await script.RunAsync(globals, HatsuneMikuBot.MikuCancellationTokenSource.Token).ConfigureAwait(false);
+
+			if (result is { ReturnValue: not null } && !string.IsNullOrWhiteSpace(result.ReturnValue.ToString()))
+				await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder
+				{
+					Title = "Evaluation Result",
+					Description = result.ReturnValue.ToString(),
+					Color = new DiscordColor("#007FFF")
+				}.Build())).ConfigureAwait(false);
+			else
+				await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder
+				{
+					Title = "Evaluation Successful",
+					Description = "No result was returned.",
+					Color = new DiscordColor("#007FFF")
+				}.Build())).ConfigureAwait(false);
+		}
+		catch (Exception ex)
+		{
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder
+			{
+				Title = "Evaluation Failure",
+				Description = string.Concat("**", ex.GetType().ToString(), "**: ", ex.Message),
+				Color = new DiscordColor("#FF0000")
+			}.Build())).ConfigureAwait(false);
+		}
+	}
+
+	/// <summary>
+	///     Evals a csharp script. Version 2 with the new components :eyes:.
+	/// </summary>
+	/// <param name="ctx">The context menu context.</param>
+	[ContextMenu(ApplicationCommandType.Message, "Eval V2 - Miku Dev"), DeferResponseAsync]
+	public static async Task EvalV2Async(ContextMenuContext ctx)
+	{
+		var msg = ctx.TargetMessage;
+		var code = msg.Content;
+		var cs1 = code.IndexOf("```", StringComparison.Ordinal) + 3;
+		cs1 = code.IndexOf('\n', cs1) + 1;
+		var cs2 = code.LastIndexOf("```", StringComparison.Ordinal);
+
+		if (cs1 is -1 || cs2 is -1)
+		{
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You need to wrap the code into a code block."));
+			return;
+		}
+
+		var cs = code[cs1..cs2];
+
+		await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder()
+			.WithColor(new("#FF007F"))
+			.WithDescription("Evaluating...\n\nMeanwhile: https://eval-deez-nuts.xyz/")
+			.Build())).ConfigureAwait(false);
+
+		try
+		{
+			var globals = new MikuDeveloperEvalVariables(ctx.TargetMessage, ctx.Client, ctx, HatsuneMikuBot.ShardedClient);
+
+			var sopts = ScriptOptions.Default;
+			sopts = sopts.WithImports("System", "System.Collections.Generic", "System.Linq", "System.Text", "System.Threading.Tasks", "DisCatSharp", "DisCatSharp.Entities", "DisCatSharp.CommandsNext", "DisCatSharp.CommandsNext.Attributes",
+				"DisCatSharp.Interactivity", "DisCatSharp.Interactivity.Extensions", "DisCatSharp.Enums", "Microsoft.Extensions.Logging", "MikuSharp.Entities");
+			sopts = sopts.WithReferences(AppDomain.CurrentDomain.GetAssemblies().Where(xa => !xa.IsDynamic && !string.IsNullOrWhiteSpace(xa.Location)));
+
+			var script = CSharpScript.Create(cs, sopts, typeof(MikuDeveloperEvalVariables));
+			script.Compile(HatsuneMikuBot.MikuCancellationTokenSource.Token);
+			var result = await script.RunAsync(globals, HatsuneMikuBot.MikuCancellationTokenSource.Token).ConfigureAwait(false);
 
 			if (result is { ReturnValue: not null } && !string.IsNullOrWhiteSpace(result.ReturnValue.ToString()))
 				await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(new DiscordEmbedBuilder
@@ -132,9 +196,12 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 		[SlashCommand("test", "Testing")]
 		public static async Task TestAsync(InteractionContext ctx)
 		{
-			await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
+			var x = await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().AsSilentMessage());
+			Console.WriteLine(x.Message?.Flags?.ToString());
+			await ctx.EditResponseAsync("a");
+			/*await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
 			List<DiscordMediaGalleryItem> items = [new("https://cdn.discordapp.com/attachments/1211030818533937362/1338113601453686835/lulalaby_Catgirls_5e44ded1-2d0d-4be7-8e1e-b08400429ec3.png?ex=67a9e6e7&is=67a89567&hm=c2de0d5bedf5f981dd66e707ed9805c4c72d0ae66161ff064a7b698e686d729c&")];
-			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(new DiscordContainerComponent([new DiscordSectionComponent([new("**Catgirlsdsaophifejkgü#äl,lsd gjf bgkfnd lög kjdf gdks flkds fujenaolsf ewj bfiew löf eroiwfb eikmfpsdnifb jkemds wflkoen uje fmj ewofn udesj fckmds mfgoe4wbrhjrf em,  folewbf jew f --s 750 --v 6.1 --p x5nrtis** - <@856780995629154305> (turbo, stealth)".SingleQuote())]).WithThumbnailComponent("https://example.com/image.png"), new DiscordMediaGalleryComponent([..items])])));
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(new DiscordContainerComponent([new DiscordSectionComponent([new("**Catgirlsdsaophifejkgü#äl,lsd gjf bgkfnd lög kjdf gdks flkds fujenaolsf ewj bfiew löf eroiwfb eikmfpsdnifb jkemds wflkoen uje fmj ewofn udesj fckmds mfgoe4wbrhjrf em,  folewbf jew f --s 750 --v 6.1 --p x5nrtis** - <@856780995629154305> (turbo, stealth)".SingleQuote())]).WithThumbnailComponent("https://example.com/image.png"), new DiscordMediaGalleryComponent([..items])])));*/
 		}
 
 		/// <summary>

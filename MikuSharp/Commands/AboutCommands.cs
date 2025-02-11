@@ -108,7 +108,7 @@ internal class AboutCommands : ApplicationCommandsModule
 	[SlashCommand("stats", "Statistics about the bot!"), DeferResponseAsync(true)]
 	public static async Task StatsAsync(InteractionContext ctx)
 	{
-		var statsitcs = HatsuneMikuBot.ShardedClient.Statistics;
+		var statistics = HatsuneMikuBot.ShardedClient.Statistics;
 
 		var knownGuildFeatures = HatsuneMikuBot.ShardedClient.ShardClients.Values.SelectMany(client => client.Guilds.Values).SelectMany(guild => guild.RawFeatures ?? ["None"]).Distinct().ToList();
 
@@ -117,7 +117,7 @@ internal class AboutCommands : ApplicationCommandsModule
 		DiscordEmbedBuilder builder = new();
 		builder.WithTitle("Stats");
 		builder.WithDescription($"Some stats about {ctx.Client.CurrentApplication.Name}!\n\nKnown Guild Features:\n{string.Join("\n", knownGuildFeatures.Where(feature => feature is not "None")).BlockCode()}");
-		foreach (var (key, value) in statsitcs)
+		foreach (var (key, value) in statistics)
 			builder.AddField(new(key.ToString(), value.ToString().InlineCode(), true));
 		builder.AddField(new("Ping", $"{averagePing}ms".InlineCode(), true));
 		if (ctx.Client.VersionString.Contains('+'))
