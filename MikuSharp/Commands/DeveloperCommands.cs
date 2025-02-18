@@ -197,8 +197,8 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 		public static async Task TestAsync(InteractionContext ctx)
 		{
 			var builder = new DiscordInteractionResponseBuilder().AsEphemeral().AsSilentMessage().SuppressEmbeds().AsVoiceMessage().WithV2Components();
-			var x = await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, builder);
-			await ctx.EditResponseAsync($"Send the following flags: {x.SendFlags}\nReceived the following flags from the callback response: {x.Message?.Flags}");
+			var response = await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, builder);
+			await ctx.EditResponseAsync($"Send the following flags: {response.SendFlags}\nReceived the following flags from the callback response: {response.Message?.Flags}");
 			/*await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
 			List<DiscordMediaGalleryItem> items = [new("https://cdn.discordapp.com/attachments/1211030818533937362/1338113601453686835/lulalaby_Catgirls_5e44ded1-2d0d-4be7-8e1e-b08400429ec3.png?ex=67a9e6e7&is=67a89567&hm=c2de0d5bedf5f981dd66e707ed9805c4c72d0ae66161ff064a7b698e686d729c&")];
 			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(new DiscordContainerComponent([new DiscordSectionComponent([new("**Catgirlsdsaophifejkgü#äl,lsd gjf bgkfnd lög kjdf gdks flkds fujenaolsf ewj bfiew löf eroiwfb eikmfpsdnifb jkemds wflkoen uje fmj ewofn udesj fckmds mfgoe4wbrhjrf em,  folewbf jew f --s 750 --v 6.1 --p x5nrtis** - <@856780995629154305> (turbo, stealth)".SingleQuote())]).WithThumbnailComponent("https://example.com/image.png"), new DiscordMediaGalleryComponent([..items])])));*/
