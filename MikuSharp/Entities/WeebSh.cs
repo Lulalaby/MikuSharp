@@ -1,10 +1,6 @@
-﻿using DisCatSharp.Entities;
+﻿namespace MikuSharp.Entities;
 
-using System.IO;
-
-namespace MikuSharp.Entities;
-
-public class WeebSh
+public sealed class WeebSh
 {
 	public MemoryStream ImgData { get; set; }
 	public string Extension { get; set; }

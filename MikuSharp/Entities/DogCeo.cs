@@ -1,7 +1,10 @@
-﻿namespace MikuSharp.Entities;
+namespace MikuSharp.Entities;
 
-public class DogCeo
+public sealed class DogCeo : ImgData
 {
-	public string status { get; set; }
-	public string message { get; set; }
+	[JsonProperty("status")]
+	public string Status { get; set; }
+
+	[JsonProperty("message")]
+	public string Message { get; set; }
 }

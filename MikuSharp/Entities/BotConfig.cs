@@ -1,10 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿namespace MikuSharp.Entities;
 
-namespace MikuSharp.Entities;
-
-public partial class BotConfig
+public sealed class BotConfig
 {
+#if DEBUG
+	[JsonProperty("discordTokenDev")]
+#else
 	[JsonProperty("discordToken")]
+#endif
 	public string DiscordToken { get; set; }
 
 	[JsonProperty("discordBotListToken")]
@@ -32,7 +34,7 @@ public partial class BotConfig
 	public NndConfig NndConfig { get; set; }
 }
 
-public partial class DatabaseConfig
+public sealed class DatabaseConfig
 {
 	[JsonProperty("hostname")]
 	public string Hostname { get; set; }
@@ -47,7 +49,7 @@ public partial class DatabaseConfig
 	public string Database { get; set; }
 }
 
-public partial class LavalinkConfig
+public sealed class LavalinkConfig
 {
 	[JsonProperty("hostname")]
 	public string Hostname { get; set; }
@@ -59,7 +61,7 @@ public partial class LavalinkConfig
 	public int Port { get; set; }
 }
 
-public partial class NndConfig
+public sealed class NndConfig
 {
 	[JsonProperty("mail")]
 	public string Mail { get; set; }

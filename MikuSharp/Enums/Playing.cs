@@ -1,20 +1,8 @@
-﻿namespace MikuSharp.Enums;
+namespace MikuSharp.Enums;
 
-public enum Playstate : int
+public enum PlaybackState
 {
-	NotPlaying = 0,
+	Stopped = 0,
 	Playing = 1,
-	Paused = 2,
-	Stopped = 3
-}
-public enum RepeatMode : int
-{
-	Off = 0,
-	On = 1,
-	All = 2
-}
-public enum ShuffleMode : int
-{
-	Off = 0,
-	On = 1
+	Paused = 2
 }
