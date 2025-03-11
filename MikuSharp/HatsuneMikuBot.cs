@@ -228,8 +228,8 @@ public sealed class HatsuneMikuBot : IDisposable
 	{
 		ShardedClient.ClientErrored += (sender, args) =>
 		{
-			sender.Logger.LogError(args.Exception.Message);
-			sender.Logger.LogError(args.Exception.StackTrace);
+			sender.Logger.LogError(args.Exception, "{Message}", args.Exception.Message);
+			sender.Logger.LogError(args.Exception, "{Stack}", args.Exception.StackTrace);
 			return Task.CompletedTask;
 		};
 

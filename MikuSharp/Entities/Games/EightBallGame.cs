@@ -55,11 +55,8 @@ public sealed class EightBallGame
 	/// </summary>
 	/// <param name="ctx">The context.</param>
 	/// <returns>Whether the message was sent successfully.</returns>
-	public async Task<bool> TryBuildV28BallMessageAsync(InteractionContext ctx)
+	public async Task Send8BallMessageAsync(InteractionContext ctx)
 	{
-		if (ctx.GuildId is not 1317206872763404478)
-			return false;
-
 		DiscordTextDisplayComponent question = new($"### Question\n{this.UserQuestion}");
 		DiscordSectionComponent questionComponent = new([DiscordExtensionMethods.EmptyComponent, question]);
 		questionComponent.WithThumbnailComponent(ctx.User.AvatarUrl);
@@ -68,13 +65,5 @@ public sealed class EightBallGame
 		DiscordSectionComponent answerComponent = new([DiscordExtensionMethods.EmptyComponent, answer]);
 		answerComponent.WithThumbnailComponent(ctx.Client.CurrentUser.AvatarUrl);
 		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(new DiscordContainerComponent([new DiscordTextDisplayComponent("## 8Ball"), new DiscordSeparatorComponent(true, SeparatorSpacingSize.Large), questionComponent, seperator, answerComponent])));
-		return true;
 	}
-
-	/// <summary>
-	///     Sends an old-style embed 8ball message.
-	/// </summary>
-	/// <param name="ctx">The context.</param>
-	public async Task SendOldStyle8BallMessageAsync(InteractionContext ctx)
-		=> await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"> {this.UserQuestion}\n\n{this.ChosenAnswer}"));
 }

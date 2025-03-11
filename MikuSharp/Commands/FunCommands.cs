@@ -15,24 +15,21 @@ internal class FunCommands : ApplicationCommandsModule
 		public static async Task EightBallAsync(InteractionContext ctx, [Option("question", "The question")] string question)
 		{
 			EightBallGame eightBall = new(question);
-			if (!await eightBall.TryBuildV28BallMessageAsync(ctx))
-				await eightBall.SendOldStyle8BallMessageAsync(ctx);
+			await eightBall.Send8BallMessageAsync(ctx);
 		}
 
 		[SlashCommand("coinflip", "Flip a coin!")]
 		public static async Task CoinflipAsync(InteractionContext ctx)
 		{
 			var game = new CointossGame(ctx).TossCoin();
-			if (!await game.TryBuildV2CointossMessageAsync())
-				await game.SendOldStyleCointossMessageAsync();
+			await game.SendCointossMessageAsync();
 		}
 
 		[SlashCommand("rps", "Play rock paper scissors!")]
 		public static async Task RpsAsync(InteractionContext ctx, [Option("rps", "Your rock paper scissor choice")] RockPaperScissorsChoiceType userChoice)
 		{
 			var game = userChoice.ResolveRps(ctx.User);
-			if (!await game.TryBuildV2RpsMessageAsync(ctx))
-				await game.SendOldStyleRpsMessageAsync(ctx);
+			await game.SendRpsMessageAsync(ctx);
 		}
 	}
 
@@ -46,8 +43,7 @@ internal class FunCommands : ApplicationCommandsModule
 			if (!await ctx.CheckForProperImageResultAsync(nekosLifeImage))
 				return;
 
-			if (!await ctx.TryBuildV2ActionMessageAsync(nekosLifeImage!.Data, content: $"[Full Image]({nekosLifeImage.Url})", footer: "by nekos.life"))
-				await ctx.SendOldStyleMessageAsync(nekosLifeImage.Data, $"[Full Image]({nekosLifeImage.Url})", footer: "by nekos.life");
+			await ctx.SendActionMessageAsync(nekosLifeImage!.Data, content: $"[Full Image]({nekosLifeImage.Url})", footer: "by nekos.life");
 		}
 
 		[SlashCommand("dog", "Random Dog Image")]
@@ -58,9 +54,7 @@ internal class FunCommands : ApplicationCommandsModule
 				return;
 
 			var img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(dogCeo.Message.ResizeLink()));
-
-			if (!await ctx.TryBuildV2ActionMessageAsync(img, content: $"[Full Image]({dogCeo.Message})", footer: "by dog.ceo"))
-				await ctx.SendOldStyleMessageAsync(img, $"[Full Image]({dogCeo.Message})", footer: "by dog.ceo");
+			await ctx.SendActionMessageAsync(img, content: $"[Full Image]({dogCeo.Message})", footer: "by dog.ceo");
 		}
 
 		[SlashCommand("duck", "Random duck image")]
@@ -71,8 +65,7 @@ internal class FunCommands : ApplicationCommandsModule
 				return;
 
 			var img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(randomData.Message.ResizeLink()));
-			if (!await ctx.TryBuildV2ActionMessageAsync(img, content: $"[Full Image]({randomData.Message})", footer: "by random-d.uk"))
-				await ctx.SendOldStyleMessageAsync(img, $"[Full Image]({randomData.Message})", footer: "by random-d.uk");
+			await ctx.SendActionMessageAsync(img, content: $"[Full Image]({randomData.Message})", footer: "by random-d.uk");
 		}
 
 		[SlashCommand("lizard", "Get a random lizard image")]
@@ -83,9 +76,7 @@ internal class FunCommands : ApplicationCommandsModule
 				return;
 
 			var img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(nekosLifeImage.Url.ResizeLink()));
-
-			if (!await ctx.TryBuildV2ActionMessageAsync(img, footer: "by nekos.life"))
-				await ctx.SendOldStyleMessageAsync(img, footer: "by nekos.life");
+			await ctx.SendActionMessageAsync(img, footer: "by nekos.life");
 		}
 	}
 

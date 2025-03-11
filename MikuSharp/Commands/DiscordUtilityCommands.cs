@@ -33,8 +33,10 @@ internal class DiscordUtilityCommands : ApplicationCommandsModule
 		emb.WithTitle(ctx.Guild.Name);
 		if (ctx.Guild.BannerUrl is not null)
 			emb.WithImageUrl(ctx.Guild.BannerUrl);
+#pragma warning disable DCS0200
 		if (ctx.Guild.Description is not null)
 			emb.WithDescription(ctx.Guild.Description);
+#pragma warning restore DCS0200
 		emb.WithColor(new(0212255));
 		if (ctx.Guild.IconUrl is not null)
 			emb.WithThumbnail(ctx.Guild.IconUrl);

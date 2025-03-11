@@ -234,7 +234,7 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 				.Append($"{SizeToString(stats.Memory.Allocated)} allocated / {SizeToString(stats.Memory.Used)} used / {SizeToString(stats.Memory.Free)} free / {SizeToString(stats.Memory.Reservable)} reservable").AppendLine()
 				.Append("Audio frames (per minute): ").Append($"{stats.Frames?.Sent:#,##0} sent / {stats.Frames?.Nulled:#,##0} nulled / {stats.Frames?.Deficit:#,##0} deficit").AppendLine()
 				.Append("```");
-			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(sb.ToString()));
+			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(sb.ToString().BlockCode()));
 		}
 
 		/// <summary>

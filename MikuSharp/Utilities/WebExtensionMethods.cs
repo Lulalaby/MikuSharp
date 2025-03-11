@@ -9,7 +9,7 @@ using Weeb.net;
 namespace MikuSharp.Utilities;
 
 /// <summary>
-///    Provides extension methods for web-related operations.
+///     Provides extension methods for web-related operations.
 /// </summary>
 public static class WebExtensionMethods
 {
@@ -63,7 +63,7 @@ public static class WebExtensionMethods
 	}
 
 	/// <summary>
-	/// Generates an image using the Nekobot API.
+	///     Generates an image using the Nekobot API.
 	/// </summary>
 	/// <param name="ctx">The context.</param>
 	/// <param name="type">The type of image to generate.</param>
@@ -85,8 +85,7 @@ public static class WebExtensionMethods
 			Position = 0
 		};
 
-		if (!await ctx.TryBuildV2ActionMessageAsync(stream))
-			await ctx.SendOldStyleMessageAsync(stream);
+		await ctx.SendActionMessageAsync(stream);
 
 		await stream.DisposeAsync();
 	}
@@ -114,6 +113,28 @@ public static class WebExtensionMethods
 		em.WithFooter("by nekobot.xyz");
 		dl.Embed = em.Build();
 		return dl;
+	}
+
+	/// <summary>
+	///    Gets an image from meek.moe.
+	/// </summary>
+	/// <param name="client">The http client.</param>
+	/// <param name="url">The url.</param>
+	/// <returns>The meek.moe response.</returns>
+	public static async Task<MeekMoeImage?> GetMeekMoeAsync(this HttpClient client, string url)
+	{
+		var mm = JsonConvert.DeserializeObject<MeekMoeImage?>(await client.GetStringAsync(url));
+		if (mm is null)
+			return null;
+
+		var img = new MemoryStream(await client.GetByteArrayAsync(mm.Url.ResizeLink()))
+		{
+			Position = 0
+		};
+
+		mm.Data = img;
+		mm.Filetype = MimeGuesser.GuessExtension(img);
+		return mm;
 	}
 
 	/// <summary>

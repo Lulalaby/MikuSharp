@@ -104,11 +104,8 @@ public sealed class RockPaperScissorsResponse(DiscordUser player, RockPaperSciss
 	/// </summary>
 	/// <param name="ctx">The context.</param>
 	/// <returns>Whether the message was sent successfully.</returns>
-	public async Task<bool> TryBuildV2RpsMessageAsync(InteractionContext ctx)
+	public async Task SendRpsMessageAsync(InteractionContext ctx)
 	{
-		if (ctx.GuildId is not 1317206872763404478)
-			return false;
-
 		DiscordWebhookBuilder builder = new();
 		builder.WithV2Components();
 		DiscordTextDisplayComponent userChoiceComponent = new($"### {ctx.User.Mention} chooses {this.UserChoiceAsset.ChoiceType}");
@@ -125,21 +122,6 @@ public sealed class RockPaperScissorsResponse(DiscordUser player, RockPaperSciss
 		builder.AddComponents(new DiscordContainerComponent([userChoiceSection, seperator1, computerChoiceSection, seperator2, resultSectionComponent]));
 		builder.WithAllowedMention(new UserMention(ctx.User));
 		await ctx.EditResponseAsync(builder);
-		return true;
-	}
-
-	/// <summary>
-	///     Sends an old-style embed rock-paper-scissors message.
-	/// </summary>
-	/// <param name="ctx">The context.</param>
-	public async Task SendOldStyleRpsMessageAsync(InteractionContext ctx)
-	{
-		var emb = new DiscordEmbedBuilder()
-			.WithTitle("Rock Paper Scissors")
-			.WithDescription($"{ctx.User.Mention} chooses {this.UserChoiceAsset.ChoiceType} and I choose {this.ComputerChoiceAsset.ChoiceType}.\n{this}")
-			.WithThumbnail(this.WinnerAsset.ImageUrl)
-			.WithFooter(this.WinnerAsset.CreativeCommonsLicense, "https://mirrors.creativecommons.org/presskit/icons/cc.xlarge.png");
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(emb));
 	}
 
 	/// <inheritdoc />

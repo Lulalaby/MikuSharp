@@ -52,22 +52,12 @@ public sealed class CointossGame(InteractionContext context)
 	///     Tries to build and send a components V2 cointoss message.
 	/// </summary>
 	/// <returns>Whether the message was sent successfully.</returns>
-	public async Task<bool> TryBuildV2CointossMessageAsync()
+	public async Task SendCointossMessageAsync()
 	{
-		if (this.Context.GuildId is not 1317206872763404478)
-			return false;
-
 		DiscordSectionComponent sectionComponent = new([DiscordExtensionMethods.EmptyComponent, new("And the winner..."), new($"### {this.Result}")]);
 		sectionComponent.WithThumbnailComponent(this.CoinTossSideImages[this.Result], this.Result.ToString());
 		await this.Context.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(new DiscordContainerComponent([sectionComponent])));
-		return true;
 	}
-
-	/// <summary>
-	///     Sends an old-style embed cointoss message.
-	/// </summary>
-	public async Task SendOldStyleCointossMessageAsync()
-		=> await this.Context.EditResponseAsync(new DiscordWebhookBuilder().WithContent($"{this.CoinTossSideEmojis[this.Result]} It's {this.Result}!"));
 }
 
 /// <summary>
