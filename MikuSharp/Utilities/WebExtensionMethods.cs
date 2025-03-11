@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 
 using HeyRed.Mime;
@@ -30,7 +31,7 @@ public static class WebExtensionMethods
 			Position = 0
 		};
 		dl.Data = str;
-		dl.Filetype = MimeGuesser.GuessExtension(str);
+		dl.FileType = MimeGuesser.GuessExtension(str);
 		return dl;
 	}
 
@@ -79,12 +80,12 @@ public static class WebExtensionMethods
 			Position = 0
 		};
 		dl.Data = str;
-		dl.Filetype = MimeGuesser.GuessExtension(str);
+		dl.FileType = MimeGuesser.GuessExtension(str);
 		return dl;
 	}
 
 	/// <summary>
-	///    Gets an image from meek.moe.
+	///     Gets an image from meek.moe.
 	/// </summary>
 	/// <param name="client">The http client.</param>
 	/// <param name="url">The url.</param>
@@ -101,7 +102,7 @@ public static class WebExtensionMethods
 		};
 
 		mm.Data = img;
-		mm.Filetype = MimeGuesser.GuessExtension(img);
+		mm.FileType = MimeGuesser.GuessExtension(img);
 		return mm;
 	}
 
@@ -132,5 +133,41 @@ public static class WebExtensionMethods
 			Extension = MimeGuesser.GuessExtension(img),
 			Embed = em
 		};
+	}
+
+	/// <summary>
+	///     Tries to get an image from the Weeb.sh API.
+	/// </summary>
+	/// <param name="data">The data.</param>
+	/// <param name="stream">The stream.</param>
+	/// <returns>Whether the image was successfully retrieved.</returns>
+	public static bool TryGetWeebShImage(this WeebSh? data, [NotNullWhen(true)] out MemoryStream? stream)
+	{
+		if (data is null)
+		{
+			stream = null;
+			return false;
+		}
+
+		stream = data.ImgData;
+		return true;
+	}
+
+	/// <summary>
+	///     Tries to get an image from the Weeb.sh API.
+	/// </summary>
+	/// <param name="data">The data.</param>
+	/// <param name="image">The image.</param>
+	/// <returns>Whether the image was successfully retrieved.</returns>
+	public static bool TryGetMeekMoeImage(this MeekMoeImage? data, [NotNullWhen(true)] out MeekMoeImage? image)
+	{
+		if (data is null)
+		{
+			image = null;
+			return false;
+		}
+
+		image = data;
+		return true;
 	}
 }

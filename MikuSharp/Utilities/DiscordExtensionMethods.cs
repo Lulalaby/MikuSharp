@@ -152,42 +152,6 @@ public static class DiscordExtensionMethods
 	}
 
 	/// <summary>
-	///     Tries to get an image from the Weeb.sh API.
-	/// </summary>
-	/// <param name="data">The data.</param>
-	/// <param name="stream">The stream.</param>
-	/// <returns>Whether the image was successfully retrieved.</returns>
-	public static bool TryGetWeebShImage(this WeebSh? data, [NotNullWhen(true)] out MemoryStream? stream)
-	{
-		if (data is null)
-		{
-			stream = null;
-			return false;
-		}
-
-		stream = data.ImgData;
-		return true;
-	}
-
-	/// <summary>
-	///     Tries to get an image from the Weeb.sh API.
-	/// </summary>
-	/// <param name="data">The data.</param>
-	/// <param name="image">The image.</param>
-	/// <returns>Whether the image was successfully retrieved.</returns>
-	public static bool TryGetMeekMoeImage(this MeekMoeImage? data, [NotNullWhen(true)] out MeekMoeImage? image)
-	{
-		if (data is null)
-		{
-			image = null;
-			return false;
-		}
-
-		image = data;
-		return true;
-	}
-
-	/// <summary>
 	///     Responds with an error message.
 	/// </summary>
 	/// <param name="ctx">The context.</param>

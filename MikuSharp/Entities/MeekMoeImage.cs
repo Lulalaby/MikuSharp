@@ -5,9 +5,15 @@ namespace MikuSharp.Entities;
 /// </summary>
 public sealed class MeekMoeImage : ImgData
 {
+	/// <summary>
+	///     Gets the url.
+	/// </summary>
 	[JsonProperty("url")]
-	public string Url { get; set; }
+	public required string Url { get; set; }
 
+	/// <summary>
+	///     Gets the creator.
+	/// </summary>
 	[JsonProperty("creator", NullValueHandling = NullValueHandling.Ignore)]
 	public string? Creator { get; set; }
 }
