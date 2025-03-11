@@ -15,11 +15,5 @@ public class ImgData
 	///     Gets the file type.
 	/// </summary>
 	[JsonIgnore]
-	public string Filetype { get; set; }
-
-	/// <summary>
-	///     Gets the embed.
-	/// </summary>
-	[JsonIgnore]
-	public DiscordEmbed Embed { get; set; }
+	public string FileType { get; set; }
 }

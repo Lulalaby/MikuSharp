@@ -99,14 +99,37 @@ public static class DiscordExtensionMethods
 	{
 		DiscordWebhookBuilder builder = new();
 		builder.WithV2Components();
-		builder.AddFile($"image.{image.Filetype}", image.Data);
+		builder.AddFile($"image.{image.FileType}", image.Data);
 		DiscordContainerComponent container = new();
-		container.AddComponent(new DiscordMediaGalleryComponent([new($"attachment://image.{image.Filetype}")]));
+		container.AddComponent(new DiscordMediaGalleryComponent([new($"attachment://image.{image.FileType}")]));
 		if (footer is not null)
 			container.AddComponent(new DiscordTextDisplayComponent(footer.Subtext()));
 		builder.AddComponents(container);
 		await context.EditResponseAsync(builder);
 		await image.Data.DisposeAsync();
+	}
+
+	/// <summary>
+	///     Sends an image message.
+	/// </summary>
+	/// <param name="context">The context.</param>
+	/// <param name="image">The image.</param>
+	/// <param name="footer">
+	///     The optional footer. Tho footer is not really the correct word for the new components. We use a
+	///     section instead.
+	/// </param>
+	public static async Task SendImageMessageAsync(this BaseContext context, MemoryStream image, string? footer = null)
+	{
+		DiscordWebhookBuilder builder = new();
+		builder.WithV2Components();
+		builder.AddFile($"image.{MimeGuesser.GuessExtension(image)}", image);
+		DiscordContainerComponent container = new();
+		container.AddComponent(new DiscordMediaGalleryComponent([new($"attachment://image.{MimeGuesser.GuessExtension(image)}")]));
+		if (footer is not null)
+			container.AddComponent(new DiscordTextDisplayComponent(footer.Subtext()));
+		builder.AddComponents(container);
+		await context.EditResponseAsync(builder);
+		await image.DisposeAsync();
 	}
 
 	/// <summary>

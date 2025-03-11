@@ -9,7 +9,7 @@ public class NsfwCommands : BaseCommandModule
 	[Command("4k"), Description("lewd")]
 	public async Task FourK(CommandContext ctx)
 	{
-		var img = await ctx.Client.RestClient.GetNekobotAsync("https://nekobot.xyz/api/image?type=4k");
+		var img = await ctx.Client.RestClient.GetNsfwNekobotAsync("https://nekobot.xyz/api/image?type=4k");
 		if (img is null)
 		{
 			await ctx.RespondAsync("Failed to get image");
@@ -18,15 +18,15 @@ public class NsfwCommands : BaseCommandModule
 		}
 
 		DiscordMessageBuilder builder = new();
-		builder.AddFile($"image.{img.Filetype}", img.Data);
-		builder.AddEmbed(img.Embed);
+		builder.AddFile($"image.{img.FileType}", img.Data);
+		//builder.AddEmbed(img.Embed);
 		await ctx.RespondAsync(builder);
 	}
 
 	[Command("anal"), Description("lewd")]
 	public async Task Anal(CommandContext ctx)
 	{
-		var img = await ctx.Client.RestClient.GetNekobotAsync("https://nekobot.xyz/api/image?type=anal");
+		var img = await ctx.Client.RestClient.GetNsfwNekobotAsync("https://nekobot.xyz/api/image?type=anal");
 		if (img is null)
 		{
 			await ctx.RespondAsync("Failed to get image");
@@ -35,15 +35,15 @@ public class NsfwCommands : BaseCommandModule
 		}
 
 		DiscordMessageBuilder builder = new();
-		builder.AddFile($"image.{img.Filetype}", img.Data);
-		builder.AddEmbed(img.Embed);
+		builder.AddFile($"image.{img.FileType}", img.Data);
+		//builder.AddEmbed(img.Embed);
 		await ctx.RespondAsync(builder);
 	}
 
 	[Command("ass"), Description("lewd")]
 	public async Task Ass(CommandContext ctx)
 	{
-		var img = await ctx.Client.RestClient.GetNekobotAsync("https://nekobot.xyz/api/image?type=ass");
+		var img = await ctx.Client.RestClient.GetNsfwNekobotAsync("https://nekobot.xyz/api/image?type=ass");
 		if (img is null)
 		{
 			await ctx.RespondAsync("Failed to get image");
@@ -52,15 +52,15 @@ public class NsfwCommands : BaseCommandModule
 		}
 
 		DiscordMessageBuilder builder = new();
-		builder.AddFile($"image.{img.Filetype}", img.Data);
-		builder.AddEmbed(img.Embed);
+		builder.AddFile($"image.{img.FileType}", img.Data);
+		//builder.AddEmbed(img.Embed);
 		await ctx.RespondAsync(builder);
 	}
 
 	[Command("gonewild"), Description("lewd")]
 	public async Task Gonewild(CommandContext ctx)
 	{
-		var img = await ctx.Client.RestClient.GetNekobotAsync("https://nekobot.xyz/api/image?type=gonewild");
+		var img = await ctx.Client.RestClient.GetNsfwNekobotAsync("https://nekobot.xyz/api/image?type=gonewild");
 		if (img is null)
 		{
 			await ctx.RespondAsync("Failed to get image");
@@ -69,15 +69,15 @@ public class NsfwCommands : BaseCommandModule
 		}
 
 		DiscordMessageBuilder builder = new();
-		builder.AddFile($"image.{img.Filetype}", img.Data);
-		builder.AddEmbed(img.Embed);
+		builder.AddFile($"image.{img.FileType}", img.Data);
+		//builder.AddEmbed(img.Embed);
 		await ctx.RespondAsync(builder);
 	}
 
 	[Command("lewdkitsune"), Description("lewd")]
 	public async Task LewdKitsune(CommandContext ctx)
 	{
-		var img = await ctx.Client.RestClient.GetNekobotAsync("https://nekobot.xyz/api/image?type=lewdkitsune");
+		var img = await ctx.Client.RestClient.GetNsfwNekobotAsync("https://nekobot.xyz/api/image?type=lewdkitsune");
 		if (img is null)
 		{
 			await ctx.RespondAsync("Failed to get image");
@@ -86,15 +86,15 @@ public class NsfwCommands : BaseCommandModule
 		}
 
 		DiscordMessageBuilder builder = new();
-		builder.AddFile($"image.{img.Filetype}", img.Data);
-		builder.AddEmbed(img.Embed);
+		builder.AddFile($"image.{img.FileType}", img.Data);
+		//builder.AddEmbed(img.Embed);
 		await ctx.RespondAsync(builder);
 	}
 
 	[Command("lewdneko"), Description("lewd")]
 	public async Task LewdNeko(CommandContext ctx)
 	{
-		var img = await ctx.Client.RestClient.GetNekobotAsync("https://nekobot.xyz/api/image?type=lewdneko");
+		var img = await ctx.Client.RestClient.GetNsfwNekobotAsync("https://nekobot.xyz/api/image?type=lewdneko");
 		if (img is null)
 		{
 			await ctx.RespondAsync("Failed to get image");
@@ -103,15 +103,15 @@ public class NsfwCommands : BaseCommandModule
 		}
 
 		DiscordMessageBuilder builder = new();
-		builder.AddFile($"image.{img.Filetype}", img.Data);
-		builder.AddEmbed(img.Embed);
+		builder.AddFile($"image.{img.FileType}", img.Data);
+		//builder.AddEmbed(img.Embed);
 		await ctx.RespondAsync(builder);
 	}
 
 	[Command("porngif"), Description("lewd")]
 	public async Task PornGif(CommandContext ctx)
 	{
-		var img = await ctx.Client.RestClient.GetNekobotAsync("https://nekobot.xyz/api/image?type=pgif");
+		var img = await ctx.Client.RestClient.GetNsfwNekobotAsync("https://nekobot.xyz/api/image?type=pgif");
 		if (img is null)
 		{
 			await ctx.RespondAsync("Failed to get image");
@@ -120,15 +120,15 @@ public class NsfwCommands : BaseCommandModule
 		}
 
 		DiscordMessageBuilder builder = new();
-		builder.AddFile($"image.{img.Filetype}", img.Data);
-		builder.AddEmbed(img.Embed);
+		builder.AddFile($"image.{img.FileType}", img.Data);
+		//builder.AddEmbed(img.Embed);
 		await ctx.RespondAsync(builder);
 	}
 
 	[Command("pussy"), Description("lewd")]
 	public async Task Pussy(CommandContext ctx)
 	{
-		var img = await ctx.Client.RestClient.GetNekobotAsync("https://nekobot.xyz/api/image?type=pussy");
+		var img = await ctx.Client.RestClient.GetNsfwNekobotAsync("https://nekobot.xyz/api/image?type=pussy");
 		if (img is null)
 		{
 			await ctx.RespondAsync("Failed to get image");
@@ -137,15 +137,15 @@ public class NsfwCommands : BaseCommandModule
 		}
 
 		DiscordMessageBuilder builder = new();
-		builder.AddFile($"image.{img.Filetype}", img.Data);
-		builder.AddEmbed(img.Embed);
+		builder.AddFile($"image.{img.FileType}", img.Data);
+		//builder.AddEmbed(img.Embed);
 		await ctx.RespondAsync(builder);
 	}
 
 	[Command("thighs"), Aliases("thigh"), Description("lewd")]
 	public async Task Thighs(CommandContext ctx)
 	{
-		var img = await ctx.Client.RestClient.GetNekobotAsync("https://nekobot.xyz/api/image?type=thigh");
+		var img = await ctx.Client.RestClient.GetNsfwNekobotAsync("https://nekobot.xyz/api/image?type=thigh");
 		if (img is null)
 		{
 			await ctx.RespondAsync("Failed to get image");
@@ -154,8 +154,8 @@ public class NsfwCommands : BaseCommandModule
 		}
 
 		DiscordMessageBuilder builder = new();
-		builder.AddFile($"image.{img.Filetype}", img.Data);
-		builder.AddEmbed(img.Embed);
+		builder.AddFile($"image.{img.FileType}", img.Data);
+		//builder.AddEmbed(img.Embed);
 		await ctx.RespondAsync(builder);
 	}
 }

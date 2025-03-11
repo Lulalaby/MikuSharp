@@ -31,34 +31,6 @@ public static class WebExtensionMethods
 		};
 		dl.Data = str;
 		dl.Filetype = MimeGuesser.GuessExtension(str);
-		var em = new DiscordEmbedBuilder();
-		em.WithImageUrl($"attachment://image.{dl.Filetype}");
-		em.WithFooter("by nekos.life");
-		dl.Embed = em.Build();
-		return dl;
-	}
-
-	/// <summary>
-	///     Gets a random image from ksoft.si.
-	/// </summary>
-	/// <param name="client">The http client.</param>
-	/// <param name="tag">The tag.</param>
-	/// <param name="nsfw">Whether the search should include NSFW results.</param>
-	/// <returns>The ksoft.si response.</returns>
-	public static async Task<KsoftSiImage?> GetKsoftSiImgageAsync(this HttpClient client, string tag = "hentai_gif", bool nsfw = true)
-	{
-		client.DefaultRequestHeaders.Authorization = new("Bearer", HatsuneMikuBot.Config.KsoftSiToken);
-		var dl = JsonConvert.DeserializeObject<KsoftSiImage>(await client.GetStringAsync($"https://api.ksoft.si/images/random-image?tag={tag}&nsfw={nsfw.ToString().ToLowerInvariant()}"));
-		if (dl is null)
-			return null;
-
-		MemoryStream img = new(await client.GetByteArrayAsync(dl.Url.ResizeLink()));
-		dl.Data = img;
-		dl.Filetype = MimeGuesser.GuessExtension(img);
-		var em = new DiscordEmbedBuilder();
-		em.WithImageUrl($"attachment://image.{dl.Filetype}");
-		em.WithFooter("by KSoft.si");
-		dl.Embed = em.Build();
 		return dl;
 	}
 
@@ -96,7 +68,7 @@ public static class WebExtensionMethods
 	/// <param name="client">The http client.</param>
 	/// <param name="url">The url.</param>
 	/// <returns>The nekobot response.</returns>
-	public static async Task<NekoBotImage?> GetNekobotAsync(this HttpClient client, string url)
+	public static async Task<NekoBotImage?> GetNsfwNekobotAsync(this HttpClient client, string url)
 	{
 		var dl = JsonConvert.DeserializeObject<NekoBotImage>(await client.GetStringAsync(url));
 		if (dl is null)
@@ -108,10 +80,6 @@ public static class WebExtensionMethods
 		};
 		dl.Data = str;
 		dl.Filetype = MimeGuesser.GuessExtension(str);
-		var em = new DiscordEmbedBuilder();
-		em.WithImageUrl($"attachment://image.{dl.Filetype}");
-		em.WithFooter("by nekobot.xyz");
-		dl.Embed = em.Build();
 		return dl;
 	}
 

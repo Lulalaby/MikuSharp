@@ -43,7 +43,7 @@ internal class FunCommands : ApplicationCommandsModule
 			if (!await ctx.CheckForProperImageResultAsync(nekosLifeImage))
 				return;
 
-			await ctx.SendActionMessageAsync(nekosLifeImage!.Data, content: $"[Full Image]({nekosLifeImage.Url})", footer: "by nekos.life");
+			await ctx.SendImageMessageAsync(nekosLifeImage!.Data, "by nekos.life");
 		}
 
 		[SlashCommand("dog", "Random Dog Image")]
@@ -54,7 +54,7 @@ internal class FunCommands : ApplicationCommandsModule
 				return;
 
 			var img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(dogCeo.Message.ResizeLink()));
-			await ctx.SendActionMessageAsync(img, content: $"[Full Image]({dogCeo.Message})", footer: "by dog.ceo");
+			await ctx.SendImageMessageAsync(img, "by dog.ceo");
 		}
 
 		[SlashCommand("duck", "Random duck image")]
@@ -65,7 +65,7 @@ internal class FunCommands : ApplicationCommandsModule
 				return;
 
 			var img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(randomData.Message.ResizeLink()));
-			await ctx.SendActionMessageAsync(img, content: $"[Full Image]({randomData.Message})", footer: "by random-d.uk");
+			await ctx.SendImageMessageAsync(img, "by random-d.uk");
 		}
 
 		[SlashCommand("lizard", "Get a random lizard image")]
@@ -76,7 +76,7 @@ internal class FunCommands : ApplicationCommandsModule
 				return;
 
 			var img = new MemoryStream(await ctx.Client.RestClient.GetByteArrayAsync(nekosLifeImage.Url.ResizeLink()));
-			await ctx.SendActionMessageAsync(img, footer: "by nekos.life");
+			await ctx.SendImageMessageAsync(img, "by nekos.life");
 		}
 	}
 
