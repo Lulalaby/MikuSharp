@@ -89,6 +89,8 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 	[ContextMenu(ApplicationCommandType.Message, "Eval V2 - Miku Dev"), DeferResponseAsync]
 	public static async Task EvalV2Async(ContextMenuContext ctx)
 	{
+		DiscordWebhookBuilder responseBuilder = new();
+		responseBuilder.WithV2Components();
 		var msg = ctx.TargetMessage;
 		var code = msg.Content;
 		var cs1 = code.IndexOf("```", StringComparison.Ordinal) + 3;
@@ -97,25 +99,21 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 
 		if (cs1 is -1 || cs2 is -1)
 		{
-			await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent("You need to wrap the code into a code block."));
+			await ctx.EditResponseAsync(responseBuilder.AddComponents(new DiscordTextDisplayComponent("You need to wrap the code into a code block.")));
 			return;
 		}
 
 		var cs = code[cs1..cs2];
-		DiscordSectionComponent sourceSectionComponent = new();
-		sourceSectionComponent.WithThumbnailComponent("https://eval-deez-nuts.xyz/static/opinion.png");
-		DiscordTextDisplayComponent sourceTitleComponent = new("Code Evaluation".Header1());
-		DiscordTextDisplayComponent sourceSubTitleComponent = new("Source Code".Header2());
+		DiscordTextDisplayComponent titleComponent = new("Code Evaluation".Header1());
+		DiscordMediaGalleryComponent imageComponent = new([new("https://eval-deez-nuts.xyz/static/opinion.png")]);
+		DiscordTextDisplayComponent sourceTitleComponent = new("Source Code".Header2());
 		DiscordTextDisplayComponent sourceComponent = new(cs.BlockCode("cs"));
-		sourceSectionComponent.AddTextDisplayComponents([sourceTitleComponent, sourceSubTitleComponent, sourceComponent]);
 
-		DiscordWebhookBuilder responseBuilder = new();
-		responseBuilder.WithV2Components();
 		DiscordContainerComponent containerComponent = new(accentColor: DiscordColor.White);
 		DiscordTextDisplayComponent statusTitleComponent = new("Status".Header2());
 		DiscordTextDisplayComponent stateComponent = new("Evaluating...");
-		containerComponent.AddComponents([sourceSectionComponent, statusTitleComponent, stateComponent]);
-		await ctx.EditResponseAsync(responseBuilder);
+		containerComponent.AddComponents([titleComponent, imageComponent, sourceTitleComponent, sourceComponent, statusTitleComponent, stateComponent]);
+		await ctx.EditResponseAsync(responseBuilder.AddComponents(containerComponent));
 
 		try
 		{
@@ -126,53 +124,53 @@ public class DeveloperOnlyCommands : ApplicationCommandsModule
 				"DisCatSharp.Interactivity", "DisCatSharp.Interactivity.Extensions", "DisCatSharp.Enums", "Microsoft.Extensions.Logging", "MikuSharp.Entities");
 			sopts = sopts.WithReferences(AppDomain.CurrentDomain.GetAssemblies().Where(xa => !xa.IsDynamic && !string.IsNullOrWhiteSpace(xa.Location)));
 
+			await Task.Delay(TimeSpan.FromSeconds(2));
 			responseBuilder.ClearComponents();
 			containerComponent = new(accentColor: DiscordColor.Blue);
 			stateComponent = new("Creating Script..");
-			containerComponent.AddComponents([sourceSectionComponent, statusTitleComponent, stateComponent]);
-			await ctx.EditResponseAsync(responseBuilder);
+			containerComponent.AddComponents([titleComponent, imageComponent, sourceTitleComponent, sourceComponent, statusTitleComponent, stateComponent]);
+			await ctx.EditResponseAsync(responseBuilder.AddComponents(containerComponent));
 			var script = CSharpScript.Create(cs, sopts, typeof(MikuDeveloperEvalVariables));
 
+			await Task.Delay(TimeSpan.FromSeconds(2));
 			responseBuilder.ClearComponents();
 			containerComponent = new(accentColor: DiscordColor.Yellow);
 			stateComponent = new("Compiling Script..");
-			containerComponent.AddComponents([sourceSectionComponent, statusTitleComponent, stateComponent]);
-			await ctx.EditResponseAsync(responseBuilder);
+			containerComponent.AddComponents([titleComponent, imageComponent, sourceTitleComponent, sourceComponent, statusTitleComponent, stateComponent]);
+			await ctx.EditResponseAsync(responseBuilder.AddComponents(containerComponent));
 			script.Compile(HatsuneMikuBot.MikuCancellationTokenSource.Token);
 
+			await Task.Delay(TimeSpan.FromSeconds(2));
 			responseBuilder.ClearComponents();
 			containerComponent = new(accentColor: DiscordColor.SpringGreen);
 			stateComponent = new("Running Script..");
-			containerComponent.AddComponents([sourceSectionComponent, statusTitleComponent, stateComponent]);
-			await ctx.EditResponseAsync(responseBuilder);
+			containerComponent.AddComponents([titleComponent, imageComponent, sourceTitleComponent, sourceComponent, statusTitleComponent, stateComponent]);
+			await ctx.EditResponseAsync(responseBuilder.AddComponents(containerComponent));
 			var result = await script.RunAsync(globals, HatsuneMikuBot.MikuCancellationTokenSource.Token).ConfigureAwait(false);
 
+			await Task.Delay(TimeSpan.FromSeconds(2));
 			responseBuilder.ClearComponents();
 			containerComponent = new(accentColor: DiscordColor.Green);
+			stateComponent = new("Evaluation Successful");
 			if (result is { ReturnValue: not null } && !string.IsNullOrWhiteSpace(result.ReturnValue.ToString()))
 			{
-				stateComponent = new("Evaluation Successful");
-				DiscordTextDisplayComponent returnValueTitleComponent = new("Return Value".Header2());
-				DiscordTextDisplayComponent returnValue = new(result.ReturnValue.ToString()!.BlockCode());
-				containerComponent.AddComponents([sourceSectionComponent, statusTitleComponent, stateComponent, returnValueTitleComponent, returnValue]);
+				DiscordTextDisplayComponent returnValueComponent = new("Return Value".Header2() + "\n" + result.ReturnValue.ToString()!);
+				containerComponent.AddComponents([titleComponent, imageComponent, sourceTitleComponent, sourceComponent, statusTitleComponent, stateComponent, returnValueComponent]);
 			}
 			else
-			{
-				stateComponent = new("Evaluation Successful");
-				containerComponent.AddComponents([sourceSectionComponent, statusTitleComponent, stateComponent]);
-			}
+				containerComponent.AddComponents([titleComponent, imageComponent, sourceTitleComponent, sourceComponent, statusTitleComponent, stateComponent]);
 
-			await ctx.EditResponseAsync(responseBuilder);
+			await ctx.EditResponseAsync(responseBuilder.AddComponents(containerComponent));
 		}
 		catch (Exception ex)
 		{
+			await Task.Delay(TimeSpan.FromSeconds(2));
 			responseBuilder.ClearComponents();
 			containerComponent = new(accentColor: DiscordColor.DarkRed);
 			stateComponent = new(":warning: Evaluation Failure");
-			DiscordTextDisplayComponent exceptionTitleComponent = new("Exception".Header2());
-			DiscordTextDisplayComponent exceptionComponent = new(string.Concat("**", ex.GetType().ToString(), "**: ", ex.Message).BlockCode());
-			containerComponent.AddComponents([sourceSectionComponent, statusTitleComponent, stateComponent, exceptionTitleComponent, exceptionComponent]);
-			await ctx.EditResponseAsync(responseBuilder);
+			DiscordTextDisplayComponent exceptionComponent = new("Exception".Header2() + "\n" + string.Concat("**", ex.GetType().ToString(), "**: ", ex.Message));
+			containerComponent.AddComponents([titleComponent, imageComponent, sourceTitleComponent, sourceComponent, statusTitleComponent, stateComponent, exceptionComponent]);
+			await ctx.EditResponseAsync(responseBuilder.AddComponents(containerComponent));
 		}
 	}
 
