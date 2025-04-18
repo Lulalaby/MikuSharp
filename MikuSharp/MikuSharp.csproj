@@ -21,12 +21,7 @@
 		<NuGetAuditSuppress>true</NuGetAuditSuppress>
 		<NuGetAudit>false</NuGetAudit>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<Compile Remove="MusicCommands\**" />
-		<EmbeddedResource Remove="MusicCommands\**" />
-		<None Remove="MusicCommands\**" />
-	</ItemGroup>
+	
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
 		<NoWarn>1701;1702;DV2001;CS8603;CS8604;CS8618;CS8601;CS8602;CS8600;CS8625</NoWarn>
 	</PropertyGroup>
@@ -70,26 +65,26 @@
 	<ItemGroup>
 		<PackageReference Include="AlbumArtExtraction" Version="1.0.2" />
 		<PackageReference Include="AngleSharp" Version="1.2.0" />
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0" />
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.12.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.13.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.13.0" />
 		<PackageReference Include="DiscordBotsList.Api" Version="1.5.0" />
-		<PackageReference Include="FluentFTP" Version="52.0.0" />
+		<PackageReference Include="FluentFTP" Version="52.1.0" />
 		<PackageReference Include="Google.Apis" Version="1.69.0" />
-		<PackageReference Include="Google.Apis.YouTube.v3" Version="1.69.0.3674" />
+		<PackageReference Include="Google.Apis.YouTube.v3" Version="1.69.0.3742" />
 		<PackageReference Include="Kitsu" Version="1.4.2" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.2" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.4" />
 		<PackageReference Include="Mime" Version="3.7.0" />
 		<PackageReference Include="NeoSmart.AsyncLock" Version="3.2.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<ProjectReference Include="..\NicoNicoNii\NicoNicoNii\NicoNicoNii.csproj" />
-		<PackageReference Include="Npgsql" Version="9.0.2" />
+		<PackageReference Include="Npgsql" Version="9.0.3" />
 		<PackageReference Include="NYoutubeDL" Version="0.11.2" />
 		<PackageReference Include="Serilog" Version="4.2.0" />
-		<PackageReference Include="Serilog.Extensions.Logging" Version="9.0.0" />
+		<PackageReference Include="Serilog.Extensions.Logging" Version="9.0.1" />
 		<PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
 		<PackageReference Include="Weeb.net" Version="1.0.7" />
-		<PackageReference Include="YoutubeExplode" Version="6.5.3" />
+		<PackageReference Include="YoutubeExplode" Version="6.5.4" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -15,9 +15,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisCatSharp.Lavalink", "..\DisCatSharp\DisCatSharp.Lavalink\DisCatSharp.Lavalink.csproj", "{3A9FE493-FC1B-9081-1E43-A3B2F37EBC76}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DisCatSharp", "DisCatSharp", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
-	ProjectSection(SolutionItems) = preProject
-		..\DisCatSharp\DisCatSharp.Experimental\DisCatSharp.Experimental.csproj = ..\DisCatSharp\DisCatSharp.Experimental\DisCatSharp.Experimental.csproj
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisCatSharp", "..\DisCatSharp\DisCatSharp\DisCatSharp.csproj", "{5E93A5B5-4FBD-8B4B-0C58-C94FBBEBD514}"
 EndProject
@@ -28,6 +25,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisCatSharp.CommandsNext", "..\DisCatSharp\DisCatSharp.CommandsNext\DisCatSharp.CommandsNext.csproj", "{9894841A-DFE9-21E9-8FE9-E3486D6E28BB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisCatSharp.Interactivity", "..\DisCatSharp\DisCatSharp.Interactivity\DisCatSharp.Interactivity.csproj", "{D57EF042-AFE2-9B8D-E9DC-C4F3B8EE60CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisCatSharp.Experimental", "..\DisCatSharp\DisCatSharp.Experimental\DisCatSharp.Experimental.csproj", "{71DC621E-D332-F94C-3F34-65A75DE657D3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +66,10 @@ Global
 		{D57EF042-AFE2-9B8D-E9DC-C4F3B8EE60CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D57EF042-AFE2-9B8D-E9DC-C4F3B8EE60CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D57EF042-AFE2-9B8D-E9DC-C4F3B8EE60CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71DC621E-D332-F94C-3F34-65A75DE657D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71DC621E-D332-F94C-3F34-65A75DE657D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71DC621E-D332-F94C-3F34-65A75DE657D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71DC621E-D332-F94C-3F34-65A75DE657D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,6 +81,7 @@ Global
 		{C58808B1-4112-1650-4864-88B8A5BCE1E9} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{9894841A-DFE9-21E9-8FE9-E3486D6E28BB} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{D57EF042-AFE2-9B8D-E9DC-C4F3B8EE60CC} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{71DC621E-D332-F94C-3F34-65A75DE657D3} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C76757C4-CC79-4C18-83BD-40F37AC98C1A}
