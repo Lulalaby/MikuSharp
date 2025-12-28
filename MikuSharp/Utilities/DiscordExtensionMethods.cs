@@ -54,7 +54,7 @@ public static class DiscordExtensionMethods
 		=> user.GlobalName ?? user.Username;
 
 	/// <summary>
-	///     Sends a Action message.
+	///     Sends an Action message.
 	/// </summary>
 	/// <param name="context">The context.</param>
 	/// <param name="image">The image.</param>
@@ -157,9 +157,14 @@ public static class DiscordExtensionMethods
 	/// <param name="ctx">The context.</param>
 	/// <param name="content">The content.</param>
 	/// <param name="user">The user.</param>
-	public static async Task ActionRespondWithErrorAsync(this BaseContext ctx, string content, DiscordUser user)
+	public static async Task ActionRespondWithErrorAsync(this BaseContext ctx, string content, DiscordUser? user = null)
 	{
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithContent(content).WithAllowedMentions([new UserMention(ctx.User), new UserMention(user)]));
+		var builder = new DiscordWebhookBuilder().WithContent(content);
+		if (user is not null)
+			builder.WithAllowedMentions([new UserMention(ctx.User), new UserMention(user)]);
+		else
+			builder.WithAllowedMentions([new UserMention(ctx.User)]);
+		await ctx.EditResponseAsync(builder);
 		await ctx.FollowUpAsync(new DiscordFollowupMessageBuilder().AsEphemeral().WithContent("Failed to get image"));
 	}
 

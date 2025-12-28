@@ -9,30 +9,40 @@ internal class AboutCommands : ApplicationCommandsModule
 	[SlashCommand("donate", "Financial support information")]
 	public static async Task DonateAsync(InteractionContext ctx)
 	{
-		var emb = new DiscordEmbedBuilder();
-		emb.WithThumbnail(ctx.Client.CurrentUser.AvatarUrl).WithTitle("Donate Page!").WithAuthor("Miku MikuBot uwu").WithColor(new("#348573"))
-			.WithDescription("Thank you for your interest in supporting the bot's development!\n" + "Here are some links that may interest you").AddField(new("Patreon (Owner)", "[sekoree](https://patreon.com/sekoree)"))
-			.AddField(new("PayPal (Owner)", "[speyd3r](https://paypal.me/speyd3r)")).AddField(new("PayPal (Current Developer)", "[aitsys](https://paypal.me/aitsys)")).AddField(new("GitHub Sponsers (Current Developer)", "[Lulalaby](https://github.com/sponsors/Lulalaby)"));
-		await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(emb.Build()).AsEphemeral());
+		DiscordContainerComponent container = new(accentColor: DiscordColor.Gold);
+		DiscordSectionComponent section = new();
+		section.WithThumbnailComponent("https://i.imgur.com/HyqWCep.png");
+		section.AddTextDisplayComponent(new("Donations".Header1()));
+		section.AddTextDisplayComponent(new("Thank you for your interest in supporting the bot's development ❤️\nHere are some links that may interest you:"));
+		section.AddTextDisplayComponent(new("Creator (@sekoree)".Header3() + "\n" +
+		                                    "- " + "Patreon".MaskedUrl(new("https://patreon.com/sekoree")) + "\n" +
+		                                    "- " + "PayPal".MaskedUrl(new("https://paypal.me/speyd3r")) + "\n" +
+		                                    "Current Developer (@lulalaby)".Header3() + "\n" +
+		                                    "- " + "PayPal".MaskedUrl(new("https://paypal.me/aitsys")) + "\n" +
+		                                    "- " + "GitHub Sponsors".MaskedUrl(new("https://github.com/sponsors/Lulalaby")) + "\n\n" +
+		                                    "Many thanks!".Subtext()));
+		container.AddComponent(section);
+		await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithV2Components().AddComponents(container));
 	}
 
 	[SlashCommand("bot", "Information about the bot"), DeferResponseAsync(true)]
 	public static async Task BotAsync(InteractionContext ctx)
 	{
-		var emb = new DiscordEmbedBuilder();
-		emb.WithThumbnail(ctx.Client.CurrentUser.AvatarUrl).WithTitle($"About {ctx.Client.CurrentApplication.Name}!").WithAuthor("Miku MikuBot uwu").WithColor(new("#348573"));
+		DiscordContainerComponent container = new(accentColor: new("#348573"));
+		DiscordSectionComponent section = new();
+		section.WithThumbnailComponent("https://i.imgur.com/Uew8VFr.png");
+		section.AddTextDisplayComponent(new($"About {ctx.Client.CurrentApplication.Name}".Header1()));
 		if (ctx.Client.CurrentApplication.Description is not null)
-			emb.WithDescription(ctx.Client.CurrentApplication.Description);
+			section.AddTextDisplayComponent(new(ctx.Client.CurrentApplication.Description));
 		if (ctx.Client.CurrentApplication.Team is not null)
-			foreach (var member in ctx.Client.CurrentApplication.Team.Members.OrderByDescending(x => x.User.Username))
-				emb.AddField(new(member.User.Id == ctx.Client.CurrentApplication.Team.Owner.Id
-					? "Owner"
-					: "Developer", member.User.UsernameWithGlobalName));
+			section.AddTextDisplayComponent(new("Team".Header3() + "\n" + string.Join("\n", ctx.Client.CurrentApplication.Team.Members.OrderByDescending(x => x.User.Username).Select(m => $"- {m.User.Username.Bold()} ({m.Role})"))));
 		else
-			emb.AddField(new("Owner", ctx.Client.CurrentApplication.Owner.UsernameWithGlobalName));
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(emb.Build()));
+			section.AddTextDisplayComponent(new("Owner".Header3() + "\n" + ctx.Client.CurrentApplication.Owner.UsernameWithGlobalName));
+		container.AddComponent(section);
+		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(container));
 	}
 
+	// TODO: CV2
 	[SlashCommand("news", "Get news about the bot in your server", allowedContexts: [InteractionContextType.Guild], integrationTypes: [ApplicationCommandIntegrationTypes.GuildInstall]), DeferResponseAsync(true)]
 	public static async Task FollowNewsAsync(
 		InteractionContext ctx,
@@ -59,6 +69,7 @@ internal class AboutCommands : ApplicationCommandsModule
 			$"News setup complete {DiscordEmoji.FromGuildEmote(HatsuneMikuBot.ShardedClient.GetShard(483279257431441410), 623933340520546306)}\n\nYou'll get the newest news about the bot in your server in {channel.Mention}!"));
 	}
 
+	// TODO: CV2
 	[SlashCommand("feedback", "Send feedback to the developers")]
 	public static async Task FeedbackAsync(InteractionContext ctx)
 	{
@@ -75,7 +86,7 @@ internal class AboutCommands : ApplicationCommandsModule
 			await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
 			var title = res.Result.Interaction.Data.Components.First(x => x.CustomId is "feedbacktitle").Value;
 			var body = res.Result.Interaction.Data.Components.First(x => x.CustomId is "feedbackbody").Value;
-			var guild = await HatsuneMikuBot.ShardedClient.GetShard(483279257431441410).GetGuildAsync(483279257431441410);
+			//var guild = await HatsuneMikuBot.ShardedClient.GetShard(483279257431441410).GetGuildAsync(483279257431441410);
 			var emb = new DiscordEmbedBuilder();
 			emb.WithAuthor($"{ctx.User.UsernameWithGlobalName}", iconUrl: ctx.User.AvatarUrl).WithTitle(title).WithDescription(body);
 			if (ctx.Guild is not null)
@@ -99,12 +110,13 @@ internal class AboutCommands : ApplicationCommandsModule
 
 	[SlashCommand("ping", "Current ping to discord's services")]
 	public static async Task PingAsync(InteractionContext ctx)
-		=> await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithContent($"Ping: {$"{ctx.Client.Ping}ms".InlineCode()}"));
+		=> await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithV2Components().AddComponents(new DiscordTextDisplayComponent($"Ping: {$"{ctx.Client.Ping}ms".InlineCode()}")));
 
 	[SlashCommand("which_shard", "Gets the id of current shard you're using me on")]
 	public static async Task GetExecutingShardAsync(InteractionContext ctx)
-		=> await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithContent($"Shard: {ctx.Client.ShardId.ToString().InlineCode()}"));
+		=> await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral().WithV2Components().AddComponents(new DiscordTextDisplayComponent($"Shard: {ctx.Client.ShardId.ToString().InlineCode()}")));
 
+	// TODO: CV2
 	[SlashCommand("stats", "Statistics about the bot!"), DeferResponseAsync(true)]
 	public static async Task StatsAsync(InteractionContext ctx)
 	{
@@ -140,7 +152,10 @@ internal class AboutCommands : ApplicationCommandsModule
 	{
 		var guild = await HatsuneMikuBot.ShardedClient.GetShard(483279257431441410).GetGuildAsync(483279257431441410);
 		var widget = await guild.GetWidgetAsync();
-		var emb = new DiscordEmbedBuilder().WithTitle("Support Server").WithDescription("Need help or is something broken?").WithThumbnail(ctx.Client.CurrentUser.AvatarUrl);
-		await ctx.EditResponseAsync(new DiscordWebhookBuilder().AddEmbed(emb.Build()).AddComponents(new DiscordLinkButtonComponent(widget.InstantInviteUrl, "Support Server", false, new(704733597655105634))));
+		DiscordContainerComponent container = new(accentColor: DiscordColor.IndianRed);
+		container.AddComponent(new DiscordTextDisplayComponent("Support".Header1()));
+		container.AddComponent(new DiscordTextDisplayComponent("Need help or is something broken?"));
+		container.AddComponent(new DiscordActionRowComponent([new DiscordLinkButtonComponent(widget.InstantInviteUrl.Replace("canary.discord.com/invite", "discord.gg"), "Support Server", false, new(704733597655105634))]));
+		await ctx.EditResponseAsync(new DiscordWebhookBuilder().WithV2Components().AddComponents(container));
 	}
 }

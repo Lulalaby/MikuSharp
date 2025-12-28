@@ -7,10 +7,10 @@ namespace MikuSharp.Commands;
 internal class ActionCommands : ApplicationCommandsModule
 {
 	[SlashCommand("hug", "Hug someone!")]
-	public static async Task HugAsync(InteractionContext ctx, [Option("user", "The user to execute the action with")] DiscordUser user)
+	public static async Task HugAsync(InteractionContext ctx, [Option("user", "The user to execute the action with")] DiscordUser? user = null)
 	{
 		var title = "## A wild hug appears!";
-		var content = $"{ctx.User.Mention} hugs {user.Mention} uwu";
+		var content = $"{ctx.User.Mention} hugs {user?.Mention ?? "everyone"} uwu";
 		if (!(await ctx.Client.RestClient.GetWeebShAsync("hug")).TryGetWeebShImage(out var img))
 		{
 			await ctx.ActionRespondWithErrorAsync(content, user);

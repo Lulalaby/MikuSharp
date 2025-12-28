@@ -37,7 +37,7 @@ public sealed class HatsuneMikuBot : IDisposable
 	/// <summary>
 	///     Whether to disable Lavalink.
 	/// </summary>
-	public const bool DISABLE_LAVALINK = true;
+	public const bool DISABLE_LAVALINK = false;
 
 	/// <summary>
 	///     Gets the Weeb client.
@@ -95,7 +95,7 @@ public sealed class HatsuneMikuBot : IDisposable
 			AttachUserInfo = true,
 			ReconnectIndefinitely = true,
 			EnableLibraryDeveloperMode = true,
-			Proxy = ENABLE_PROXY ? new WebProxy("127.0.0.1", 8004) : null,
+			Proxy = ENABLE_PROXY ? new WebProxy("127.0.0.1", 8000) : null,
 			GatewayCompressionLevel = DISABLE_GATEWAY_COMPRESSION ? GatewayCompressionLevel.None : GatewayCompressionLevel.Stream
 		});
 

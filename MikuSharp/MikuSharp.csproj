@@ -46,10 +46,6 @@
 		<ProjectReference Include="..\..\DisCatSharp\DisCatSharp.Experimental\DisCatSharp.Experimental.csproj" />
 		<ProjectReference Include="..\..\DisCatSharp\DisCatSharp.Interactivity\DisCatSharp.Interactivity.csproj" />
 		<ProjectReference Include="..\..\DisCatSharp\DisCatSharp.Lavalink\DisCatSharp.Lavalink.csproj" />
-		<PackageReference Include="DisCatSharp.Analyzer.Roselyn" Version="6.2.5">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Release'">
@@ -64,7 +60,11 @@
 
 	<ItemGroup>
 		<PackageReference Include="AlbumArtExtraction" Version="1.0.2" />
-		<PackageReference Include="AngleSharp" Version="1.2.0" />
+		<PackageReference Include="AngleSharp" Version="1.3.0" />
+		<PackageReference Include="DisCatSharp.Analyzer" Version="1.0.0">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.13.0" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.13.0" />
 		<PackageReference Include="DiscordBotsList.Api" Version="1.5.0" />
