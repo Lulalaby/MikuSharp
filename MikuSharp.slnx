@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/DisCatSharp/">
+    <Project Path="C:\Users\Lulalaby\codex-workspaces\dave-experimental\discatsharp-codex/DisCatSharp.ApplicationCommands/DisCatSharp.ApplicationCommands.csproj" />
+    <Project Path="C:\Users\Lulalaby\codex-workspaces\dave-experimental\discatsharp-codex/DisCatSharp.CommandsNext/DisCatSharp.CommandsNext.csproj" />
+    <Project Path="C:\Users\Lulalaby\codex-workspaces\dave-experimental\discatsharp-codex/DisCatSharp.Common/DisCatSharp.Common.csproj" />
+    <Project Path="C:\Users\Lulalaby\codex-workspaces\dave-experimental\discatsharp-codex/DisCatSharp.Experimental/DisCatSharp.Experimental.csproj" />
+    <Project Path="C:\Users\Lulalaby\codex-workspaces\dave-experimental\discatsharp-codex/DisCatSharp.Interactivity/DisCatSharp.Interactivity.csproj" />
+    <Project Path="C:\Users\Lulalaby\codex-workspaces\dave-experimental\discatsharp-codex/DisCatSharp.Lavalink/DisCatSharp.Lavalink.csproj" />
+    <Project Path="C:\Users\Lulalaby\codex-workspaces\dave-experimental\discatsharp-codex/DisCatSharp/DisCatSharp.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Project Path="MikuSharp/MikuSharp.csproj" />
+  <Project Path="NicoNicoNii/NicoNicoNii/NicoNicoNii.csproj" />
+</Solution>

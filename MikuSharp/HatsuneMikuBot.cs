@@ -37,12 +37,12 @@ public sealed class HatsuneMikuBot : IDisposable
 	/// <summary>
 	///     Whether to disable Lavalink.
 	/// </summary>
-	public const bool DISABLE_LAVALINK = false;
+	public const bool DISABLE_LAVALINK = true;
 
 	/// <summary>
 	///     Gets the Weeb client.
 	/// </summary>
-	internal static readonly WeebClient WeebClient = new("Hatsune Miku Bot", "5.0.0");
+	internal static readonly WeebClient WeebClient = new("Hatsune Miku Bot", "6.0.0");
 
 	/// <summary>
 	///     Gets the music sessions.

@@ -1,3 +1,5 @@
+using DisCatSharp.Interactivity.Entities;
+
 using MikuSharp.Attributes;
 using MikuSharp.Utilities;
 
@@ -43,7 +45,7 @@ internal class DiscordUtilityCommands : ApplicationCommandsModule
 		emb.AddField(new("Owner", ctx.Guild.Owner?.UsernameWithGlobalName ?? "Unknown??".Italic()));
 		emb.AddField(new("Language", ctx.Guild.PreferredLocale ?? "Not set".Italic()));
 		emb.AddField(new("ID", ctx.Guild.Id.ToString()));
-		emb.AddField(new("Created At", ctx.Guild.CreationTimestamp.Timestamp(TimestampFormat.LongDateTime)));
+		emb.AddField(new("Created At", ctx.Guild.CreationTimestamp.Timestamp(TimestampFormat.FullDateShortTime)));
 		emb.AddField(new("Members (Bots)", $"{members.Count} ({bots})"));
 		emb.AddField(new("Emojis", ctx.Guild.Emojis.Count.ToString()));
 		emb.AddField(new("Stickers", ctx.Guild.Stickers.Count.ToString()));
@@ -129,7 +131,7 @@ internal class DiscordUtilityCommands : ApplicationCommandsModule
 
 		var guildStickers = ctx.Guild.Stickers.Values.ToList();
 		List<Page> pages = new(guildStickers.Count);
-		pages.AddRange(guildStickers.Select(guildSticker => new Page(embed: new DiscordEmbedBuilder().WithTitle($"Stickers in {ctx.Guild.Name}").AddField(new("Name", guildSticker.Name)).AddField(new("ID", guildSticker.Id.ToString())).AddField(new("Description", string.IsNullOrEmpty(guildSticker.Description) ? "No description".Italic() : guildSticker.Description)).WithImageUrl(guildSticker.Url))));
+		pages.AddRange(guildStickers.Select(guildSticker => new Page().WithEmbed(new DiscordEmbedBuilder().WithTitle($"Stickers in {ctx.Guild.Name}").AddField(new("Name", guildSticker.Name)).AddField(new("ID", guildSticker.Id.ToString())).AddField(new("Description", string.IsNullOrEmpty(guildSticker.Description) ? "No description".Italic() : guildSticker.Description)).WithImageUrl(guildSticker.Url))));
 		await ctx.Client.GetInteractivity().SendPaginatedResponseAsync(ctx.Interaction, true, true, ctx.User, pages.Recalculate());
 	}
 }

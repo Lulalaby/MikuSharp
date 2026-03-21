@@ -1,3 +1,5 @@
+using DisCatSharp.Interactivity.Entities;
+
 using Kitsu.Anime;
 using Kitsu.Manga;
 

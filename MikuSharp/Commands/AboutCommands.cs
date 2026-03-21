@@ -75,8 +75,10 @@ internal class AboutCommands : ApplicationCommandsModule
 	{
 		DiscordInteractionModalBuilder modalBuilder = new();
 		modalBuilder.WithTitle("Feedback modal");
-		modalBuilder.AddTextComponent(new(TextComponentStyle.Small, "Title of feedback", "feedbacktitle", null, 5, null, true, "Feedback"));
-		modalBuilder.AddTextComponent(new(TextComponentStyle.Paragraph, "Your feedback", "feedbackbody", null, 20));
+#pragma warning disable DCS0102 // [Discord] Deprecated
+		modalBuilder.AddTextComponent(new(TextComponentStyle.Small, label: "Title of feedback", "feedbacktitle", null, 5, null, true, "Feedback"));
+		modalBuilder.AddTextComponent(new(TextComponentStyle.Paragraph, label: "Your feedback", "feedbackbody", null, 20));
+#pragma warning restore DCS0102 // [Discord] Deprecated
 		await ctx.CreateModalResponseAsync(modalBuilder);
 
 		var res = await ctx.Client.GetInteractivity().WaitForModalAsync(modalBuilder.CustomId, TimeSpan.FromMinutes(2));
@@ -84,8 +86,8 @@ internal class AboutCommands : ApplicationCommandsModule
 		if (!res.TimedOut)
 		{
 			await res.Result.Interaction.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new DiscordInteractionResponseBuilder().AsEphemeral());
-			var title = res.Result.Interaction.Data.Components.First(x => x.CustomId is "feedbacktitle").Value;
-			var body = res.Result.Interaction.Data.Components.First(x => x.CustomId is "feedbackbody").Value;
+			var title = (res.Result.Interaction.Data.ModalComponents.First(x => x.CustomId is "feedbacktitle") as DiscordTextInputComponent)?.Value;
+			var body = (res.Result.Interaction.Data.ModalComponents.First(x => x.CustomId is "feedbackbody") as DiscordTextInputComponent)?.Value;
 			//var guild = await HatsuneMikuBot.ShardedClient.GetShard(483279257431441410).GetGuildAsync(483279257431441410);
 			var emb = new DiscordEmbedBuilder();
 			emb.WithAuthor($"{ctx.User.UsernameWithGlobalName}", iconUrl: ctx.User.AvatarUrl).WithTitle(title).WithDescription(body);
