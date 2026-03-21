@@ -1,1 +1,0 @@
-﻿# Generated translations for Miku Bot
