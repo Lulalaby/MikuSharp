@@ -46,6 +46,7 @@
 		<ProjectReference Include="C:\Users\Lulalaby\codex-workspaces\dave-experimental\discatsharp-codex\DisCatSharp.Experimental\DisCatSharp.Experimental.csproj" />
 		<ProjectReference Include="C:\Users\Lulalaby\codex-workspaces\dave-experimental\discatsharp-codex\DisCatSharp.Interactivity\DisCatSharp.Interactivity.csproj" />
 		<ProjectReference Include="C:\Users\Lulalaby\codex-workspaces\dave-experimental\discatsharp-codex\DisCatSharp.Lavalink\DisCatSharp.Lavalink.csproj" />
+		<ProjectReference Include="C:\Users\Lulalaby\codex-workspaces\dave-experimental\discatsharp-codex\DisCatSharp.Voice.Natives\DisCatSharp.Voice.Natives.csproj" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'!='DebugSrc'">
@@ -56,6 +57,7 @@
 		<PackageReference Include="DisCatSharp.Experimental" Version="10.7.0" />
 		<PackageReference Include="DisCatSharp.Interactivity" Version="10.7.0" />
 		<PackageReference Include="DisCatSharp.Lavalink" Version="10.7.0" />
+		<PackageReference Include="DisCatSharp.Voice.Natives" Version="10.7.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -113,12 +115,6 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="ffprobe.exe">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="libopus.dll">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-		<None Update="libsodium.dll">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="miku.png">

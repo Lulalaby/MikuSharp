@@ -343,3 +343,4 @@ MikuSharp/config.json
 *.bin
 .history/
 .vscode/
+docs/
