@@ -2,10 +2,10 @@
 
 public sealed class BotConfig
 {
-#if DEBUG
-	[JsonProperty("discordTokenDev")]
+#if RELEASE
+	[JsonProperty("discordTokenProd")]
 #else
-	[JsonProperty("discordToken")]
+	[JsonProperty("discordTokenDev")]
 #endif
 	public string DiscordToken { get; set; }
 
