@@ -1,5 +1,6 @@
 {
-	"discordToken": "",
+	"discordTokenProd": "",
+	"discordTokenDev": "",
 	"discordBotListToken": "",
 	"weebShToken": "",
 	"youtubeApiToken": "",
